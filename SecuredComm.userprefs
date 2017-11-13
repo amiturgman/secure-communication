@@ -1,0 +1,17 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workbench ActiveDocument="SecuredComm/SecretsManagement.cs">
+    <Files>
+      <File FileName="SecuredComm/SecuredComm.cs" Line="22" Column="59" />
+      <File FileName="SecuredComm/ISecuredComm.cs" Line="10" Column="36" />
+      <File FileName="SecuredComm/TXEngine.cs" Line="46" Column="38" />
+      <File FileName="SecuredComm/ISecretsManagement.cs" Line="1" Column="1" />
+      <File FileName="SecuredComm/SecretsManagement.cs" Line="6" Column="42" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MultiItemStartupConfigurations />
+</Properties>
