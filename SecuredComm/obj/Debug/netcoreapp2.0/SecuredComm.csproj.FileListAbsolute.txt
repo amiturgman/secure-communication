@@ -1,8 +1,0 @@
-/Users/eladi/projects/securedcomm/SecuredComm/bin/Debug/netcoreapp2.0/SecuredComm.deps.json
-/Users/eladi/projects/securedcomm/SecuredComm/bin/Debug/netcoreapp2.0/SecuredComm.dll
-/Users/eladi/projects/securedcomm/SecuredComm/bin/Debug/netcoreapp2.0/SecuredComm.pdb
-/Users/eladi/projects/securedcomm/SecuredComm/obj/Debug/netcoreapp2.0/SecuredComm.csproj.CoreCompileInputs.cache
-/Users/eladi/projects/securedcomm/SecuredComm/obj/Debug/netcoreapp2.0/SecuredComm.AssemblyInfoInputs.cache
-/Users/eladi/projects/securedcomm/SecuredComm/obj/Debug/netcoreapp2.0/SecuredComm.AssemblyInfo.cs
-/Users/eladi/projects/securedcomm/SecuredComm/obj/Debug/netcoreapp2.0/SecuredComm.dll
-/Users/eladi/projects/securedcomm/SecuredComm/obj/Debug/netcoreapp2.0/SecuredComm.pdb

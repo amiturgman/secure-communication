@@ -8,6 +8,7 @@ namespace SecuredComm
         // an example of a TXengine which uses the securedComm class
         public TXEngine()
         {
+            /// ######## Examples ##############
             var secretsMgmnt = new SecretsManagement("kvName", "appId", "servicePrincipalId");
             m_securedComm = new SecuredComm(secretsMgmnt, new Uri("queueUri"));
 
