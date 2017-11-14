@@ -8,7 +8,7 @@ namespace SecuredComm
         // an example of a TXengine which uses the securedComm class
         public TXEngine()
         {
-            /// ######## Examples ##############
+            /// ######## Usage Examples ##############
             var secretsMgmnt = new SecretsManagement("kvName", "appId", "servicePrincipalId");
             m_securedComm = new SecuredComm(secretsMgmnt, new Uri("queueUri"));
 
@@ -18,7 +18,7 @@ namespace SecuredComm
                 "someQueue1",
                 (decryptedMsg) =>
                 {
-                    Console.WriteLine("The decrypted msg is " + decryptedMsg);
+                    Console.WriteLine("The decrypted msg is " + decryptedMsg.data);
                 });
 
             // and listen on other queues...
@@ -27,7 +27,7 @@ namespace SecuredComm
                 "someQueue2",
                 (decryptedMsg) =>
                 {
-                    Console.WriteLine("The decrypted msg is " + decryptedMsg);
+                    Console.WriteLine("The decrypted msg is " + decryptedMsg.data);
                 });
 
             // even if unencrypted
@@ -35,26 +35,24 @@ namespace SecuredComm
                 "someQueue3",
                 (plainTextMsg) =>
                 {
-                    Console.WriteLine("The msg is " + plainTextMsg);
+                    Console.WriteLine("The msg is " + plainTextMsg.data);
                 });
         }
 
-        public async void SendTX(string fromAddres, string toAddress, string value) {
+        public async void SendTX(string fromAddres, string toAddress, string value)
+        {
             // Create the transaction
-            // pseudo code
-            // var msg = create tx
             var txMsg = "";
-            await m_securedComm.SendEncryptedMsgAsync("EncryptionKeyName", "queueName", txMsg);
+            Message msg = new Message(txMsg);
+            await m_securedComm.SendEncryptedMsgAsync("EncryptionKeyName", "queueName", msg);
         }
 
         // example of unencrypted msg
         public async void SendNotification()
         {
-            // Sends an unecnrypted msg
+            Message msg = new Message("notification of some kind");
 
-            // pseudo
-            // var msg = create msg
-            var msg = "";
+            // Sends an unecnrypted msg
             await m_securedComm.SendUnencryptedMsgAsync("queueName", msg);
         }
     }
