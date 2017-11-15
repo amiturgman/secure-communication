@@ -3,6 +3,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecuredComm", "SecuredComm\SecuredComm.csproj", "{3F77C7E4-A3AC-4F03-B3FA-B958059B2B53}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test1", "..\securedcommtest1\test1\test1.csproj", "{5CDC7819-38A6-4E6D-9C1A-DE81D6DE4755}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test2", "..\securedcomm2\test2\test2.csproj", "{A0BD56CF-2D4E-4A23-842B-AD5BF5115DF6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,5 +17,13 @@ Global
 		{3F77C7E4-A3AC-4F03-B3FA-B958059B2B53}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F77C7E4-A3AC-4F03-B3FA-B958059B2B53}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F77C7E4-A3AC-4F03-B3FA-B958059B2B53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CDC7819-38A6-4E6D-9C1A-DE81D6DE4755}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CDC7819-38A6-4E6D-9C1A-DE81D6DE4755}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CDC7819-38A6-4E6D-9C1A-DE81D6DE4755}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CDC7819-38A6-4E6D-9C1A-DE81D6DE4755}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0BD56CF-2D4E-4A23-842B-AD5BF5115DF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0BD56CF-2D4E-4A23-842B-AD5BF5115DF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0BD56CF-2D4E-4A23-842B-AD5BF5115DF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0BD56CF-2D4E-4A23-842B-AD5BF5115DF6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

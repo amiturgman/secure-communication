@@ -1,5 +1,5 @@
 ﻿using System;
-namespace SecuredComm
+namespace SecuredCommunication
 {
     public class TXEngine
     {

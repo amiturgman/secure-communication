@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace SecuredComm
+namespace SecuredCommunication
 {
     public class SecuredComm : ISecuredComm
     {
@@ -20,11 +20,22 @@ namespace SecuredComm
 
         public SecuredComm(ISecretsManagement secretMgmnt, Uri queueUri)
         {
-            ConnectionFactory factory = new ConnectionFactory();
-            factory.Uri = queueUri; //"amqp://user:pass@hostName:port/vhost";
+            //factory.Uri = queueUri; //"amqp://user:pass@hostName:port/vhost";
+
+            ConnectionFactory factory = new ConnectionFactory
+            {
+                UserName = "XXX",
+                Password = "XXX",
+                VirtualHost = "/",
+                Protocol = Protocols.AMQP_0_9_1,//DefaultProtocol;//FromEnvironment();
+                HostName = "1.1.1.1",
+                Port = 5672
+            };
 
             IConnection conn = factory.CreateConnection();
+
             m_channel = conn.CreateModel();
+            m_channel.ExchangeDeclare("exchangeName", ExchangeType.Direct);
 
             m_secretMgmt = secretMgmnt;
         }
@@ -69,7 +80,7 @@ namespace SecuredComm
             m_channel.BasicCancel(consumerTag);
         }
 
-        async Task ISecuredComm.SendEncryptedMsgAsync(string encKeyName, string queue, Message msg)
+        public async Task SendEncryptedMsgAsync(string encKeyName, string queue, Message msg)
         {
             var encMsg = await m_secretMgmt.Encrypt(encKeyName, msg.data);
             msg.data = encMsg;
@@ -78,7 +89,7 @@ namespace SecuredComm
             await SendMsg(queue, msg);
         }
 
-        async Task ISecuredComm.SendUnencryptedMsgAsync(string queue, Message msg)
+        public async Task SendUnencryptedMsgAsync(string queue, Message msg)
         {
             msg.isEncrypted = false;
             msg.sign = ""; // todo m_secretMgmt.Sign
@@ -89,12 +100,15 @@ namespace SecuredComm
 
         private async Task SendMsg(string queue, Message msg)
         {
+            m_channel.QueueDeclare(queue, false, false, false, null);
+            m_channel.QueueBind(queue, "exchangeName", queue, null);
+
             var msgAsBytes = ToByteArray<Message>(msg);
             m_channel.BasicPublish(
-                exchange: "", 
-                routingKey: queue, 
-                mandatory: false, 
-                basicProperties: null, 
+                exchange: "",
+                routingKey: queue,
+                mandatory: false,
+                basicProperties: null,
                 body: msgAsBytes);
             await Task.FromResult<object>(null);
         }

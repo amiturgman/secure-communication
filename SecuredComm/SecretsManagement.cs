@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace SecuredComm
+namespace SecuredCommunication
 {
     public class SecretsManagement : ISecretsManagement
     {
@@ -9,7 +9,7 @@ namespace SecuredComm
         {
         }
 
-        public async Task<string> Decrypt(string keyName, string encData)
+        public async Task<string> Decrypt(string keyName, string encryptedData)
         {
             return await Task.FromResult("Not implemented");
         }
@@ -24,7 +24,7 @@ namespace SecuredComm
             return await Task.FromResult("Not implemented");
         }
 
-        public async Task<string> Verify()
+        public async Task<string> Verify(string keyName, string signature)
         {
             return await Task.FromResult("Not implemented");
         }

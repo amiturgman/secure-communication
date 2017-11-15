@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace SecuredComm
+namespace SecuredCommunication
 {
     public interface ISecretsManagement
     {
         // todo: fill with a wrapper for our keys management mechanism
         Task<string> Encrypt(string keyName, string data);
 
-        Task<string> Decrypt(string keyName, string encData);
+        Task<string> Decrypt(string keyName, string encryptedData);
 
         Task<string> Sign(string keyName, string data);
 
-        Task<string> Verify();
+        Task<string> Verify(string keyName, string signature);
     }
 }
