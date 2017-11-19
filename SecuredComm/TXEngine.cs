@@ -9,8 +9,8 @@ namespace SecuredCommunication
         public TXEngine()
         {
             /// ######## Usage Examples ##############
-            var secretsMgmnt = new SecretsManagement("kvName", "appId", "servicePrincipalId");
-            m_securedComm = new SecuredComm(secretsMgmnt, new Uri("queueUri"));
+            var secretsMgmnt = new SecretsManagement("kvName", "appId", "servicePrincipalId"); // make it support multiple kvs
+            m_securedComm = new SecuredComm(secretsMgmnt, new Uri("queueUri")); // add signing key/authority
 
             // can listen on encrypted queue, automatically decrypt messages
             m_securedComm.ListenOnEncryptedQueue(

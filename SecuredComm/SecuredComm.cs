@@ -66,6 +66,9 @@ namespace SecuredCommunication
 
                 var msg = FromByteArray<Message>(body);
                 msg.data = await m_secretMgmt.Decrypt(decryptionKeyName, msg.data);
+
+                // add verify 
+
                 m_channel.BasicAck(ea.DeliveryTag, false);
 
                 cb(msg);
