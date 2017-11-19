@@ -1,5 +1,4 @@
-﻿<Properties StartupConfiguration="{A0BD56CF-2D4E-4A23-842B-AD5BF5115DF6}|Default">
-  <MonoDevelop.Ide.ItemProperties.test1 PreferredExecutionTarget="MonoDevelop.Default" />
+﻿<Properties>
   <MonoDevelop.Ide.Workbench ActiveDocument="../securedcomm2/test2/Program.cs">
     <Files>
       <File FileName="SecuredComm/ISecuredComm.cs" Line="40" Column="60" />
@@ -20,5 +19,8 @@
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MultiItemStartupConfigurations />
-  <MonoDevelop.Ide.ItemProperties.test2 PreferredExecutionTarget="MonoDevelop.Default" />
+  <DisabledProjects>
+    <String>../securedcommtest1/test1/test1.csproj</String>
+    <String>../securedcomm2/test2/test2.csproj</String>
+  </DisabledProjects>
 </Properties>

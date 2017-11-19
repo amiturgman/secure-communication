@@ -1,4 +1,6 @@
 ﻿using System;
+using static SecuredCommunication.SecretsManagement;
+
 namespace SecuredCommunication
 {
     public class TXEngine
@@ -9,13 +11,16 @@ namespace SecuredCommunication
         public TXEngine()
         {
             /// ######## Usage Examples ##############
-            var secretsMgmnt = new SecretsManagement("kvName", "appId", "servicePrincipalId"); // make it support multiple kvs
+            var kvInfo = new KvInfo("kvName", "appId", "servicePrincipalId");
+            var secretsMgmnt = new SecretsManagement(kvInfo, kvInfo);
             m_securedComm = new SecuredComm(secretsMgmnt, new Uri("queueUri")); // add signing key/authority
 
             // can listen on encrypted queue, automatically decrypt messages
             m_securedComm.ListenOnEncryptedQueue(
                 "SomeDecryptionKeyName1",
+                "SomeVerificationKeyName1",
                 "someQueue1",
+                // todo? add here the list of auth senders
                 (decryptedMsg) =>
                 {
                     Console.WriteLine("The decrypted msg is " + decryptedMsg.data);
@@ -24,6 +29,7 @@ namespace SecuredCommunication
             // and listen on other queues...
             m_securedComm.ListenOnEncryptedQueue(
                 "SomeDecryptionKeyName2",
+                "SomeVerificationKeyName2",
                 "someQueue2",
                 (decryptedMsg) =>
                 {
@@ -33,6 +39,7 @@ namespace SecuredCommunication
             // even if unencrypted
             m_securedComm.ListenOnUnencryptedQueue(
                 "someQueue3",
+                "SomeVerificationKeyName3",
                 (plainTextMsg) =>
                 {
                     Console.WriteLine("The msg is " + plainTextMsg.data);
@@ -44,7 +51,7 @@ namespace SecuredCommunication
             // Create the transaction
             var txMsg = "";
             Message msg = new Message(txMsg);
-            await m_securedComm.SendEncryptedMsgAsync("EncryptionKeyName", "queueName", msg);
+            await m_securedComm.SendEncryptedMsgAsync("EncryptionKeyName", "signingKeyName", "queueName", msg);
         }
 
         // example of unencrypted msg
@@ -53,7 +60,7 @@ namespace SecuredCommunication
             Message msg = new Message("notification of some kind");
 
             // Sends an unecnrypted msg
-            await m_securedComm.SendUnencryptedMsgAsync("queueName", msg);
+            await m_securedComm.SendUnencryptedMsgAsync("queueName", "signingKeyName", msg);
         }
     }
 }

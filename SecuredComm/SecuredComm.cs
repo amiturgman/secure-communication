@@ -20,6 +20,7 @@ namespace SecuredCommunication
 
         public SecuredComm(ISecretsManagement secretMgmnt, Uri queueUri)
         {
+            // todo: replace hard coded values with supplied uri 
             //factory.Uri = queueUri; //"amqp://user:pass@hostName:port/vhost";
 
             ConnectionFactory factory = new ConnectionFactory
@@ -40,14 +41,21 @@ namespace SecuredCommunication
             m_secretMgmt = secretMgmnt;
         }
 
-        public string ListenOnUnencryptedQueue(string queueName, Action<Message> cb)
+        public string ListenOnUnencryptedQueue(string verificationKeyName, string queueName, Action<Message> cb)
         {
             m_consumer = new EventingBasicConsumer(m_channel);
-            m_consumer.Received += (ch, ea) =>
+            m_consumer.Received += async (ch, ea) =>
             {
                 var body = ea.Body;
                 var msg = FromByteArray<Message>(body);
 
+                var verifyResult = await m_secretMgmt.Verify(verificationKeyName, msg.sign);
+                if (verifyResult == false)
+                {
+                    //throw;
+                }
+
+                // ack to the queue that we got the msg
                 m_channel.BasicAck(ea.DeliveryTag, false);
 
                 cb(msg);
@@ -57,7 +65,7 @@ namespace SecuredCommunication
             return m_channel.BasicConsume(queueName, false, m_consumer);
         }
 
-        public string ListenOnEncryptedQueue(string decryptionKeyName, string queueName, Action<Message> cb)
+        public string ListenOnEncryptedQueue(string decryptionKeyName, string verificationKeyName, string queueName, Action<Message> cb)
         {
             m_consumer = new EventingBasicConsumer(m_channel);
             m_consumer.Received += async (ch, ea) =>
@@ -67,8 +75,12 @@ namespace SecuredCommunication
                 var msg = FromByteArray<Message>(body);
                 msg.data = await m_secretMgmt.Decrypt(decryptionKeyName, msg.data);
 
-                // add verify 
+                var verifyResult = await m_secretMgmt.Verify(verificationKeyName, msg.sign);
+                if (verifyResult == false) {
+                    //throw;
+                }
 
+                // ack to the queue that we got the msg
                 m_channel.BasicAck(ea.DeliveryTag, false);
 
                 cb(msg);
@@ -83,19 +95,21 @@ namespace SecuredCommunication
             m_channel.BasicCancel(consumerTag);
         }
 
-        public async Task SendEncryptedMsgAsync(string encKeyName, string queue, Message msg)
+        public async Task SendEncryptedMsgAsync(string encKeyName, string signingKeyName, string queue, Message msg)
         {
             var encMsg = await m_secretMgmt.Encrypt(encKeyName, msg.data);
             msg.data = encMsg;
             msg.isEncrypted = true;
-            msg.sign = ""; // todo: m_secretMgmt.Sign
+            msg.sign = await m_secretMgmt.Sign(signingKeyName, msg.data);
             await SendMsg(queue, msg);
         }
 
-        public async Task SendUnencryptedMsgAsync(string queue, Message msg)
+        public async Task SendUnencryptedMsgAsync(string signingKeyName, string queue, Message msg)
         {
             msg.isEncrypted = false;
-            msg.sign = ""; // todo m_secretMgmt.Sign
+
+            // sign even if the msg is encrypted
+            msg.sign = await m_secretMgmt.Sign(signingKeyName, msg.data);
             await SendMsg(queue, msg);
         }
 

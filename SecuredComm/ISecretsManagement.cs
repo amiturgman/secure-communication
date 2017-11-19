@@ -12,6 +12,6 @@ namespace SecuredCommunication
 
         Task<string> Sign(string keyName, string data);
 
-        Task<string> Verify(string keyName, string signature);
+        Task<bool> Verify(string keyName, string signature);
     }
 }
