@@ -2,7 +2,6 @@
 using System.IO;
 using Nethereum.Geth;
 using Nethereum.JsonRpc.IpcClient;
-using Nethereum.Web3.Accounts.Managed;
 using Nethereum.Web3;
 using Nethereum.Web3.Accounts;
 using Nethereum.Hex.HexConvertors.Extensions;
