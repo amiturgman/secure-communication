@@ -41,41 +41,21 @@ namespace SecuredCommunication
             m_secretMgmt = secretMgmnt;
         }
 
-        public string ListenOnUnencryptedQueue(string verificationKeyName, string queueName, Action<Message> cb)
+        public string ListenOnQueue(string verificationKeyName, string queueName, Action<Message> cb, string decryptionKeyName)
         {
             m_consumer = new EventingBasicConsumer(m_channel);
             m_consumer.Received += async (ch, ea) =>
             {
                 var body = ea.Body;
-                var msg = FromByteArray<Message>(body);
 
-                var verifyResult = await m_secretMgmt.Verify(verificationKeyName, msg.sign);
-                if (verifyResult == false)
-                {
-                    //throw;
+                var msg = FromByteArray<Message>(body);
+                if (decryptionKeyName != string.Empty) {
+                    msg.data = 
+                        await m_secretMgmt.Decrypt(decryptionKeyName, msg.data);
                 }
 
-                // ack to the queue that we got the msg
-                m_channel.BasicAck(ea.DeliveryTag, false);
-
-                cb(msg);
-            };
-
-            // return the consumer tag
-            return m_channel.BasicConsume(queueName, false, m_consumer);
-        }
-
-        public string ListenOnEncryptedQueue(string decryptionKeyName, string verificationKeyName, string queueName, Action<Message> cb)
-        {
-            m_consumer = new EventingBasicConsumer(m_channel);
-            m_consumer.Received += async (ch, ea) =>
-            {
-                var body = ea.Body;
-
-                var msg = FromByteArray<Message>(body);
-                msg.data = await m_secretMgmt.Decrypt(decryptionKeyName, msg.data);
-
-                var verifyResult = await m_secretMgmt.Verify(verificationKeyName, msg.sign);
+                var verifyResult = 
+                    await m_secretMgmt.Verify(verificationKeyName, msg.sign);
                 if (verifyResult == false) {
                     //throw;
                 }

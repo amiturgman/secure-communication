@@ -9,8 +9,13 @@ public class Message
     }
 
     public bool isEncrypted;
+    public bool isSigned;
     public string data;
     public string sign;
+
+    // used to let the listener know which cert is for verification.
+    // If the verification passed then we also know that 
+    public string verificationKeyName;
 }
 
 interface ISecuredComm
@@ -34,13 +39,7 @@ interface ISecuredComm
     /// Creates a listener on a queue where messages are encrypted. The message's data is automatically decrypted
     /// </summary>
     /// <returns>The consumer tag</returns>
-    string ListenOnEncryptedQueue(string decryptionKeyName, string verificationKeyName, string queueName, Action<Message> cb);
-
-    /// <summary>
-    /// Creates a listener on a queue where messages are unencrypted
-    /// </summary>
-    /// <returns>The consumer tag</returns>
-    string ListenOnUnencryptedQueue(string verificationKeyName, string queueName, Action<Message> cb);
+    string ListenOnQueue(string verificationKeyName, string queueName, Action<Message> cb, string decryptionKeyName = "");
 
     /// <summary>
     /// Cancels a specific listener

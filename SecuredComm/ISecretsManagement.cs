@@ -5,7 +5,6 @@ namespace SecuredCommunication
 {
     public interface ISecretsManagement
     {
-        // todo: fill with a wrapper for our keys management mechanism
         Task<string> Encrypt(string keyName, string data);
 
         Task<string> Decrypt(string keyName, string encryptedData);
@@ -13,5 +12,11 @@ namespace SecuredCommunication
         Task<string> Sign(string keyName, string data);
 
         Task<bool> Verify(string keyName, string signature);
+
+        Task<bool> StoreKeyPair(string identifier, KeyPair key);
+
+        Task<string> GeyPublicKey(string identifier);
+
+        Task<string> GeyPrivateKey(string identifier);
     }
 }

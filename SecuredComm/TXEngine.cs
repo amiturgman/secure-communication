@@ -18,7 +18,7 @@ namespace SecuredCommunication
             // can listen on encrypted queue, automatically decrypt messages
             m_securedComm.ListenOnEncryptedQueue(
                 "SomeDecryptionKeyName1",
-                "SomeVerificationKeyName1",
+               /// "SomeVerificationKeyName1",
                 "someQueue1",
                 // todo? add here the list of auth senders
                 (decryptedMsg) =>
@@ -29,7 +29,7 @@ namespace SecuredCommunication
             // and listen on other queues...
             m_securedComm.ListenOnEncryptedQueue(
                 "SomeDecryptionKeyName2",
-                "SomeVerificationKeyName2",
+           //     "SomeVerificationKeyName2",
                 "someQueue2",
                 (decryptedMsg) =>
                 {
@@ -39,7 +39,7 @@ namespace SecuredCommunication
             // even if unencrypted
             m_securedComm.ListenOnUnencryptedQueue(
                 "someQueue3",
-                "SomeVerificationKeyName3",
+             //   "SomeVerificationKeyName3",
                 (plainTextMsg) =>
                 {
                     Console.WriteLine("The msg is " + plainTextMsg.data);
