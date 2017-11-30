@@ -11,5 +11,6 @@ namespace CryptoFan
 
             // TODO: write a sample app that registers on a queue, whenver it gets update
             //       it checks and prints the balance.
+        }
     }
 }
