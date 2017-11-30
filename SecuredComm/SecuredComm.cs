@@ -46,7 +46,7 @@ namespace SecuredCommunication
             m_secretMgmt = secretMgmnt;
         }
 
-        public string ListenOnQueue(string verificationKeyName, string queueName, string[] topics, Action<Message> cb, string decryptionKeyName = "")
+        public string ListenOnQueue(string queueName, string[] topics, string verificationKeyName, Action<Message> cb, string decryptionKeyName = "")
         {
             foreach (var topic in topics)
             {
@@ -67,7 +67,7 @@ namespace SecuredCommunication
                 }
 
                 var verifyResult = 
-                    await m_secretMgmt.Verify(PrivateKeyVaultName, verificationKeyName, msg.sign);
+                    await m_secretMgmt.Verify(PrivateKeyVaultName, verificationKeyName, msg.sign, msg.data);
                 if (verifyResult == false) {
                     //throw;
                 }

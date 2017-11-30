@@ -13,7 +13,7 @@ namespace SecuredCommunication
         #region Public Methods
         public EthereumWalletService()
         {
-            KeyVault = new KeyVaultInfo(KeyVaultName, "someAppId", "principalId");
+            KeyVault = new KeyVaultInfo(KeyVaultName);
             secretsManagement = new SecretsManagement(KeyVault);
         }
 

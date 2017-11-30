@@ -4,8 +4,6 @@ using Nethereum.Geth;
 using Nethereum.JsonRpc.IpcClient;
 using Nethereum.Web3;
 using Nethereum.Web3.Accounts;
-using Nethereum.Hex.HexConvertors.Extensions;
-using System.Threading;
 
 namespace EthereumTest
 {

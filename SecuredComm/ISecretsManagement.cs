@@ -4,18 +4,18 @@ namespace SecuredCommunication
 {
     public interface ISecretsManagement
     {
-        Task<string> Encrypt(string keyVaultName, string keyName, string data);
+        Task<string> Encrypt(string keyVaultUrl, string keyName, string data);
 
-        Task<string> Decrypt(string keyVaultName, string keyName, string encryptedData);
+        Task<string> Decrypt(string keyVaultUrl, string keyName, string encryptedData);
 
-        Task<string> Sign(string keyVaultName, string keyName, string data);
+        Task<byte[]> Sign(string keyVaultUrl, string keyName, string data);
 
-        Task<bool> Verify(string keyVaultName, string keyName, string signature);
+        Task<bool> Verify(string keyVaultUrl, string keyName, byte[] signature, string data);
 
-        Task<bool> StoreKeyPair(string keyVaultName, string identifier, KeyPair key);
+        Task<bool> StoreKeyPair(string keyVaultUrl, string identifier, KeyPair key);
 
-        Task<string> GetPublicKey(string keyVaultName, string identifier);
+        Task<string> GetPublicKey(string keyVaultUrl, string identifier);
 
-        Task<string> GetPrivateKey(string keyVaultName, string identifier);
+        Task<string> GetPrivateKey(string keyVaultUrl, string identifier);
     }
 }
