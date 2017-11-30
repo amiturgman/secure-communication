@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EthereumTest", "EthereumTes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{90D4D08A-DAD5-40ED-959E-4B560C75ADA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cryptoPhilanthrop", "Sample\cryptoPhilanthrop\cryptoPhilanthrop.csproj", "{CA596C80-84A9-4CC4-835E-62EDD10C9021}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}")= "cryptoPhilanthrop", "Sample\cryptoPhilanthrop\cryptoPhilanthrop.csproj", "{CA596C80-84A9-4CC4-835E-62EDD10C9021}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoFan", "Sample\CryptoFan\CryptoFan.csproj", "{49206470-5E90-4BA4-999F-BF7663EC3E93}"
 EndProject
