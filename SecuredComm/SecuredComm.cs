@@ -20,12 +20,14 @@ namespace SecuredCommunication
         private const string GlobalKeyVaultName = "global";
         private const string PrivateKeyVaultName = "private";
 
+        private static string c_exchangeName = "securedCommExchange";
+
         public SecuredComm(ISecretsManagement secretMgmnt, Uri queueUri)
         {
-            // todo: replace hard coded values with supplied uri 
-            //factory.Uri = queueUri; //"amqp://user:pass@hostName:port/vhost";
+            ConnectionFactory factory = new ConnectionFactory();
+            factory.Uri = queueUri; //"amqp://user:pass@hostName:port/vhost";
 
-            ConnectionFactory factory = new ConnectionFactory
+            /*ConnectionFactory factory = new ConnectionFactory
             {
                 UserName = "XXX",
                 Password = "XXX",
@@ -33,18 +35,26 @@ namespace SecuredCommunication
                 Protocol = Protocols.AMQP_0_9_1,//DefaultProtocol;//FromEnvironment();
                 HostName = "1.1.1.1",
                 Port = 5672
-            };
+            };*/
 
             IConnection conn = factory.CreateConnection();
 
             m_channel = conn.CreateModel();
-            m_channel.ExchangeDeclare("exchangeName", ExchangeType.Direct);
+            // topic based...
+            m_channel.ExchangeDeclare(c_exchangeName, ExchangeType.Topic);
 
             m_secretMgmt = secretMgmnt;
         }
 
-        public string ListenOnQueue(string verificationKeyName, string queueName, Action<Message> cb, string decryptionKeyName)
+        public string ListenOnQueue(string verificationKeyName, string queueName, string[] topics, Action<Message> cb, string decryptionKeyName)
         {
+            foreach (var topic in topics)
+            {
+                m_channel.QueueBind(queue: queueName,
+                                    exchange: c_exchangeName,
+                                    routingKey: topic);
+            }
+            
             m_consumer = new EventingBasicConsumer(m_channel);
             m_consumer.Received += async (ch, ea) =>
             {
@@ -77,35 +87,36 @@ namespace SecuredCommunication
             m_channel.BasicCancel(consumerTag);
         }
 
-        public async Task SendEncryptedMsgAsync(string encKeyName, string signingKeyName, string queue, Message msg)
+        public async Task SendEncryptedMsgAsync(string encKeyName, string signingKeyName, string queue, string topic, Message msg)
         {
             var encMsg = await m_secretMgmt.Encrypt(GlobalKeyVaultName, encKeyName, msg.data);
             msg.data = encMsg;
-            msg.isEncrypted = true;
             msg.sign = await m_secretMgmt.Sign(GlobalKeyVaultName, signingKeyName, msg.data);
-            await SendMsg(queue, msg);
+
+            msg.isEncrypted = true;
+            msg.isSigned = true;
+            await SendMsg(queue, topic, msg);
         }
 
-        public async Task SendUnencryptedMsgAsync(string signingKeyName, string queue, Message msg)
+        public async Task SendUnencryptedMsgAsync(string signingKeyName, string queue, string topic, Message msg)
         {
             msg.isEncrypted = false;
 
             // sign even if the msg is encrypted
             msg.sign = await m_secretMgmt.Sign(GlobalKeyVaultName, signingKeyName, msg.data);
-            await SendMsg(queue, msg);
+            msg.isSigned = true;
+
+            await SendMsg(queue, topic, msg);
         }
 
         #region private methods
 
-        private async Task SendMsg(string queue, Message msg)
+        private async Task SendMsg(string queue, string topic, Message msg)
         {
-            m_channel.QueueDeclare(queue, false, false, false, null);
-            m_channel.QueueBind(queue, "exchangeName", queue, null);
-
             var msgAsBytes = ToByteArray<Message>(msg);
             m_channel.BasicPublish(
-                exchange: "",
-                routingKey: queue,
+                exchange: c_exchangeName,
+                routingKey: topic,
                 mandatory: false,
                 basicProperties: null,
                 body: msgAsBytes);

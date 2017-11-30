@@ -1,14 +1,15 @@
-﻿<Properties>
-  <MonoDevelop.Ide.Workbench ActiveDocument="SecuredComm/IBlockchainNodeWrapper.cs">
+﻿<Properties StartupConfiguration="{E0F1BD96-F330-4B4F-ADBB-9518779E60CB}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="SecuredComm/EthereumWalletService.cs">
     <Files>
-      <File FileName="SecuredComm/ISecuredComm.cs" Line="16" Column="58" />
-      <File FileName="SecuredComm/TXEngine.cs" Line="19" Column="45" />
-      <File FileName="SecuredComm/ISecretsManagement.cs" Line="4" Column="31" />
-      <File FileName="SecuredComm/SecretsManagement.cs" Line="6" Column="18" />
-      <File FileName="SecuredComm/SecuredComm.cs" Line="90" Column="9" />
+      <File FileName="SecuredComm/ISecuredComm.cs" Line="42" Column="89" />
+      <File FileName="SecuredComm/ISecretsManagement.cs" Line="19" Column="25" />
+      <File FileName="SecuredComm/SecretsManagement.cs" Line="46" Column="38" />
+      <File FileName="SecuredComm/SecuredComm.cs" Line="49" Column="29" />
       <File FileName="../securedcommtest1/test1/Program.cs" Line="11" Column="13" />
       <File FileName="../securedcomm2/test2/Program.cs" Line="20" Column="1" />
       <File FileName="SecuredComm/IBlockchainNodeWrapper.cs" Line="6" Column="6" />
+      <File FileName="SecuredComm/TXEngine.cs" Line="47" Column="1" />
+      <File FileName="SecuredComm/EthereumWalletService.cs" Line="36" Column="57" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
@@ -19,6 +20,7 @@
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.ItemProperties.EthereumTest PreferredExecutionTarget="MonoDevelop.Default" />
   <MultiItemStartupConfigurations />
   <DisabledProjects>
     <String>../securedcommtest1/test1/test1.csproj</String>

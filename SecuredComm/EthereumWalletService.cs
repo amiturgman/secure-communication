@@ -32,8 +32,8 @@ namespace SecuredCommunication
         #region Private Methods
         private async Task<KeyPair> LoadKeyPairFromKeyVault(string identifier)
         {
-            var publicKey = await secretsManagement.GeyPublicKey(KeyVaultName, identifier);
-            var privateKey = await secretsManagement.GeyPrivateKey(KeyVaultName, identifier);
+            var publicKey = await secretsManagement.GetPublicKey(KeyVaultName, identifier);
+            var privateKey = await secretsManagement.GetPrivateKey(KeyVaultName, identifier);
 
             return new KeyPair(publicKey, privateKey);
         }

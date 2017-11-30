@@ -38,12 +38,12 @@ namespace SecuredCommunication
             return await Task.FromResult("Not implemented");
         }
 
-        public async Task<string> GeyPrivateKey(string keyVaultName, string identifier)
+        public async Task<string> GetPrivateKey(string keyVaultName, string identifier)
         {
             return await Task.FromResult("Not implemented");
         }
 
-        public async Task<string> GeyPublicKey(string keyVaultName, string identifier)
+        public async Task<string> GetPublicKey(string keyVaultName, string identifier)
         {
             return await Task.FromResult("Not implemented");
         }

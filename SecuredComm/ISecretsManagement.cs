@@ -14,8 +14,8 @@ namespace SecuredCommunication
 
         Task<bool> StoreKeyPair(string keyVaultName, string identifier, KeyPair key);
 
-        Task<string> GeyPublicKey(string keyVaultName, string identifier);
+        Task<string> GetPublicKey(string keyVaultName, string identifier);
 
-        Task<string> GeyPrivateKey(string keyVaultName, string identifier);
+        Task<string> GetPrivateKey(string keyVaultName, string identifier);
     }
 }
