@@ -7,35 +7,36 @@ namespace SecuredCommunication
 {
     public class SecretsManagement : ISecretsManagement
     {
-        private List<KeyVaultInfo> _keyVaultList = new List<KeyVaultInfo>();
+        private List<KeyVaultInfo> m_KeyVaultList;
 
         public SecretsManagement(KeyVaultInfo keyVault)
         {
+            m_KeyVaultList = new List<KeyVaultInfo>();
             AddKeyVault(keyVault);
         }
 
         public void AddKeyVault(KeyVaultInfo keyVault)
         {
-            if (_keyVaultList.Exists(kv => keyVault.KvName.Equals(kv.KvName)))
+            if (m_KeyVaultList.Exists(kv => keyVault.KvName.Equals(kv.KvName)))
             {
                 throw new Exception($"Key Vault with name {keyVault.KvName} already exists");
             }
 
-            _keyVaultList.Add(keyVault);
+            m_KeyVaultList.Add(keyVault);
         }
 
         public async Task<string> Decrypt(string keyVaultName, string keyName, string encryptedData)
         {
             // For encryption use the private KV 
             // (the one associated with the current service).
-            return await Task.FromResult("Not implemented");
+            return await Task.FromResult(encryptedData);
         }
 
         public async Task<string> Encrypt(string keyVaultName, string keyName, string data)
         {
             // For encryption use the global KV 
             // (the one with just public keys).
-            return await Task.FromResult("Not implemented");
+            return await Task.FromResult(data);
         }
 
         public async Task<string> GetPrivateKey(string keyVaultName, string identifier)
@@ -64,12 +65,12 @@ namespace SecuredCommunication
         {
             // For encryption use the global KV 
             // (the one with just public keys).
-            return await Task.FromResult(false);
+            return await Task.FromResult(true);
         }
 
         private KeyVaultInfo LoadKeyVault(string KeyVaultName)
         {
-            foreach (KeyVaultInfo keyVault in _keyVaultList.Where(keyVault => KeyVaultName.Equals(keyVault.KvName)))
+            foreach (KeyVaultInfo keyVault in m_KeyVaultList.Where(keyVault => KeyVaultName.Equals(keyVault.KvName)))
             {
                 return keyVault;
             }
