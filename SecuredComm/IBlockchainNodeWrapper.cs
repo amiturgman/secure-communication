@@ -2,17 +2,20 @@
 using System.Threading.Tasks;
 
 public class KeyPair {
-    public string privateKey;
-    public string publicKey;
+    public string PrivateKey { get; set; }
+    public string PublicKey{ get; set; }
+
+    public KeyPair(string publicKey, string privateKey)
+    {
+        PrivateKey = privateKey;
+        PublicKey = publicKey;
+    }
 }
 
 public interface IBlockchainNodeWrapper
 {
     // Create account
     Task<KeyPair> GenerateAccount();
-
-    // Sign Transaction
-    Task<bool> SignTransaction(string privateKey, string recieverAddress, BigInteger amount, BigInteger nonce);
 
     // send raw transaction
     Task<bool> SendTransaction(string hash);

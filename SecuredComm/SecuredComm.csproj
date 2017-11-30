@@ -5,6 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Nethereum.Signer" Version="2.1.0" />
+    <PackageReference Include="Nethereum.Web3" Version="2.1.0" />
     <PackageReference Include="RabbitMQ.Client" Version="5.0.1" />
   </ItemGroup>
 </Project>

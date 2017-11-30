@@ -11,12 +11,12 @@ namespace SecuredCommunication
         public TXEngine()
         {
             /// ######## Usage Examples ##############
-            var kvInfo = new KvInfo("kvName", "appId", "servicePrincipalId");
-            var secretsMgmnt = new SecretsManagement(kvInfo, kvInfo);
+            var kvInfo = new KeyVaultInfo("kvName", "appId", "servicePrincipalId");
+            var secretsMgmnt = new SecretsManagement(kvInfo);
             m_securedComm = new SecuredComm(secretsMgmnt, new Uri("queueUri")); // add signing key/authority
 
             // can listen on encrypted queue, automatically decrypt messages
-            m_securedComm.ListenOnEncryptedQueue(
+            m_securedComm.ListenOnQueue(
                 "SomeDecryptionKeyName1",
                /// "SomeVerificationKeyName1",
                 "someQueue1",
@@ -27,7 +27,7 @@ namespace SecuredCommunication
                 });
 
             // and listen on other queues...
-            m_securedComm.ListenOnEncryptedQueue(
+            m_securedComm.ListenOnQueue(
                 "SomeDecryptionKeyName2",
            //     "SomeVerificationKeyName2",
                 "someQueue2",
@@ -37,9 +37,9 @@ namespace SecuredCommunication
                 });
 
             // even if unencrypted
-            m_securedComm.ListenOnUnencryptedQueue(
+            m_securedComm.ListenOnQueue(
                 "someQueue3",
-             //   "SomeVerificationKeyName3",
+                "SomeVerificationKeyName3",
                 (plainTextMsg) =>
                 {
                     Console.WriteLine("The msg is " + plainTextMsg.data);

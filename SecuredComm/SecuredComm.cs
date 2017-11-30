@@ -17,6 +17,8 @@ namespace SecuredCommunication
         private ISecretsManagement m_secretMgmt;
         private EventingBasicConsumer m_consumer;
         private IModel m_channel;
+        private const string GlobalKeyVaultName = "global";
+        private const string PrivateKeyVaultName = "private";
 
         public SecuredComm(ISecretsManagement secretMgmnt, Uri queueUri)
         {
@@ -51,11 +53,11 @@ namespace SecuredCommunication
                 var msg = FromByteArray<Message>(body);
                 if (decryptionKeyName != string.Empty) {
                     msg.data = 
-                        await m_secretMgmt.Decrypt(decryptionKeyName, msg.data);
+                        await m_secretMgmt.Decrypt(PrivateKeyVaultName,decryptionKeyName, msg.data);
                 }
 
                 var verifyResult = 
-                    await m_secretMgmt.Verify(verificationKeyName, msg.sign);
+                    await m_secretMgmt.Verify(PrivateKeyVaultName, verificationKeyName, msg.sign);
                 if (verifyResult == false) {
                     //throw;
                 }
@@ -77,10 +79,10 @@ namespace SecuredCommunication
 
         public async Task SendEncryptedMsgAsync(string encKeyName, string signingKeyName, string queue, Message msg)
         {
-            var encMsg = await m_secretMgmt.Encrypt(encKeyName, msg.data);
+            var encMsg = await m_secretMgmt.Encrypt(GlobalKeyVaultName, encKeyName, msg.data);
             msg.data = encMsg;
             msg.isEncrypted = true;
-            msg.sign = await m_secretMgmt.Sign(signingKeyName, msg.data);
+            msg.sign = await m_secretMgmt.Sign(GlobalKeyVaultName, signingKeyName, msg.data);
             await SendMsg(queue, msg);
         }
 
@@ -89,7 +91,7 @@ namespace SecuredCommunication
             msg.isEncrypted = false;
 
             // sign even if the msg is encrypted
-            msg.sign = await m_secretMgmt.Sign(signingKeyName, msg.data);
+            msg.sign = await m_secretMgmt.Sign(GlobalKeyVaultName, signingKeyName, msg.data);
             await SendMsg(queue, msg);
         }
 

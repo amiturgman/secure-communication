@@ -16,7 +16,7 @@ namespace EthereumTest
         {
             // create account 
             var password = "12345678";
-            var path = @"C:\temp\NetherumDemo\privchain\keystore";
+            var path = @"C:\temp\NetherumDemo\test\keystore";
 
             // Initialize
             var service = new Nethereum.KeyStore.KeyStoreService();
@@ -26,36 +26,36 @@ namespace EthereumTest
             var unitConverion = new Nethereum.Util.UnitConversion();
 
             //// Create Accounts
-            var accountOnePath = Directory.GetFiles(path)[0];
-            var accountTwoPath = Directory.GetFiles(path)[1];
-            //var accountTwoPath = Path.Combine(path, CreateAccount(password, path));
+            //var accountOnePath = Directory.GetFiles(path)[0];
+            //var accountTwoPath = Directory.GetFiles(path)[1];
+            var accountTwoPath = Path.Combine(path, CreateAccount(password, path));
 
-            var account1 = Account.LoadFromKeyStore(File.ReadAllText(accountOnePath), password);
-            var account2 = Account.LoadFromKeyStore(File.ReadAllText(accountTwoPath), password);
+           // //var account1 = Account.LoadFromKeyStore(File.ReadAllText(accountOnePath), password);
+           // var account2 = Account.LoadFromKeyStore(File.ReadAllText(accountTwoPath), password);
 
-            PrintCurrentBalance(account1, web3);
-            PrintCurrentBalance(account2, web3);
+           // PrintCurrentBalance(account1, web3);
+           // PrintCurrentBalance(account2, web3);
 
-            var amount = unitConverion.ToWei(5000);
-            var privateKey = service.DecryptKeyStoreFromJson(password, File.ReadAllText(accountOnePath)).ToHex(true);
+           // var amount = unitConverion.ToWei(5000);
+           // var privateKey = service.DecryptKeyStoreFromJson(password, File.ReadAllText(accountOnePath)).ToHex(true);
 
-            var txCount = web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(account1.Address).Result;
-            var encoded = Web3.OfflineTransactionSigner.SignTransaction(privateKey, account2.Address, amount, txCount.Value);
-            var SendRawTransaction = web3.Eth.Transactions.SendRawTransaction.SendRequestAsync(encoded).Result;
+           // var txCount = web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(account1.Address).Result;
+           // var encoded = Web3.OfflineTransactionSigner.SignTransaction(privateKey, account2.Address, amount, txCount.Value);
+           // var SendRawTransaction = web3.Eth.Transactions.SendRawTransaction.SendRequestAsync(encoded).Result;
 
-            Console.WriteLine($"Sending Transaction....");
-            Console.WriteLine();
-            Console.WriteLine();
+           // Console.WriteLine($"Sending Transaction....");
+           // Console.WriteLine();
+           // Console.WriteLine();
 
-            var transactionResult = web3Geth.Miner.Start.SendRequestAsync(100).Result;
-            Thread.Sleep(6000);
-            var minerStop = web3Geth.Miner.Stop.SendRequestAsync(100).Result;
-            Thread.Sleep(3000);
+           // var transactionResult = web3Geth.Miner.Start.SendRequestAsync(100).Result;
+           // Thread.Sleep(6000);
+           // var minerStop = web3Geth.Miner.Stop.SendRequestAsync(100).Result;
+           // Thread.Sleep(3000);
 
-            PrintCurrentBalance(account1, web3);
-            PrintCurrentBalance(account2, web3);
-            Console.WriteLine("finish");
-            Console.ReadLine();
+           // PrintCurrentBalance(account1, web3);
+           // PrintCurrentBalance(account2, web3);
+           // Console.WriteLine("finish");
+           // Console.ReadLine();
         }
 
         public static void PrintCurrentBalance(Account account, Web3 web3)
