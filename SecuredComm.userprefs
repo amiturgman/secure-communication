@@ -1,5 +1,5 @@
 ﻿<Properties StartupConfiguration="{E0F1BD96-F330-4B4F-ADBB-9518779E60CB}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="SecuredComm/EthereumWalletService.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Sample/TransactionEngine/Program.cs">
     <Files>
       <File FileName="SecuredComm/ISecuredComm.cs" Line="42" Column="89" />
       <File FileName="SecuredComm/ISecretsManagement.cs" Line="19" Column="25" />
@@ -9,7 +9,11 @@
       <File FileName="../securedcomm2/test2/Program.cs" Line="20" Column="1" />
       <File FileName="SecuredComm/IBlockchainNodeWrapper.cs" Line="6" Column="6" />
       <File FileName="SecuredComm/TXEngine.cs" Line="47" Column="1" />
-      <File FileName="SecuredComm/EthereumWalletService.cs" Line="36" Column="57" />
+      <File FileName="SecuredComm/EthereumWalletService.cs" Line="34" Column="10" />
+      <File FileName="EthereumTest/Program.cs" Line="1" Column="1" />
+      <File FileName="Sample/cryptoPhilanthrop/Program.cs" Line="9" Column="12" />
+      <File FileName="Sample/CryptoFan/Program.cs" Line="13" Column="55" />
+      <File FileName="Sample/TransactionEngine/Program.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />

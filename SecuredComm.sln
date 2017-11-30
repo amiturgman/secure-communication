@@ -2,9 +2,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SecuredComm", "SecuredComm\SecuredComm.csproj", "{3F77C7E4-A3AC-4F03-B3FA-B958059B2B53}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecuredComm", "SecuredComm\SecuredComm.csproj", "{3F77C7E4-A3AC-4F03-B3FA-B958059B2B53}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EthereumTest", "EthereumTest\EthereumTest.csproj", "{E0F1BD96-F330-4B4F-ADBB-9518779E60CB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{90D4D08A-DAD5-40ED-959E-4B560C75ADA4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cryptoPhilanthrop", "Sample\cryptoPhilanthrop\cryptoPhilanthrop.csproj", "{CA596C80-84A9-4CC4-835E-62EDD10C9021}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoFan", "Sample\CryptoFan\CryptoFan.csproj", "{49206470-5E90-4BA4-999F-BF7663EC3E93}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionEngine", "Sample\TransactionEngine\TransactionEngine.csproj", "{F359DD2F-F6BE-4302-A3FB-57F92394F524}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,11 +28,28 @@ Global
 		{E0F1BD96-F330-4B4F-ADBB-9518779E60CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0F1BD96-F330-4B4F-ADBB-9518779E60CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0F1BD96-F330-4B4F-ADBB-9518779E60CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA596C80-84A9-4CC4-835E-62EDD10C9021}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA596C80-84A9-4CC4-835E-62EDD10C9021}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA596C80-84A9-4CC4-835E-62EDD10C9021}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA596C80-84A9-4CC4-835E-62EDD10C9021}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49206470-5E90-4BA4-999F-BF7663EC3E93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49206470-5E90-4BA4-999F-BF7663EC3E93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49206470-5E90-4BA4-999F-BF7663EC3E93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49206470-5E90-4BA4-999F-BF7663EC3E93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F359DD2F-F6BE-4302-A3FB-57F92394F524}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F359DD2F-F6BE-4302-A3FB-57F92394F524}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F359DD2F-F6BE-4302-A3FB-57F92394F524}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F359DD2F-F6BE-4302-A3FB-57F92394F524}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4737FFEB-AAC1-40F3-BDC1-B601CAE22546}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CA596C80-84A9-4CC4-835E-62EDD10C9021} = {90D4D08A-DAD5-40ED-959E-4B560C75ADA4}
+		{49206470-5E90-4BA4-999F-BF7663EC3E93} = {90D4D08A-DAD5-40ED-959E-4B560C75ADA4}
+		{F359DD2F-F6BE-4302-A3FB-57F92394F524} = {90D4D08A-DAD5-40ED-959E-4B560C75ADA4}
 	EndGlobalSection
 EndGlobal
