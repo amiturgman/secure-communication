@@ -11,17 +11,17 @@ namespace SecuredCommunication
 {
     public class SecretsManagement : ISecretsManagement
     {
-        private List<KeyVaultInfo> m_KeyVaultList;
+        private List<KeyVault> m_KeyVaultList;
         private const string publicKeySuffix = "-public";
         private const string privateKeySuffix = "-private";
 
-        public SecretsManagement(KeyVaultInfo keyVault)
+        public SecretsManagement(KeyVault keyVault)
         {
-            m_KeyVaultList = new List<KeyVaultInfo>();
+            m_KeyVaultList = new List<KeyVault>();
             AddKeyVault(keyVault);
         }
 
-        public void AddKeyVault(KeyVaultInfo keyVault)
+        public void AddKeyVault(KeyVault keyVault)
         {
             if (m_KeyVaultList.Exists(kv => keyVault.Url.Equals(kv.Url)))
             {
@@ -147,9 +147,9 @@ namespace SecuredCommunication
             }
         }
         #region Private Methods
-        private KeyVaultInfo LoadKeyVault(string keyVaultUrl)
+        private KeyVault LoadKeyVault(string keyVaultUrl)
         {
-            foreach (KeyVaultInfo keyVault in m_KeyVaultList.Where(keyVault => keyVaultUrl.Equals(keyVault.Url)))
+            foreach (KeyVault keyVault in m_KeyVaultList.Where(keyVault => keyVaultUrl.Equals(keyVault.Url)))
             {
                 return keyVault;
             }

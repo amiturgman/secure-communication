@@ -24,10 +24,11 @@ namespace cryptoPhilanthrop
             Console.WriteLine("Sender - Happy to transfer my crypto coins!");
             var account = Account.LoadFromKeyStore(File.ReadAllText(@"C:\temp\NetherumDemo\privchain\keystore\UTC--2017-11-30T13-34-42.742317500Z--bb6d204b166279511ce6cb4547275e805bc8cb82"), password);
 
-            var balance = GetCurrentBalance(account, web3);
+            var balance = EthereumWalletService.GetCurrentBalance(account).Result;
+            PrintCurrentBalance(account, balance);
             var newBalance = balance;
 
-            var kvInfo = new KeyVaultInfo("https://eladiw-testkv.vault.azure.net/");
+            var kvInfo = new KeyVault("https://eladiw-testkv.vault.azure.net/");
             var secretsMgmnt = new SecretsManagement(kvInfo);
 
             var uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"]);
@@ -35,7 +36,7 @@ namespace cryptoPhilanthrop
 
             while (balance > 10000)
             {
-                var amountToSend = 1;
+                var amountToSend = 5000;
                 // Message structure: {amountToSend};{senderName};{reciverAddress}
                 securedComm.SendEncryptedMsgAsync(
                     "encdec",
@@ -45,25 +46,25 @@ namespace cryptoPhilanthrop
                     new Message($"{amountToSend};sender;0x863c813c74acee5e4063bd65e880c0f06d3cc765")).Wait();
 
                 Thread.Sleep(60000);
-
-                newBalance = GetCurrentBalance(account, web3);
                 
+                newBalance = EthereumWalletService.GetCurrentBalance(account).Result;
+                PrintCurrentBalance(account, newBalance);
+
                 // Wait for mining.. 
                 while (newBalance.Equals(balance))
                 {
-                    newBalance = GetCurrentBalance(account, web3);
+                    newBalance = EthereumWalletService.GetCurrentBalance(account).Result;
+                    PrintCurrentBalance(account, newBalance);
                 }
 
                 balance = newBalance;
+                Console.WriteLine(balance - newBalance);
             }
         }
 
-        public static decimal GetCurrentBalance(Account account, Web3 web3)
+        public static void PrintCurrentBalance(Account account, decimal balance)
         {
-            var unitConverion = new Nethereum.Util.UnitConversion();
-            var currentBalance = unitConverion.FromWei(web3.Eth.GetBalance.SendRequestAsync(account.Address).Result);
-            Console.WriteLine($"Account {account.Address} balance: {currentBalance}");
-            return currentBalance;
+            Console.WriteLine($"Account {account.Address} balance: {balance}");
         }
     }
 }

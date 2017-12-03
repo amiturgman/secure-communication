@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.KeyVault;
+﻿using Contracts;
+using Microsoft.Azure.KeyVault;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using System.Configuration;
 using System.Net.Http;
@@ -6,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace SecuredCommunication
 {
-    public class KeyVaultInfo
+    public class KeyVault : IKeyVault
     {
         public string Url;
         public KeyVaultClient client;
 
-        public KeyVaultInfo(string kvUrl)
+        public KeyVault(string kvUrl)
         {
             Url = kvUrl;
             client = new KeyVaultClient(

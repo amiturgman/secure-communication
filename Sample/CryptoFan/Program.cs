@@ -17,15 +17,14 @@ namespace CryptoFan
     {
         static void Main(string[] args)
         {
-            var client = new IpcClient("geth.ipc");
-            var web3 = new Web3(client);
-            var password = "12345678";
-
             Console.WriteLine("Reciever - I just love getting new crypto coins");
+            var password = "12345678";
             var account = Account.LoadFromKeyStore(File.ReadAllText(@"C:\temp\NetherumDemo\privchain\keystore\UTC--2017-11-30T13-36-01.594748200Z--863c813c74acee5e4063bd65e880c0f06d3cc765"), password);
-            PrintCurrentBalance(account, web3);
 
-            var kvInfo = new KeyVaultInfo("https://eladiw-testkv.vault.azure.net/");
+            var kvInfo = new KeyVault("https://eladiw-testkv.vault.azure.net/");
+
+            PrintCurrentBalance(account, EthereumWalletService.GetCurrentBalance(account).Result);
+
             var secretsMgmnt = new SecretsManagement(kvInfo);
 
             var uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"]);
@@ -40,7 +39,7 @@ namespace CryptoFan
                                             if (msg.data.Equals(account.Address, StringComparison.OrdinalIgnoreCase))
                                               {
                                                   Console.WriteLine("Great, Balance change!");
-                                                  PrintCurrentBalance(account, web3);
+                                                  PrintCurrentBalance(account, EthereumWalletService.GetCurrentBalance(account).Result);
                                               }
                                             else
                                               {
@@ -56,11 +55,9 @@ namespace CryptoFan
             securedComm.CancelListeningOnQueue(consumerTag);
         }
 
-        public static void PrintCurrentBalance(Account account, Web3 web3)
+        public static void PrintCurrentBalance(Account account, decimal balance)
         {
-            var unitConverion = new Nethereum.Util.UnitConversion();
-            var currentBalance = unitConverion.FromWei(web3.Eth.GetBalance.SendRequestAsync(account.Address).Result);
-            Console.WriteLine($"Account {account.Address} balance: {currentBalance}");
+            Console.WriteLine($"Account {account.Address} balance: {balance}");
         }
     }
 }
