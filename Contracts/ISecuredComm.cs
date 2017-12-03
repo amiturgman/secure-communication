@@ -18,7 +18,7 @@ public class Message
     public string verificationKeyName;
 }
 
-interface ISecuredComm
+public interface ISecuredComm
 {
     /// <summary>
     /// Encrypts and Sends the a message
