@@ -5,6 +5,7 @@ using Nethereum.JsonRpc.IpcClient;
 using Nethereum.Web3;
 using Nethereum.Web3.Accounts;
 using System.IO;
+using System.Configuration;
 
 namespace cryptoPhilanthrop
 {
@@ -28,7 +29,7 @@ namespace cryptoPhilanthrop
             var kvInfo = new KeyVaultInfo("https://eladiw-testkv.vault.azure.net/");
             var secretsMgmnt = new SecretsManagement(kvInfo);
 
-            var uri = new Uri("amqp://XXX:XXX@XXX:xx");
+            var uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"]);
             var securedComm = new SecuredComm(secretsMgmnt, uri);
 
             while (balance > 10000)
@@ -41,7 +42,9 @@ namespace cryptoPhilanthrop
                     "innerQueue",
                     "send.transactions",
                     new Message($"{amountToSend};sender;0x863c813c74acee5e4063bd65e880c0f06d3cc765")).Wait();
-                
+
+                Thread.Sleep(60000);
+
                 newBalance = GetCurrentBalance(account, web3);
                 
                 // Wait for mining.. 

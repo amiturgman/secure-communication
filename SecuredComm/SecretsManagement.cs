@@ -33,61 +33,63 @@ namespace SecuredCommunication
 
         public async Task<string> Decrypt(string keyVaultUrl, string keyName, string encryptedData)
         {
+            return await Task.FromResult(encryptedData);
             // For encryption use the private KV 
             // (the one associated with the current service).
-            var keyVault = LoadKeyVault(keyVaultUrl);
+            //var keyVault = LoadKeyVault(keyVaultUrl);
 
-            try
-            {
-                var key = await keyVault.client.GetKeyAsync(keyVault.Url, keyName, null);
+            //try
+            //{
+            //    var key = await keyVault.client.GetKeyAsync(keyVault.Url, keyName, null);
 
-                var publicKey = Convert.ToBase64String(key.Key.N);
-                using (var rsa = new RSACryptoServiceProvider())
-                {
-                    var p = new RSAParameters() { Modulus = key.Key.N, Exponent = key.Key.E };
-                    rsa.ImportParameters(p);
+            //    var publicKey = Convert.ToBase64String(key.Key.N);
+            //    using (var rsa = new RSACryptoServiceProvider())
+            //    {
+            //        var p = new RSAParameters() { Modulus = key.Key.N, Exponent = key.Key.E };
+            //        rsa.ImportParameters(p);
 
-                    // Decrypt
-                    var encryptedTextNew = Convert.FromBase64String(encryptedData);
-                    var decryptedData = keyVault.client.DecryptAsync(key.KeyIdentifier.Identifier, JsonWebKeyEncryptionAlgorithm.RSAOAEP, encryptedTextNew).GetAwaiter().GetResult();
-                    var decryptedText = Encoding.Unicode.GetString(decryptedData.Result);
+            //        // Decrypt
+            //        var encryptedTextNew = Convert.FromBase64String(encryptedData);
+            //        var decryptedData = keyVault.client.DecryptAsync(key.KeyIdentifier.Identifier, JsonWebKeyEncryptionAlgorithm.RSAOAEP, encryptedTextNew).GetAwaiter().GetResult();
+            //        var decryptedText = Encoding.Unicode.GetString(decryptedData.Result);
 
-                    return decryptedText;
-                }
-            }
-            catch (Exception)
-            {
-                //TODO: handle exception
-                return "";
-            }
+            //        return decryptedText;
+            //    }
+            //}
+            //catch (Exception)
+            //{
+            //    //TODO: handle exception
+            //    return "";
+            //}
         }
 
         public async Task<string> Encrypt(string keyVaultUrl, string keyName, string data)
         {
-            // For encryption use the global KV 
-            // (the one with just public keys).
-            var keyVault = LoadKeyVault(keyVaultUrl);
+            //// For encryption use the global KV 
+            //// (the one with just public keys).
+            //var keyVault = LoadKeyVault(keyVaultUrl);
 
-            try
-            {
-                var key = await keyVault.client.GetKeyAsync(keyVault.Url, keyName, null);
+            //try
+            //{
+            //    var key = await keyVault.client.GetKeyAsync(keyVault.Url, keyName, null);
 
-                var publicKey = Convert.ToBase64String(key.Key.N);
-                using (var rsa = new RSACryptoServiceProvider())
-                {
-                    var p = new RSAParameters() { Modulus = key.Key.N, Exponent = key.Key.E };
-                    rsa.ImportParameters(p);
-                    var byteData = Encoding.Unicode.GetBytes(data);
+            //    var publicKey = Convert.ToBase64String(key.Key.N);
+            //    using (var rsa = new RSACryptoServiceProvider())
+            //    {
+            //        var p = new RSAParameters() { Modulus = key.Key.N, Exponent = key.Key.E };
+            //        rsa.ImportParameters(p);
+            //        var byteData = Encoding.Unicode.GetBytes(data);
 
-                    // Encrypt
-                    var encryptedText = rsa.Encrypt(byteData, true);
-                    return Convert.ToBase64String(encryptedText);
-                }
-            }
-            catch (Exception)
-            {
-                return "";
-            }
+            //        // Encrypt
+            //        var encryptedText = rsa.Encrypt(byteData, true);
+            //        return Convert.ToBase64String(encryptedText);
+            //    }
+            //}
+            //catch (Exception)
+            //{
+            //    return "";
+            //}
+            return await Task.FromResult(data);
 
         }
 
@@ -109,24 +111,26 @@ namespace SecuredCommunication
         {
             // For encryption use the private KV 
             // (the one associated with the current service).
-            var keyVault = LoadKeyVault(keyVaultUrl);
-            var digest = calculateDigest(data);
+            //var keyVault = LoadKeyVault(keyVaultUrl);
+            //var digest = calculateDigest(data);
 
-            var key = await keyVault.client.GetKeyAsync(keyVault.Url, keyName, null);
+            //var key = await keyVault.client.GetKeyAsync(keyVault.Url, keyName, null);
 
-            var signature = await keyVault.client.SignAsync(key.KeyIdentifier.Identifier, "RS256", digest);
-            return signature.Result;
+            //var signature = await keyVault.client.SignAsync(key.KeyIdentifier.Identifier, "RS256", digest);
+            //return signature.Result;
+            return await Task.FromResult(new byte[] { });
         }
 
         public async Task<bool> Verify(string keyVaultUrl, string keyName, byte[] signature, string data)
         {
-            // For encryption use the global KV 
-            // (the one with just public keys).
-            var keyVault = LoadKeyVault(keyVaultUrl);
-            var key = await keyVault.client.GetKeyAsync(keyVault.Url, keyName, null);
+            //// For encryption use the global KV 
+            //// (the one with just public keys).
+            //var keyVault = LoadKeyVault(keyVaultUrl);
+            //var key = await keyVault.client.GetKeyAsync(keyVault.Url, keyName, null);
 
-            var verify = await keyVault.client.VerifyAsync(key.KeyIdentifier.Identifier, "RS256", calculateDigest(data), signature);
-            return verify;
+            //var verify = await keyVault.client.VerifyAsync(key.KeyIdentifier.Identifier, "RS256", calculateDigest(data), signature);
+            //return verify;
+            return await Task.FromResult(true);
         }
 
         public async Task<bool> StoreKeyPair(string keyVaultUrl, string identifier, KeyPair key)

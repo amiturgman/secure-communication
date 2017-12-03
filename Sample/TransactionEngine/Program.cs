@@ -2,6 +2,8 @@
 using SecuredCommunication;
 using Nethereum.JsonRpc.IpcClient;
 using Nethereum.Web3;
+using System.Configuration;
+using System.Threading;
 
 namespace TransactionEngine
 {
@@ -23,7 +25,7 @@ namespace TransactionEngine
             var kvInfo = new KeyVaultInfo("https://eladiw-testkv.vault.azure.net/");
             var secretsMgmnt = new SecretsManagement(kvInfo);
 
-            var uri = new Uri("amqp://XXX:XXX@XXX:xx");
+            var uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"]);
             var securedComm = new SecuredComm(secretsMgmnt, uri);
 
             var consumerTag =
@@ -45,6 +47,10 @@ namespace TransactionEngine
                                               var txCount = web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(senderAddress).Result;
                                               var encoded = Web3.OfflineTransactionSigner.SignTransaction(privateKey, reciverAddress, amount, txCount.Value);
                                               var SendRawTransaction = web3.Eth.Transactions.SendRawTransaction.SendRequestAsync(encoded).Result;
+
+                                              // Wait for miner
+                                              Thread.Sleep(30000);
+
                                               securedComm.SendEncryptedMsgAsync(
                                               "encdec",
                                               "signverify",
