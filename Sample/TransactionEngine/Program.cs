@@ -46,7 +46,14 @@ namespace TransactionEngine
 
                                               var txCount = web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(senderAddress).Result;
                                               var encoded = Web3.OfflineTransactionSigner.SignTransaction(privateKey, reciverAddress, amount, txCount.Value);
-                                              var SendRawTransaction = web3.Eth.Transactions.SendRawTransaction.SendRequestAsync(encoded).Result;
+                                              try
+                                              {
+                                                  var SendRawTransaction = web3.Eth.Transactions.SendRawTransaction.SendRequestAsync(encoded).Result;
+                                              } catch (Exception ex)
+                                              {
+                                                  Console.WriteLine(ex.Message);
+                                              }
+                                              
 
                                               // Wait for miner
                                               Thread.Sleep(30000);
