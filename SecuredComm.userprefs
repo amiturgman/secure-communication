@@ -1,19 +1,22 @@
 ﻿<Properties StartupConfiguration="{E0F1BD96-F330-4B4F-ADBB-9518779E60CB}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Sample/TransactionEngine/Program.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="SecretsManagementTests/UnitTest1.cs">
     <Files>
-      <File FileName="SecuredComm/ISecuredComm.cs" Line="42" Column="89" />
-      <File FileName="SecuredComm/ISecretsManagement.cs" Line="19" Column="25" />
-      <File FileName="SecuredComm/SecretsManagement.cs" Line="46" Column="38" />
-      <File FileName="SecuredComm/SecuredComm.cs" Line="49" Column="29" />
+      <File FileName="SecuredComm/ISecuredComm.cs" Line="1" Column="1" />
+      <File FileName="SecuredComm/ISecretsManagement.cs" Line="1" Column="1" />
+      <File FileName="SecuredComm/SecretsManagement.cs" Line="1" Column="1" />
+      <File FileName="SecuredComm/SecuredComm.cs" Line="49" Column="149" />
       <File FileName="../securedcommtest1/test1/Program.cs" Line="11" Column="13" />
       <File FileName="../securedcomm2/test2/Program.cs" Line="20" Column="1" />
       <File FileName="SecuredComm/IBlockchainNodeWrapper.cs" Line="6" Column="6" />
-      <File FileName="SecuredComm/TXEngine.cs" Line="47" Column="1" />
-      <File FileName="SecuredComm/EthereumWalletService.cs" Line="34" Column="10" />
+      <File FileName="SecuredComm/EthereumWalletService.cs" Line="1" Column="1" />
       <File FileName="EthereumTest/Program.cs" Line="1" Column="1" />
-      <File FileName="Sample/cryptoPhilanthrop/Program.cs" Line="9" Column="12" />
-      <File FileName="Sample/CryptoFan/Program.cs" Line="13" Column="55" />
-      <File FileName="Sample/TransactionEngine/Program.cs" Line="1" Column="1" />
+      <File FileName="Sample/cryptoPhilanthrop/Program.cs" Line="24" Column="38" />
+      <File FileName="Sample/CryptoFan/Program.cs" Line="24" Column="43" />
+      <File FileName="Sample/TransactionEngine/Program.cs" Line="19" Column="52" />
+      <File FileName="Sample/cryptoPhilanthrop/App.config" Line="1" Column="1" />
+      <File FileName="Sample/CryptoFan/App.config" Line="1" Column="1" />
+      <File FileName="SecuredCommTests/UnitTest1.cs" Line="1" Column="1" />
+      <File FileName="SecretsManagementTests/UnitTest1.cs" Line="15" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
