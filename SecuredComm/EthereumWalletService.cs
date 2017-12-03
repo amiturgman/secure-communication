@@ -1,4 +1,5 @@
-﻿using Nethereum.Web3;
+﻿using Nethereum.JsonRpc.IpcClient;
+using Nethereum.Web3;
 using Nethereum.Web3.Accounts;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -20,7 +21,8 @@ namespace SecuredCommunication
 
         public async Task<string> SignTransaction(string senderIdentifier, string recieverAddress, BigInteger amount)
         {
-            var web3 = new Web3();
+            var client = new IpcClient("geth.ipc");
+            var web3 = new Web3(client);
 
             var senderKeyPair = await LoadKeyPairFromKeyVault(senderIdentifier);
             var txCount = await web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(senderKeyPair.PublicKey);
@@ -31,7 +33,8 @@ namespace SecuredCommunication
 
         public static async Task<decimal> GetCurrentBalance(Account account)
         {
-            var web3 = new Web3();
+            var client = new IpcClient("geth.ipc");
+            var web3 = new Web3(client);
             var unitConverion = new Nethereum.Util.UnitConversion();
             var currentBalance = unitConverion.FromWei(await web3.Eth.GetBalance.SendRequestAsync(account.Address));
             return currentBalance;

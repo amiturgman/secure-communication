@@ -54,7 +54,6 @@ namespace cryptoPhilanthrop
                 while (newBalance.Equals(balance))
                 {
                     newBalance = EthereumWalletService.GetCurrentBalance(account).Result;
-                    PrintCurrentBalance(account, newBalance);
                 }
 
                 balance = newBalance;
