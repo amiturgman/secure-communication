@@ -24,6 +24,7 @@ namespace TransactionEngine
 
             var uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"]);
             var securedComm = new SecuredComm(secretsMgmnt, uri);
+            var ethereumNodeWrapper = new EthereumNodeWrapper();
 
             var consumerTag =
                 securedComm.ListenOnQueue("innerQueue",
@@ -37,12 +38,15 @@ namespace TransactionEngine
                                               var amount = unitConverion.ToWei(msgArray[0]);
                                               var senderName = msgArray[1];
                                               var reciverAddress = msgArray[2];
-                                              var ethereumWallet = new EthereumWalletService("https://eladiw-testkv.vault.azure.net/");
-                                              
+                                              var secretManagement = new SecretsManagement(new KeyVault("https://eladiw-testkv.vault.azure.net/"));
+                                              var ethereumWallet = new EthereumWalletService("https://eladiw-testkv.vault.azure.net/", secretManagement);
+
                                               try
                                               {
-                                                  var SendRawTransaction = ethereumWallet.SignTransaction("sender", reciverAddress, amount).Result;
-                                              } catch (Exception ex)
+                                                  var transactionHash = ethereumWallet.SignTransaction("sender", reciverAddress, amount).Result;
+                                                  var trnsactionResult = ethereumNodeWrapper.SendTransaction(transactionHash).Result;
+                                              }
+                                              catch (Exception ex)
                                               {
                                                   Console.WriteLine(ex.Message);
                                               }

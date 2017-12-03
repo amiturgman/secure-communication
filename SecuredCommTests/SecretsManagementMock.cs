@@ -21,12 +21,12 @@ namespace SecuredCommTests
 
         Task<string> ISecretsManagement.GetPrivateKey(string keyVaultUrl, string identifier)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(TestConstants.privateKey);
         }
 
         Task<string> ISecretsManagement.GetPublicKey(string keyVaultUrl, string identifier)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(TestConstants.publicKey);
         }
 
         Task<byte[]> ISecretsManagement.Sign(string keyVaultUrl, string keyName, string data)

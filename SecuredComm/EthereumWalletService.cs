@@ -1,6 +1,5 @@
 ﻿using Nethereum.JsonRpc.IpcClient;
 using Nethereum.Web3;
-using Nethereum.Web3.Accounts;
 using System.Numerics;
 using System.Threading.Tasks;
 
@@ -8,15 +7,14 @@ namespace SecuredCommunication
 {
     public class EthereumWalletService : IWalletService
     {
-        private KeyVault KeyVault;
-        private SecretsManagement secretsManagement;
+        private ISecretsManagement secretsManagement;
         private string keyVaultUrl;
+
         #region Public Methods
-        public EthereumWalletService(string keyVaultUrl)
+        public EthereumWalletService(string keyVaultUrl, ISecretsManagement secretsManagement)
         {
             this.keyVaultUrl = keyVaultUrl;
-            KeyVault = new KeyVault(keyVaultUrl);
-            secretsManagement = new SecretsManagement(KeyVault);
+            this.secretsManagement = secretsManagement;
         }
 
         public async Task<string> SignTransaction(string senderIdentifier, string recieverAddress, BigInteger amount)
@@ -31,12 +29,12 @@ namespace SecuredCommunication
             return await Task.FromResult(transactionHash);
         }
 
-        public static async Task<decimal> GetCurrentBalance(Account account)
+        public static async Task<decimal> GetCurrentBalance(string address)
         {
             var client = new IpcClient("geth.ipc");
             var web3 = new Web3(client);
             var unitConverion = new Nethereum.Util.UnitConversion();
-            var currentBalance = unitConverion.FromWei(await web3.Eth.GetBalance.SendRequestAsync(account.Address));
+            var currentBalance = unitConverion.FromWei(await web3.Eth.GetBalance.SendRequestAsync(address));
             return currentBalance;
         }
         #endregion

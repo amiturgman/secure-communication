@@ -1,4 +1,6 @@
-﻿using Nethereum.Signer;
+﻿using Nethereum.JsonRpc.IpcClient;
+using Nethereum.Signer;
+using Nethereum.Web3;
 using System.Threading.Tasks;
 
 namespace SecuredCommunication
@@ -13,9 +15,12 @@ namespace SecuredCommunication
             return await Task.FromResult(new KeyPair(ecKey.GetPublicAddress(), ecKey.GetPrivateKey()));
         }
 
-        Task<bool> IBlockchainNodeWrapper.SendTransaction(string hash)
+        public async Task<string> SendTransaction(string hash)
         {
-            throw new System.NotImplementedException();
+            var client = new IpcClient("geth.ipc");
+            var web3 = new Web3(client);
+            var transactionResult = await web3.Eth.Transactions.SendRawTransaction.SendRequestAsync(hash);
+            return transactionResult;
         }
     }
 }

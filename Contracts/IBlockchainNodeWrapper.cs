@@ -6,5 +6,5 @@ public interface IBlockchainNodeWrapper
     Task<KeyPair> GenerateAccount();
 
     // send raw transaction
-    Task<bool> SendTransaction(string hash);
+    Task<string> SendTransaction(string hash);
 }

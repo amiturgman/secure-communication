@@ -23,7 +23,7 @@ namespace CryptoFan
 
             var kvInfo = new KeyVault("https://eladiw-testkv.vault.azure.net/");
 
-            PrintCurrentBalance(account, EthereumWalletService.GetCurrentBalance(account).Result);
+            PrintCurrentBalance(account, EthereumWalletService.GetCurrentBalance(account.Address).Result);
 
             var secretsMgmnt = new SecretsManagement(kvInfo);
 
@@ -39,7 +39,7 @@ namespace CryptoFan
                                             if (msg.data.Equals(account.Address, StringComparison.OrdinalIgnoreCase))
                                               {
                                                   Console.WriteLine("Great, Balance change!");
-                                                  PrintCurrentBalance(account, EthereumWalletService.GetCurrentBalance(account).Result);
+                                                  PrintCurrentBalance(account, EthereumWalletService.GetCurrentBalance(account.Address).Result);
                                               }
                                             else
                                               {
