@@ -25,18 +25,7 @@ namespace SecuredCommunication
         public SecuredComm(ISecretsManagement secretMgmnt, Uri queueUri)
         {
             ConnectionFactory factory = new ConnectionFactory();
-            factory.Uri = queueUri; //"amqp://user:pass@hostName:port/vhost";
-
-            /*ConnectionFactory factory = new ConnectionFactory
-            {
-                UserName = "XXX",
-                Password = "XXX",
-                VirtualHost = "/",
-                Protocol = Protocols.AMQP_0_9_1,//DefaultProtocol;//FromEnvironment();
-                HostName = "1.1.1.1",
-                Port = 5672
-            };*/
-
+            factory.Uri = queueUri; 
             IConnection conn = factory.CreateConnection();
 
             m_channel = conn.CreateModel();
