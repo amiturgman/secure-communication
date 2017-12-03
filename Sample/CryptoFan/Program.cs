@@ -9,6 +9,10 @@ using System.Configuration;
 
 namespace CryptoFan
 {
+    /// <summary>
+    /// A sample app that registers on a queue, whenver it gets update
+    /// it checks and prints the balance.
+    /// </summary>
     class Program
     {
         static void Main(string[] args)
@@ -17,12 +21,9 @@ namespace CryptoFan
             var web3 = new Web3(client);
             var password = "12345678";
 
-            Console.WriteLine("I just love getting new crypto coins");
+            Console.WriteLine("Reciever - I just love getting new crypto coins");
             var account = Account.LoadFromKeyStore(File.ReadAllText(@"C:\temp\NetherumDemo\privchain\keystore\UTC--2017-11-30T13-36-01.594748200Z--863c813c74acee5e4063bd65e880c0f06d3cc765"), password);
             PrintCurrentBalance(account, web3);
-
-            // TODO: write a sample app that registers on a queue, whenver it gets update
-            //       it checks and prints the balance.
 
             var kvInfo = new KeyVaultInfo("https://eladiw-testkv.vault.azure.net/");
             var secretsMgmnt = new SecretsManagement(kvInfo);

@@ -7,20 +7,21 @@ using System.Threading;
 
 namespace TransactionEngine
 {
+    /// <summary>
+    /// A sample app that listens for transactions requests.
+    /// when one arrives, perform it, and notify about the change 
+    /// to the fans
+    /// </summary>
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("I do as I told");
+            Console.WriteLine("TransactionEngine - I do as I told");
             var client = new IpcClient("geth.ipc");
             var web3 = new Web3(client);
             var password = "12345678";
             var unitConverion = new Nethereum.Util.UnitConversion();
             var service = new Nethereum.KeyStore.KeyStoreService();
-
-            // TODO: write a sample app that listens for transactions requests.
-            //       when one arrives, perform it, and notify about the change 
-            //       to the fans
 
             var kvInfo = new KeyVaultInfo("https://eladiw-testkv.vault.azure.net/");
             var secretsMgmnt = new SecretsManagement(kvInfo);

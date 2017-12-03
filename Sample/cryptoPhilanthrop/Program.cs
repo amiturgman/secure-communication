@@ -9,6 +9,10 @@ using System.Configuration;
 
 namespace cryptoPhilanthrop
 {
+    /// <summary>
+    ///  A sample app that checks balance and while > some value
+    ///  keep asking the transferer to do more transactions
+    /// </summary>
     class Program
     {
         static void Main(string[] args)
@@ -17,11 +21,8 @@ namespace cryptoPhilanthrop
             var web3 = new Web3(client);
             var password = "12345678";
 
-            Console.WriteLine("Happily to transfer my crypto coins!");
+            Console.WriteLine("Sender - Happy to transfer my crypto coins!");
             var account = Account.LoadFromKeyStore(File.ReadAllText(@"C:\temp\NetherumDemo\privchain\keystore\UTC--2017-11-30T13-34-42.742317500Z--bb6d204b166279511ce6cb4547275e805bc8cb82"), password);
-
-            // TODO: write a sample app that checks balance and while > some value
-            //       keep asking the transferer to do more transactions
 
             var balance = GetCurrentBalance(account, web3);
             var newBalance = balance;
