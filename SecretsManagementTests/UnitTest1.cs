@@ -9,7 +9,7 @@ namespace SecretsManagementTests
         [Fact]
         public void Sanity_VerifyCanBeCreated()
         {
-            var kvInfo = new KeyVault("http://dummyKvUri");
+            var kvInfo = new KeyVaultInfoMock("http://dummyKvUri");
             var secMgmnt = new SecretsManagement(kvInfo);
         }
 
@@ -18,7 +18,7 @@ namespace SecretsManagementTests
         {
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
-            var kvInfo = new KeyVault(kvUri);
+            var kvInfo = new KeyVaultInfoMock(kvUri);
             var secMgmnt = new SecretsManagement(kvInfo);
             var encryptedData = await secMgmnt.Encrypt(kvUri, "encKey", rawData);
 
@@ -30,7 +30,7 @@ namespace SecretsManagementTests
         {
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
-            var kvInfo = new KeyVault(kvUri);
+            var kvInfo = new KeyVaultInfoMock(kvUri);
             var secMgmnt = new SecretsManagement(kvInfo);
 
             // Encrypt

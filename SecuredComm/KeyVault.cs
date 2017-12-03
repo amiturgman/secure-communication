@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using System.Configuration;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Azure.KeyVault.Models;
 
 namespace SecuredCommunication
 {
@@ -18,6 +19,20 @@ namespace SecuredCommunication
             client = new KeyVaultClient(
                                     new KeyVaultClient.AuthenticationCallback(GetAccessTokenAsync),
                                     new HttpClient());
+        }
+
+        public string GetUrl()
+        {
+            return this.Url;
+        }
+
+        public Task<KeyBundle> GetKeyAsync(string vault,
+                               string keyName,
+                               string keyVersion = null)
+        {
+
+            return this.client.GetKeyAsync(this.Url, keyName, null);
+
         }
 
         private static async Task<string> GetAccessTokenAsync(

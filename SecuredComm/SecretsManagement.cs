@@ -11,21 +11,21 @@ namespace SecuredCommunication
 {
     public class SecretsManagement : ISecretsManagement
     {
-        private List<KeyVault> m_KeyVaultList;
+        private List<IKeyVaultInfo> m_KeyVaultList;
         private const string publicKeySuffix = "-public";
         private const string privateKeySuffix = "-private";
 
-        public SecretsManagement(KeyVault keyVault)
+        public SecretsManagement(IKeyVaultInfo keyVault)
         {
-            m_KeyVaultList = new List<KeyVault>();
+            m_KeyVaultList = new List<IKeyVaultInfo>();
             AddKeyVault(keyVault);
         }
 
-        public void AddKeyVault(KeyVault keyVault)
+        public void AddKeyVault(IKeyVaultInfo keyVault)
         {
-            if (m_KeyVaultList.Exists(kv => keyVault.Url.Equals(kv.Url)))
+            if (m_KeyVaultList.Exists(kv => keyVault.GetUrl().Equals(kv.GetUrl())))//keyVault.Url.Equals(kv.Url)))
             {
-                throw new Exception($"Key Vault with name {keyVault.Url} already exists");
+                throw new Exception($"Key Vault with name {keyVault.GetUrl()} already exists");
             }
 
             m_KeyVaultList.Add(keyVault);
@@ -33,34 +33,34 @@ namespace SecuredCommunication
 
         public async Task<string> Decrypt(string keyVaultUrl, string keyName, string encryptedData)
         {
-            return await Task.FromResult(encryptedData);
             // For encryption use the private KV 
             // (the one associated with the current service).
-            //var keyVault = LoadKeyVault(keyVaultUrl);
+            var keyVault = LoadKeyVault(keyVaultUrl);
 
-            //try
-            //{
-            //    var key = await keyVault.client.GetKeyAsync(keyVault.Url, keyName, null);
+            try
+            {
+                // var key = await keyVault.client.GetKeyAsync(keyVault.Url, keyName, null);
+                var key = await keyVault.GetKeyAsync(keyVault.Url, keyName, null);
 
-            //    var publicKey = Convert.ToBase64String(key.Key.N);
-            //    using (var rsa = new RSACryptoServiceProvider())
-            //    {
-            //        var p = new RSAParameters() { Modulus = key.Key.N, Exponent = key.Key.E };
-            //        rsa.ImportParameters(p);
+                var publicKey = Convert.ToBase64String(key.Key.N);
+                using (var rsa = new RSACryptoServiceProvider())
+                {
+                    var p = new RSAParameters() { Modulus = key.Key.N, Exponent = key.Key.E };
+                    rsa.ImportParameters(p);
 
-            //        // Decrypt
-            //        var encryptedTextNew = Convert.FromBase64String(encryptedData);
-            //        var decryptedData = keyVault.client.DecryptAsync(key.KeyIdentifier.Identifier, JsonWebKeyEncryptionAlgorithm.RSAOAEP, encryptedTextNew).GetAwaiter().GetResult();
-            //        var decryptedText = Encoding.Unicode.GetString(decryptedData.Result);
+                    // Decrypt
+                    var encryptedTextNew = Convert.FromBase64String(encryptedData);
+                    var decryptedData = keyVault.client.DecryptAsync(key.KeyIdentifier.Identifier, JsonWebKeyEncryptionAlgorithm.RSAOAEP, encryptedTextNew).GetAwaiter().GetResult();
+                    var decryptedText = Encoding.Unicode.GetString(decryptedData.Result);
 
-            //        return decryptedText;
-            //    }
-            //}
-            //catch (Exception)
-            //{
-            //    //TODO: handle exception
-            //    return "";
-            //}
+                    return decryptedText;
+                }
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine("Exception was thrown: " + exc);
+                throw;
+            }
         }
 
         public async Task<string> Encrypt(string keyVaultUrl, string keyName, string data)
@@ -149,7 +149,7 @@ namespace SecuredCommunication
         #region Private Methods
         private KeyVault LoadKeyVault(string keyVaultUrl)
         {
-            foreach (KeyVault keyVault in m_KeyVaultList.Where(keyVault => keyVaultUrl.Equals(keyVault.Url)))
+            foreach (KeyVaultInfo keyVault in m_KeyVaultList.Where(keyVault => keyVaultUrl.Equals(keyVault.GetUrl())))
             {
                 return keyVault;
             }
