@@ -9,7 +9,7 @@ namespace SecretsManagementTests
         [Fact]
         public void Sanity_VerifyCanBeCreated()
         {
-            var kvInfo = new KeyVaultInfoMock("http://dummyKvUri");
+            var kvInfo = new KeyVaultMock("http://dummyKvUri");
             var secMgmnt = new SecretsManagement(kvInfo);
         }
 
@@ -18,9 +18,11 @@ namespace SecretsManagementTests
         {
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
-            var kvInfo = new KeyVaultInfoMock(kvUri);
+            var kvInfo = new KeyVaultMock(kvUri);
             var secMgmnt = new SecretsManagement(kvInfo);
-            var encryptedData = await secMgmnt.Encrypt(kvUri, "encKey", rawData);
+            var encryptedData = await secMgmnt.Encrypt(kvUri, "key_public", rawData);
+
+            Console.WriteLine(encryptedData);
 
             Assert.NotEqual(encryptedData, rawData);
         }
@@ -30,14 +32,14 @@ namespace SecretsManagementTests
         {
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
-            var kvInfo = new KeyVaultInfoMock(kvUri);
+            var kvInfo = new KeyVaultMock(kvUri);
             var secMgmnt = new SecretsManagement(kvInfo);
 
             // Encrypt
-            var encryptedData = await secMgmnt.Encrypt(kvUri, "encKey", rawData);
+            var encryptedData = await secMgmnt.Encrypt(kvUri, "encKey_public", rawData);
 
             // Decrypt
-            var decryptedData = await secMgmnt.Decrypt(kvUri, "encKey", encryptedData);
+            var decryptedData = await secMgmnt.Decrypt(kvUri, "encKey_private", encryptedData);
 
             // Verify the process ended succesfully and the data is plain text
             Assert.NotEqual(encryptedData, rawData);

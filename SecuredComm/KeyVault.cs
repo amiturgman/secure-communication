@@ -1,5 +1,4 @@
-﻿using Contracts;
-using Microsoft.Azure.KeyVault;
+﻿using Microsoft.Azure.KeyVault;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using System.Configuration;
 using System.Net.Http;
@@ -24,6 +23,27 @@ namespace SecuredCommunication
         public string GetUrl()
         {
             return this.Url;
+        }
+
+        public Task<SecretBundle> GetSecretAsync(
+    string vault,
+            string secretName) {
+            return this.client.GetSecretAsync(vault, secretName);;
+        } 
+
+       /* public Task<KeyOperationResult> DecryptAsync(
+    string keyIdentifier,
+    string algorithm,
+            byte[] cipherText) {
+            return this.client.DecryptAsync(keyIdentifier,algorithm,cipherText);
+        }
+*/
+        public Task<SecretBundle> SetSecretAsync(
+    string vault,
+    string secretName,
+        string value)
+        {
+            return this.client.SetSecretAsync(vault, secretName, value);
         }
 
         public Task<KeyBundle> GetKeyAsync(string vault,

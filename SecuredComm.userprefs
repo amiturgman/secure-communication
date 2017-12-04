@@ -1,15 +1,17 @@
 ﻿<Properties StartupConfiguration="{E0F1BD96-F330-4B4F-ADBB-9518779E60CB}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="SecuredComm/KeyVault.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="SecuredCommTests/SecretsManagementMock.cs">
     <Files>
-      <File FileName="SecuredComm/SecretsManagement.cs" Line="152" Column="1" />
       <File FileName="SecuredComm/EthereumNodeWrapper.cs" Line="1" Column="1" />
-      <File FileName="SecretsManagementTests/UnitTest1.cs" Line="1" Column="1" />
-      <File FileName="Contracts/IKeyVaultInfo.cs" Line="1" Column="1" />
-      <File FileName="SecretsManagementTests/KeyVaultInfoMock.cs" Line="1" Column="1" />
       <File FileName="Contracts/ISecuredComm.cs" Line="21" Column="8" />
-      <File FileName="SecuredComm/SecuredComm.cs" Line="31" Column="20" />
+      <File FileName="SecuredComm/SecuredComm.cs" Line="79" Column="35" />
       <File FileName="SecuredComm/EthereumWalletService.cs" Line="1" Column="1" />
-      <File FileName="SecuredComm/KeyVault.cs" Line="11" Column="21" />
+      <File FileName="SecuredComm/KeyVault.cs" Line="40" Column="3" />
+      <File FileName="Contracts/IKeyVault.cs" Line="12" Column="5" />
+      <File FileName="Contracts/ISecretsManagement.cs" Line="1" Column="1" />
+      <File FileName="SecretsManagementTests/KeyVaultInfoMock.cs" Line="20" Column="6" />
+      <File FileName="SecuredComm/SecretsManagement.cs" Line="55" Column="42" />
+      <File FileName="SecretsManagementTests/UnitTest1.cs" Line="15" Column="1" />
+      <File FileName="SecuredCommTests/SecretsManagementMock.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
