@@ -5,7 +5,7 @@ namespace SecuredCommTests
 {
     public class EthereumNodeWrapperTest
     {
-        [Fact]
+     /*   [Fact]
         public async void Sanity_Sign_Transaction()
         {
             var secretManagmentMock = new SecretsManagementMock();
@@ -21,6 +21,6 @@ namespace SecuredCommTests
             var trnsactionHash = await EthereumNodeWrapper.GetCurrentBalance(TestConstants.publicKey);
 
             Assert.IsType<decimal>(trnsactionHash);
-        }
+        }*/
     }
 }

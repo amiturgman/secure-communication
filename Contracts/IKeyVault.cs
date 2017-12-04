@@ -4,11 +4,16 @@ public interface IKeyVault
 {
     string GetUrl();
 
-    Task<SecretBundle> GetSecretAsync(string vault, string secretName);
+    Task<SecretBundle> GetSecretAsync(string secretName);
 
-    Task<KeyBundle> GetKeyAsync(string vault,
-                                string keyName,
+    Task<KeyBundle> GetKeyAsync(string keyName,
                                 string keyVersion = null);
 
-    Task<SecretBundle> SetSecretAsync(string vault, string secretName, string value);
+    Task<SecretBundle> SetSecretAsync(string secretName, string value);
+
+    Task<bool> StoreKeyPair(string identifier, KeyPair key);
+
+    Task<string> GetPublicKey(string identifier);
+
+    Task<string> GetPrivateKey(string identifier);
 }

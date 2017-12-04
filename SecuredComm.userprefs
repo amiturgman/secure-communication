@@ -1,17 +1,21 @@
 ﻿<Properties StartupConfiguration="{E0F1BD96-F330-4B4F-ADBB-9518779E60CB}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="SecretsManagementTests/UnitTest1.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Sample/TransactionEngine/Program.cs">
     <Files>
-      <File FileName="SecuredComm/EthereumNodeWrapper.cs" Line="1" Column="1" />
+      <File FileName="SecuredComm/EthereumNodeWrapper.cs" Line="18" Column="54" />
       <File FileName="Contracts/ISecuredComm.cs" Line="21" Column="8" />
-      <File FileName="SecuredComm/SecuredComm.cs" Line="79" Column="35" />
-      <File FileName="SecuredComm/KeyVault.cs" Line="1" Column="1" />
-      <File FileName="Contracts/IKeyVault.cs" Line="9" Column="21" />
-      <File FileName="Contracts/ISecretsManagement.cs" Line="1" Column="1" />
-      <File FileName="SecretsManagementTests/KeyVaultMock.cs" Line="1" Column="1" />
-      <File FileName="SecuredComm/SecretsManagement.cs" Line="1" Column="1" />
-      <File FileName="SecretsManagementTests/UnitTest1.cs" Line="1" Column="1" />
-      <File FileName="SecuredCommTests/SecretsManagementMock.cs" Line="24" Column="51" />
-      <File FileName="SecuredCommTests/UnitTest1.cs" Line="1" Column="1" />
+      <File FileName="SecuredComm/SecuredComm.cs" Line="83" Column="43" />
+      <File FileName="SecuredComm/KeyVault.cs" Line="38" Column="47" />
+      <File FileName="Contracts/IKeyVault.cs" Line="7" Column="39" />
+      <File FileName="Contracts/ISecretsManagement.cs" Line="11" Column="23" />
+      <File FileName="SecretsManagementTests/KeyVaultMock.cs" Line="7" Column="29" />
+      <File FileName="SecuredComm/SecretsManagement.cs" Line="2" Column="1" />
+      <File FileName="SecretsManagementTests/SecretsManagerTests.cs" Line="20" Column="28" />
+      <File FileName="SecuredCommTests/SecretsManagementMock.cs" Line="20" Column="49" />
+      <File FileName="SecuredCommTests/SecuredCommTests.cs" Line="9" Column="9" />
+      <File FileName="SecuredCommTests/EthereumNodeWrapperTest.cs" Line="24" Column="12" />
+      <File FileName="Sample/cryptoPhilanthrop/Program.cs" Line="31" Column="13" />
+      <File FileName="Sample/CryptoFan/Program.cs" Line="25" Column="102" />
+      <File FileName="Sample/TransactionEngine/Program.cs" Line="24" Column="13" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />

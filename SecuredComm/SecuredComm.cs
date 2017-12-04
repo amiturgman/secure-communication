@@ -52,11 +52,11 @@ namespace SecuredCommunication
                 var msg = FromByteArray<Message>(body);
                 if (decryptionKeyName != string.Empty) {
                     msg.data = 
-                        await m_secretMgmt.Decrypt(PrivateKeyVaultName,decryptionKeyName, msg.data);
+                        await m_secretMgmt.Decrypt(msg.data);
                 }
 
                 var verifyResult = 
-                    await m_secretMgmt.Verify(PrivateKeyVaultName, verificationKeyName, msg.sign, msg.data);
+                    await m_secretMgmt.Verify(msg.sign, msg.data);
                 if (verifyResult == false) {
                     //throw;
                 }
@@ -78,9 +78,9 @@ namespace SecuredCommunication
 
         public async Task SendEncryptedMsgAsync(string encKeyName, string signingKeyName, string queue, string topic, Message msg)
         {
-            var encMsg = await m_secretMgmt.Encrypt(GlobalKeyVaultName, encKeyName, msg.data);
+            var encMsg = await m_secretMgmt.Encrypt(msg.data);
             msg.data = encMsg;
-            msg.sign = await m_secretMgmt.Sign(GlobalKeyVaultName, signingKeyName, msg.data);
+            msg.sign = await m_secretMgmt.Sign(msg.data);
 
             msg.isEncrypted = true;
             msg.isSigned = true;
@@ -92,7 +92,7 @@ namespace SecuredCommunication
             msg.isEncrypted = false;
 
             // sign even if the msg is encrypted
-            msg.sign = await m_secretMgmt.Sign(GlobalKeyVaultName, signingKeyName, msg.data);
+            msg.sign = await m_secretMgmt.Sign(msg.data);
             msg.isSigned = true;
 
             await SendMsg(queue, topic, msg);

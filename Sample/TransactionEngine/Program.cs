@@ -20,11 +20,11 @@ namespace TransactionEngine
             var service = new Nethereum.KeyStore.KeyStoreService();
 
             var kvInfo = new KeyVault("https://eladiw-testkv.vault.azure.net/");
-            var secretsMgmnt = new SecretsManagement(kvInfo);
+            var secretsMgmnt = new SecretsManagement("enc", "dec", "sign", "verify", kvInfo, kvInfo);
 
             var uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"]);
             var securedComm = new SecuredComm(secretsMgmnt, uri);
-            var ethereumNodeWrapper = new EthereumNodeWrapper("https://eladiw-testkv.vault.azure.net/", secretsMgmnt);
+            var ethereumNodeWrapper = new EthereumNodeWrapper(kvInfo, secretsMgmnt);
 
             var consumerTag =
                 securedComm.ListenOnQueue("innerQueue",
@@ -38,12 +38,10 @@ namespace TransactionEngine
                                               var amount = unitConverion.ToWei(msgArray[0]);
                                               var senderName = msgArray[1];
                                               var reciverAddress = msgArray[2];
-                                              var secretManagement = new SecretsManagement(new KeyVault("https://eladiw-testkv.vault.azure.net/"));
-                                              var ethereumWallet = new EthereumNodeWrapper("https://eladiw-testkv.vault.azure.net/", secretManagement);
 
                                               try
                                               {
-                                                  var transactionHash = ethereumWallet.SignTransaction("sender", reciverAddress, amount).Result;
+                                                  var transactionHash = ethereumNodeWrapper.SignTransaction("sender", reciverAddress, amount).Result;
                                                   var trnsactionResult = ethereumNodeWrapper.SendTransaction(transactionHash).Result;
                                               }
                                               catch (Exception ex)

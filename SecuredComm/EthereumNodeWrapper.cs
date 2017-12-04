@@ -12,12 +12,13 @@ namespace SecuredCommunication
     public class EthereumNodeWrapper : IBlockchainNodeWrapper
     {
         private ISecretsManagement secretsManagement;
-        private string keyVaultUrl;
+        private IKeyVault m_kv;
 
         #region Public Methods
-        public EthereumNodeWrapper(string keyVaultUrl, ISecretsManagement secretsManagement)
+        public EthereumNodeWrapper(IKeyVault keyVault, ISecretsManagement secretsManagement)
         {
-            this.keyVaultUrl = keyVaultUrl;
+            m_kv = keyVault;
+
             this.secretsManagement = secretsManagement;
         }
 
@@ -87,8 +88,8 @@ namespace SecuredCommunication
         /// <returns>The public private key pair</returns>
         private async Task<KeyPair> LoadKeyPairFromKeyVault(string identifier)
         {
-            var publicKey = await secretsManagement.GetPublicKey(keyVaultUrl, identifier);
-            var privateKey = await secretsManagement.GetPrivateKey(keyVaultUrl, identifier);
+            var publicKey = await m_kv.GetPublicKey(identifier);
+            var privateKey = await m_kv.GetPrivateKey(identifier);
 
             return new KeyPair(publicKey, privateKey);
         }

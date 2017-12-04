@@ -4,7 +4,7 @@ using SecuredCommunication;
 
 namespace SecuredCommTests
 {
-    public class UnitTest1
+    public class SecuredCommTests
     {
         [Fact]
         public void Sanity_VerifyCanBeCreated()

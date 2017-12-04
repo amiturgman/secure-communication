@@ -29,7 +29,7 @@ namespace cryptoPhilanthrop
             var newBalance = balance;
 
             var kvInfo = new KeyVault("https://eladiw-testkv.vault.azure.net/");
-            var secretsMgmnt = new SecretsManagement(kvInfo);
+            var secretsMgmnt = new SecretsManagement("enc", "dec", "sign", "verify", kvInfo, kvInfo);
 
             var uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"]);
             var securedComm = new SecuredComm(secretsMgmnt, uri);

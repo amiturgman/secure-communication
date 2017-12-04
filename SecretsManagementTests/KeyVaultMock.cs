@@ -13,20 +13,37 @@ public class KeyVaultMock : IKeyVault
         this.kvUri = kvUri;
     }
 
-    public Task<SecretBundle> GetSecretAsync(
-   string vault,
-           string secretName)
+    public Task<string> GetPrivateKey(string identifier)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<string> GetPublicKey(string identifier)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<SecretBundle> GetSecretAsync(string secretName)
     {
         throw new Exception();
     }
 
-    public Task<SecretBundle> SetSecretAsync(string vault, string secretName, string value)
+    public string GetUrl()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<SecretBundle> SetSecretAsync(string secretName, string value)
     {
         throw new Exception();
     }
 
+    public Task<bool> StoreKeyPair(string identifier, KeyPair key)
+    {
+        throw new NotImplementedException();
+    }
 
-    Task<KeyBundle> IKeyVault.GetKeyAsync(string vault, string keyName, string keyVersion)
+    Task<KeyBundle> IKeyVault.GetKeyAsync(string keyName, string keyVersion)
     {
 
         var x = new X509Certificate2("../../../testCert.pfx", "abc123ABC", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
@@ -55,10 +72,5 @@ public class KeyVaultMock : IKeyVault
             };
             return Task.FromResult(bundle);
         }
-    }
-
-    string IKeyVault.GetUrl()
-    {
-        return this.kvUri;
     }
 }

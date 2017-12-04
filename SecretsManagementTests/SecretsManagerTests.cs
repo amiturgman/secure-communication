@@ -4,13 +4,13 @@ using Xunit;
 
 namespace SecretsManagementTests
 {
-    public class UnitTest1
+    public class SecretsManagerTests
     {
         [Fact]
         public void Sanity_VerifyCanBeCreated()
         {
             var kvInfo = new KeyVaultMock("http://dummyKvUri");
-            var secMgmnt = new SecretsManagement(kvInfo);
+            var secretsMgmnt = new SecretsManagement("enc", "dec", "sign", "verify", kvInfo, kvInfo);
         }
 
         [Fact]
@@ -19,8 +19,8 @@ namespace SecretsManagementTests
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
             var kvInfo = new KeyVaultMock(kvUri);
-            var secMgmnt = new SecretsManagement(kvInfo);
-            var encryptedData = await secMgmnt.Encrypt(kvUri, "key_public", rawData);
+            var secretsMgmnt = new SecretsManagement("enc_public", "dec_private", "sign", "verify", kvInfo, kvInfo);
+            var encryptedData = await secretsMgmnt.Encrypt(rawData);
 
             Assert.NotEqual(encryptedData, rawData);
         }
@@ -31,13 +31,13 @@ namespace SecretsManagementTests
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
             var kvInfo = new KeyVaultMock(kvUri);
-            var secMgmnt = new SecretsManagement(kvInfo);
+            var secretsMgmnt = new SecretsManagement("enc_public", "dec_private", "sign", "verify", kvInfo, kvInfo);
 
             // Encrypt
-            var encryptedData = await secMgmnt.Encrypt(kvUri, "encKey_public", rawData);
+            var encryptedData = await secretsMgmnt.Encrypt(rawData);
 
             // Decrypt
-            var decryptedData = await secMgmnt.Decrypt(kvUri, "encKey_private", encryptedData);
+            var decryptedData = await secretsMgmnt.Decrypt(encryptedData);
 
             // Verify the process ended succesfully and the data is plain text
             Assert.NotEqual(encryptedData, rawData);

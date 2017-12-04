@@ -4,12 +4,15 @@ using System.Configuration;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure.KeyVault.Models;
+using System;
 
 namespace SecuredCommunication
 {
     public class KeyVault : IKeyVault
     {
         public string Url;
+        private const string publicKeySuffix = "-public";
+        private const string privateKeySuffix = "-private";
         public KeyVaultClient client;
 
         public KeyVault(string kvUrl)
@@ -25,29 +28,53 @@ namespace SecuredCommunication
             return this.Url;
         }
 
-        public Task<SecretBundle> GetSecretAsync(string vault, string secretName) 
+        public Task<SecretBundle> GetSecretAsync(string secretName) 
         { 
-            return client.GetSecretAsync(vault, secretName);;
+            return client.GetSecretAsync(GetUrl(), secretName);;
         } 
 
-        public Task<SecretBundle> SetSecretAsync(string vault, string secretName, string value)
+        public Task<SecretBundle> SetSecretAsync(string secretName, string value)
         {
-            return this.client.SetSecretAsync(vault, secretName, value);
+            return this.client.SetSecretAsync(GetUrl(), secretName, value);
         }
 
-        public Task<KeyBundle> GetKeyAsync(string vault,
-                               string keyName,
-                               string keyVersion = null)
+        public Task<KeyBundle> GetKeyAsync(string keyName, string keyVersion = null)
         {
 
             return client.GetKeyAsync(this.Url, keyName, null);
 
         }
 
+        public async Task<string> GetPrivateKey(string identifier)
+        {
+            var secret = await client.GetSecretAsync(GetUrl(), identifier + privateKeySuffix);
+            return secret.Value;
+        }
+
+        public async Task<string> GetPublicKey(string identifier)
+        {
+            var secret = await client.GetSecretAsync(GetUrl(), identifier + publicKeySuffix); 
+            return secret.Value;
+        }
+
+        public async Task<bool> StoreKeyPair(string identifier, KeyPair key)
+        {
+            try
+            {
+                await client.SetSecretAsync(GetUrl(), identifier + publicKeySuffix, key.PublicKey);
+                await client.SetSecretAsync(GetUrl(), identifier + privateKeySuffix, key.PrivateKey);
+                return true;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         private static async Task<string> GetAccessTokenAsync(
-            string authority,
-            string resource,
-            string scope)
+          string authority,
+          string resource,
+          string scope)
         {
             //clientID and clientSecret are obtained by registering
             //the application in Azure AD

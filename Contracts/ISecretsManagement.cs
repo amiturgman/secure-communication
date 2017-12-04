@@ -2,17 +2,11 @@
 
 public interface ISecretsManagement
 {
-    Task<string> Encrypt(string keyVaultUrl, string keyName, string data);
+    Task<string> Encrypt(string data);
 
-    Task<string> Decrypt(string keyVaultUrl, string keyName, string encryptedData);
+    Task<string> Decrypt(string encryptedData);
 
-    Task<byte[]> Sign(string keyVaultUrl, string keyName, string data);
+    Task<byte[]> Sign(string data);
 
-    Task<bool> Verify(string keyVaultUrl, string keyName, byte[] signature, string data);
-
-    Task<bool> StoreKeyPair(string keyVaultUrl, string identifier, KeyPair key);
-
-    Task<string> GetPublicKey(string keyVaultUrl, string identifier);
-
-    Task<string> GetPrivateKey(string keyVaultUrl, string identifier);
+    Task<bool> Verify(byte[] signature, string data);
 }

@@ -3,43 +3,24 @@ using System.Threading.Tasks;
 
 namespace SecuredCommTests
 {
-    public class SecretsManagementMock: ISecretsManagement
+    public class SecretsManagementMock : ISecretsManagement
     {
-        public SecretsManagementMock()
-        {
-        }
-
-        Task<string> ISecretsManagement.Decrypt(string keyVaultUrl, string keyName, string encryptedData)
+        Task<string> ISecretsManagement.Decrypt(string encryptedData)
         {
             throw new NotImplementedException();
         }
 
-        Task<string> ISecretsManagement.Encrypt(string keyVaultUrl, string keyName, string data)
+        Task<string> ISecretsManagement.Encrypt(string data)
         {
             throw new NotImplementedException();
         }
 
-        Task<string> ISecretsManagement.GetPrivateKey(string keyVaultUrl, string identifier)
-        {
-            return Task.FromResult(TestConstants.privateKey);
-        }
-
-        Task<string> ISecretsManagement.GetPublicKey(string keyVaultUrl, string identifier)
-        {
-            return Task.FromResult(TestConstants.publicKey);
-        }
-
-        Task<byte[]> ISecretsManagement.Sign(string keyVaultUrl, string keyName, string data)
+        Task<byte[]> ISecretsManagement.Sign(string data)
         {
             throw new NotImplementedException();
         }
 
-        Task<bool> ISecretsManagement.StoreKeyPair(string keyVaultUrl, string identifier, KeyPair key)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<bool> ISecretsManagement.Verify(string keyVaultUrl, string keyName, byte[] signature, string data)
+        Task<bool> ISecretsManagement.Verify(byte[] signature, string data)
         {
             throw new NotImplementedException();
         }

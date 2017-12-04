@@ -19,11 +19,10 @@ namespace CryptoFan
             var password = "12345678";
             var account = Account.LoadFromKeyStore(File.ReadAllText(@"C:\temp\NetherumDemo\privchain\keystore\UTC--2017-11-30T13-36-01.594748200Z--863c813c74acee5e4063bd65e880c0f06d3cc765"), password);
 
-            var kvInfo = new KeyVault("https://eladiw-testkv.vault.azure.net/");
-
             PrintCurrentBalance(account, EthereumNodeWrapper.GetCurrentBalance(account.Address).Result);
 
-            var secretsMgmnt = new SecretsManagement(kvInfo);
+            var kvInfo = new KeyVault("https://eladiw-testkv.vault.azure.net/");
+            var secretsMgmnt = new SecretsManagement("enc", "dec", "sign", "verify", kvInfo, kvInfo);
 
             var uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"]);
             var securedComm = new SecuredComm(secretsMgmnt, uri);
