@@ -22,8 +22,6 @@ namespace SecretsManagementTests
             var secMgmnt = new SecretsManagement(kvInfo);
             var encryptedData = await secMgmnt.Encrypt(kvUri, "key_public", rawData);
 
-            Console.WriteLine(encryptedData);
-
             Assert.NotEqual(encryptedData, rawData);
         }
 
@@ -44,6 +42,7 @@ namespace SecretsManagementTests
             // Verify the process ended succesfully and the data is plain text
             Assert.NotEqual(encryptedData, rawData);
             Assert.Equal(decryptedData, rawData);
+            Assert.Equal(encryptedData.Substring(encryptedData.Length - 2, 2), "==");
         }
     }
 }

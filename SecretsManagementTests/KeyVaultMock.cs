@@ -29,7 +29,7 @@ public class KeyVaultMock : IKeyVault
     Task<KeyBundle> IKeyVault.GetKeyAsync(string vault, string keyName, string keyVersion)
     {
 
-        var x = new X509Certificate2("../../../ilanatest.pfx", "abc123ABC", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
+        var x = new X509Certificate2("../../../testCert.pfx", "abc123ABC", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
 
         var key = keyName.Contains("private") ? x.GetRSAPrivateKey() : x.GetRSAPublicKey();
         using (RSA rsa = key)

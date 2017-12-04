@@ -47,9 +47,8 @@ namespace SecuredCommunication
 
                     // Decrypt
                     var encryptedTextNew = Convert.FromBase64String(encryptedData);
-                    var decryptedData = rsa.Decrypt(encryptedTextNew, true);;//rsa.Decrypt(encryptedTextNew,true);
+                    var decryptedData = rsa.Decrypt(encryptedTextNew, true);
 
-                    //var decryptedData = keyVault.DecryptAsync(key.KeyIdentifier.Identifier, JsonWebKeyEncryptionAlgorithm.RSAOAEP, encryptedTextNew).GetAwaiter().GetResult();
                     var decryptedText = Encoding.Unicode.GetString(decryptedData);
 
                     return decryptedText;
@@ -88,8 +87,6 @@ namespace SecuredCommunication
             {
                 throw;
             }
-            //return await Task.FromResult(data);
-
         }
 
         public async Task<string> GetPrivateKey(string keyVaultUrl, string identifier)
@@ -110,12 +107,12 @@ namespace SecuredCommunication
         {
             // For encryption use the private KV 
             // (the one associated with the current service).
-            //var keyVault = LoadKeyVault(keyVaultUrl);
-            //var digest = calculateDigest(data);
+            var keyVault = LoadKeyVault(keyVaultUrl);
+            var digest = calculateDigest(data);
 
-            //var key = await keyVault.client.GetKeyAsync(keyVault.Url, keyName, null);
+            var key = await keyVault.GetKeyAsync(keyVault.GetUrl(), keyName, null);
 
-            //var signature = await keyVault.client.SignAsync(key.KeyIdentifier.Identifier, "RS256", digest);
+            //var signature = await keyVault.SignAsync(key.KeyIdentifier.Identifier, "RS256", digest);
             //return signature.Result;
             return await Task.FromResult(new byte[] { });
         }
@@ -124,8 +121,8 @@ namespace SecuredCommunication
         {
             //// For encryption use the global KV 
             //// (the one with just public keys).
-            //var keyVault = LoadKeyVault(keyVaultUrl);
-            //var key = await keyVault.client.GetKeyAsync(keyVault.Url, keyName, null);
+            var keyVault = LoadKeyVault(keyVaultUrl);
+            var key = await keyVault.GetKeyAsync(keyVault.GetUrl(), keyName, null);
 
             //var verify = await keyVault.client.VerifyAsync(key.KeyIdentifier.Identifier, "RS256", calculateDigest(data), signature);
             //return verify;
@@ -139,10 +136,9 @@ namespace SecuredCommunication
                 await keyVault.SetSecretAsync(keyVault.GetUrl(), identifier + publicKeySuffix, key.PublicKey);
                 await keyVault.SetSecretAsync(keyVault.GetUrl(), identifier + privateKeySuffix, key.PrivateKey);
                 return true;
-            } catch (Exception ex)
+            } catch (Exception)
             {
-                //TODO: handle exception
-                return false;
+                throw;
             }
         }
 

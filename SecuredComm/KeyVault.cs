@@ -25,23 +25,12 @@ namespace SecuredCommunication
             return this.Url;
         }
 
-        public Task<SecretBundle> GetSecretAsync(
-    string vault,
-            string secretName) {
-            return this.client.GetSecretAsync(vault, secretName);;
+        public Task<SecretBundle> GetSecretAsync(string vault, string secretName) 
+        { 
+            return client.GetSecretAsync(vault, secretName);;
         } 
 
-       /* public Task<KeyOperationResult> DecryptAsync(
-    string keyIdentifier,
-    string algorithm,
-            byte[] cipherText) {
-            return this.client.DecryptAsync(keyIdentifier,algorithm,cipherText);
-        }
-*/
-        public Task<SecretBundle> SetSecretAsync(
-    string vault,
-    string secretName,
-        string value)
+        public Task<SecretBundle> SetSecretAsync(string vault, string secretName, string value)
         {
             return this.client.SetSecretAsync(vault, secretName, value);
         }
@@ -51,7 +40,7 @@ namespace SecuredCommunication
                                string keyVersion = null)
         {
 
-            return this.client.GetKeyAsync(this.Url, keyName, null);
+            return client.GetKeyAsync(this.Url, keyName, null);
 
         }
 
