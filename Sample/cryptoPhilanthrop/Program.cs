@@ -32,18 +32,15 @@ namespace cryptoPhilanthrop
             var secretsMgmnt = new SecretsManagement("enc", "dec", "sign", "verify", kvInfo, kvInfo);
 
             var uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"]);
-            var securedComm = new SecuredComm(secretsMgmnt, uri);
+            var securedComm = new SecuredComm(secretsMgmnt, uri, "verify", "sign", false, "enc", "dec");
 
             while (balance > 10000)
             {
                 var amountToSend = 5000;
                 // Message structure: {amountToSend};{senderName};{reciverAddress}
-                securedComm.SendEncryptedMsgAsync(
-                    "encdec",
-                    "signverify",
-                    "innerQueue",
-                    "send.transactions",
-                    new Message($"{amountToSend};sender;0x863c813c74acee5e4063bd65e880c0f06d3cc765")).Wait();
+                securedComm.SendMsgAsync(
+                    "sender.transactions",
+                    new Message($"{amountToSend};sender;0x863c813c74acee5e4063bd65e880c0f06d3cc765"));
 
                 Thread.Sleep(60000);
                 

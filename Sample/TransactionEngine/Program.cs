@@ -23,13 +23,11 @@ namespace TransactionEngine
             var secretsMgmnt = new SecretsManagement("enc", "dec", "sign", "verify", kvInfo, kvInfo);
 
             var uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"]);
-            var securedComm = new SecuredComm(secretsMgmnt, uri);
+            var securedComm = new SecuredComm(secretsMgmnt, uri, "verify", "sign", false, "enc", "dec");
             var ethereumNodeWrapper = new EthereumNodeWrapper(kvInfo, secretsMgmnt);
 
             var consumerTag =
-                securedComm.ListenOnQueue("innerQueue",
-                                          new string[] { "*.transactions" },
-                                          "signverify",
+                securedComm.ListenOnQueue("transactions", new string[] { "*.transactions" },
                                           (msg) =>
                                           {
                                               Console.WriteLine("GOT WORK!");
@@ -52,12 +50,9 @@ namespace TransactionEngine
                                               // Wait for miner
                                               Thread.Sleep(30000);
 
-                                              securedComm.SendEncryptedMsgAsync(
-                                              "encdec",
-                                              "signverify",
-                                              "notifications",
+                                              securedComm.SendMsgAsync(
                                               "notifications.balance",
-                                               new Message(reciverAddress)).Wait();
+                                               new Message(reciverAddress));
                                           });
         }
     }

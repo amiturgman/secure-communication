@@ -25,12 +25,11 @@ namespace CryptoFan
             var secretsMgmnt = new SecretsManagement("enc", "dec", "sign", "verify", kvInfo, kvInfo);
 
             var uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"]);
-            var securedComm = new SecuredComm(secretsMgmnt, uri);
+            var securedComm = new SecuredComm(secretsMgmnt, uri, "verify", "sign", false, "enc", "dec");
 
             var consumerTag =
-                securedComm.ListenOnQueue("notifications",                                
+                securedComm.ListenOnQueue("notifications",
                                           new string[] { "notifications.balance" },
-                                          "signverify",
                                           (msg) =>
                                           {
                                             if (msg.data.Equals(account.Address, StringComparison.OrdinalIgnoreCase))
@@ -43,8 +42,7 @@ namespace CryptoFan
                                                   Console.WriteLine("Not my balance!");
                                                   Console.WriteLine(msg.data);
                                               }
-                                          },
-                                          "encdec");
+                                          });
 
             // wait 30 minutes
             Thread.Sleep(30 * 1000 * 60);

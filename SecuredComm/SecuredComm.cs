@@ -17,15 +17,37 @@ namespace SecuredCommunication
         private ISecretsManagement m_secretMgmt;
         private EventingBasicConsumer m_consumer;
         private IModel m_channel;
-        private const string GlobalKeyVaultName = "global";
-        private const string PrivateKeyVaultName = "private";
 
         private static string c_exchangeName = "securedCommExchange";
+        private string m_encryptionKeyName;
+        private string m_decryptionKeyName;
+        private string m_verificationKeyName;
+        private string m_signKeyName;
+        private bool m_isEncrypted;
 
-        public SecuredComm(ISecretsManagement secretMgmnt, Uri queueUri)
+        public SecuredComm(
+            ISecretsManagement secretMgmnt,
+            Uri queueUri, 
+            string verificationKeyName,
+            string signKeyName,
+            bool isEncrypted) 
+            : this(secretMgmnt, queueUri, verificationKeyName, signKeyName, isEncrypted, string.Empty, string.Empty)
         {
-            ConnectionFactory factory = new ConnectionFactory();
-            factory.Uri = queueUri; 
+        }
+
+        public SecuredComm(
+            ISecretsManagement secretMgmnt,
+            Uri queueUri, 
+            string verificationKeyName,
+            string signKeyName,
+            bool isEncrypted,
+            string encryptionKeyName,
+            string decryptionKeyName)
+        {
+            ConnectionFactory factory = new ConnectionFactory
+            {
+                Uri = queueUri
+            };
             IConnection conn = factory.CreateConnection();
 
             m_channel = conn.CreateModel();
@@ -33,9 +55,14 @@ namespace SecuredCommunication
             m_channel.ExchangeDeclare(c_exchangeName, ExchangeType.Topic);
 
             m_secretMgmt = secretMgmnt;
+            m_encryptionKeyName = encryptionKeyName;
+            m_decryptionKeyName = decryptionKeyName;
+            m_verificationKeyName = verificationKeyName;
+            m_signKeyName = signKeyName;
+            m_isEncrypted = isEncrypted;
         }
 
-        public string ListenOnQueue(string queueName, string[] topics, string verificationKeyName, Action<Message> cb, string decryptionKeyName = "")
+        public string ListenOnQueue(string queueName, string[] topics, Action<Message> cb)
         {
             foreach (var topic in topics)
             {
@@ -50,13 +77,11 @@ namespace SecuredCommunication
                 var body = ea.Body;
 
                 var msg = FromByteArray<Message>(body);
-                if (decryptionKeyName != string.Empty) {
-                    msg.data = 
-                        await m_secretMgmt.Decrypt(msg.data);
+                if (msg.isEncrypted) {
+                    msg.data = await m_secretMgmt.Decrypt(msg.data);
                 }
 
-                var verifyResult = 
-                    await m_secretMgmt.Verify(msg.sign, msg.data);
+                var verifyResult = await m_secretMgmt.Verify(msg.sign, msg.data);
                 if (verifyResult == false) {
                     //throw;
                 }
@@ -76,41 +101,28 @@ namespace SecuredCommunication
             m_channel.BasicCancel(consumerTag);
         }
 
-        public async Task SendEncryptedMsgAsync(string encKeyName, string signingKeyName, string queue, string topic, Message msg)
+        public async void SendMsgAsync(string topic, Message msg)
         {
-            var encMsg = await m_secretMgmt.Encrypt(msg.data);
-            msg.data = encMsg;
-            msg.sign = await m_secretMgmt.Sign(msg.data);
-
-            msg.isEncrypted = true;
             msg.isSigned = true;
-            await SendMsg(queue, topic, msg);
-        }
-
-        public async Task SendUnencryptedMsgAsync(string signingKeyName, string queue, string topic, Message msg)
-        {
-            msg.isEncrypted = false;
-
-            // sign even if the msg is encrypted
             msg.sign = await m_secretMgmt.Sign(msg.data);
-            msg.isSigned = true;
+            msg.isEncrypted = m_isEncrypted;
 
-            await SendMsg(queue, topic, msg);
-        }
+            if (m_isEncrypted)
+            {
+                var encMsg = await m_secretMgmt.Encrypt(msg.data);
+                msg.data = encMsg;
+            }
 
-        #region private methods
-
-        private async Task SendMsg(string queue, string topic, Message msg)
-        {
-            var msgAsBytes = ToByteArray<Message>(msg);
+            var msgAsBytes = ToByteArray(msg);
             m_channel.BasicPublish(
                 exchange: c_exchangeName,
                 routingKey: topic,
                 mandatory: false,
                 basicProperties: null,
                 body: msgAsBytes);
-            await Task.FromResult<object>(null);
         }
+
+        #region private methods
 
         private byte[] ToByteArray<T>(T source)
         {

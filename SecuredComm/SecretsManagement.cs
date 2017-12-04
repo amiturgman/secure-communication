@@ -84,9 +84,9 @@ namespace SecuredCommunication
         {
             // For encryption use the private KV 
             // (the one associated with the current service).
-            var digest = calculateDigest(data);
+            //var digest = calculateDigest(data);
 
-            var key = await m_privateKeyVault.GetKeyAsync(m_signKeyName, null);
+            //var key = await m_privateKeyVault.GetKeyAsync(m_signKeyName, null);
 
             //var signature = await keyVault.SignAsync(key.KeyIdentifier.Identifier, "RS256", digest);
             //return signature.Result;
@@ -97,7 +97,7 @@ namespace SecuredCommunication
         {
             //// For encryption use the global KV 
             //// (the one with just public keys).
-            var key = await m_publicKeyVault.GetKeyAsync(m_verifyKeyName, null);
+            //var key = await m_publicKeyVault.GetKeyAsync(m_verifyKeyName, null);
 
             //var verify = await keyVault.client.VerifyAsync(key.KeyIdentifier.Identifier, "RS256", calculateDigest(data), signature);
             //return verify;
