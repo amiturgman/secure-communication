@@ -14,9 +14,9 @@ public interface IBlockchainNodeWrapper
     /// </summary>
     /// <param name="senderIdentifier">The sender identifier (Id, name etc.)</param>
     /// <param name="recieverAddress">The reciver address</param>
-    /// <param name="amountInWei">The amount to send in wei</param>
-    /// <returns></returns>
-    Task<string> SignTransaction(string senderIdentifier, string recieverAddress, BigInteger amountInWei);
+    /// <param name="amount">The amount to send</param>
+    /// <returns>The transaction hash</returns>
+    Task<string> SignTransaction(string senderIdentifier, string recieverAddress, BigInteger amount);
 
     /// <summary>
     /// Send the transaction to the public node. 
