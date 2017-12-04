@@ -24,7 +24,7 @@ namespace TransactionEngine
 
             var uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"]);
             var securedComm = new SecuredComm(secretsMgmnt, uri);
-            var ethereumNodeWrapper = new EthereumNodeWrapper();
+            var ethereumNodeWrapper = new EthereumNodeWrapper("https://eladiw-testkv.vault.azure.net/", secretsMgmnt);
 
             var consumerTag =
                 securedComm.ListenOnQueue("innerQueue",
@@ -39,7 +39,7 @@ namespace TransactionEngine
                                               var senderName = msgArray[1];
                                               var reciverAddress = msgArray[2];
                                               var secretManagement = new SecretsManagement(new KeyVault("https://eladiw-testkv.vault.azure.net/"));
-                                              var ethereumWallet = new EthereumWalletService("https://eladiw-testkv.vault.azure.net/", secretManagement);
+                                              var ethereumWallet = new EthereumNodeWrapper("https://eladiw-testkv.vault.azure.net/", secretManagement);
 
                                               try
                                               {

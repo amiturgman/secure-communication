@@ -24,7 +24,7 @@ namespace cryptoPhilanthrop
             Console.WriteLine("Sender - Happy to transfer my crypto coins!");
             var account = Account.LoadFromKeyStore(File.ReadAllText(@"C:\temp\NetherumDemo\privchain\keystore\UTC--2017-11-30T13-34-42.742317500Z--bb6d204b166279511ce6cb4547275e805bc8cb82"), password);
 
-            var balance = EthereumWalletService.GetCurrentBalance(account.Address).Result;
+            var balance = EthereumNodeWrapper.GetCurrentBalance(account.Address).Result;
             PrintCurrentBalance(account, balance);
             var newBalance = balance;
 
@@ -47,13 +47,13 @@ namespace cryptoPhilanthrop
 
                 Thread.Sleep(60000);
                 
-                newBalance = EthereumWalletService.GetCurrentBalance(account.Address).Result;
+                newBalance = EthereumNodeWrapper.GetCurrentBalance(account.Address).Result;
                 PrintCurrentBalance(account, newBalance);
 
                 // Wait for mining.. 
                 while (newBalance.Equals(balance))
                 {
-                    newBalance = EthereumWalletService.GetCurrentBalance(account.Address).Result;
+                    newBalance = EthereumNodeWrapper.GetCurrentBalance(account.Address).Result;
                 }
 
                 balance = newBalance;

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading;
 using SecuredCommunication;
-using Nethereum.JsonRpc.IpcClient;
-using Nethereum.Web3;
 using Nethereum.Web3.Accounts;
 using System.IO;
 using System.Configuration;
@@ -23,7 +21,7 @@ namespace CryptoFan
 
             var kvInfo = new KeyVault("https://eladiw-testkv.vault.azure.net/");
 
-            PrintCurrentBalance(account, EthereumWalletService.GetCurrentBalance(account.Address).Result);
+            PrintCurrentBalance(account, EthereumNodeWrapper.GetCurrentBalance(account.Address).Result);
 
             var secretsMgmnt = new SecretsManagement(kvInfo);
 
@@ -39,7 +37,7 @@ namespace CryptoFan
                                             if (msg.data.Equals(account.Address, StringComparison.OrdinalIgnoreCase))
                                               {
                                                   Console.WriteLine("Great, Balance change!");
-                                                  PrintCurrentBalance(account, EthereumWalletService.GetCurrentBalance(account.Address).Result);
+                                                  PrintCurrentBalance(account, EthereumNodeWrapper.GetCurrentBalance(account.Address).Result);
                                               }
                                             else
                                               {
