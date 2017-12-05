@@ -6,11 +6,16 @@ namespace SecretsManagementTests
 {
     public class SecretsManagerTests
     {
+        private const string c_encKeyName = "enc_public";
+        private const string c_decKeyName = "dec_private";
+        private const string c_signKeyName = "sign_private";
+        private const string c_verifyKeyName = "verify_public";
+
         [Fact]
         public void Sanity_VerifyCanBeCreated()
         {
             var kvInfo = new KeyVaultMock("http://dummyKvUri");
-            var secretsMgmnt = new SecretsManagement("enc", "dec", "sign", "verify", kvInfo, kvInfo);
+            var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
         }
 
         [Fact]
@@ -19,7 +24,7 @@ namespace SecretsManagementTests
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
             var kvInfo = new KeyVaultMock(kvUri);
-            var secretsMgmnt = new SecretsManagement("enc_public", "dec_private", "sign", "verify", kvInfo, kvInfo);
+            var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
             var encryptedData = await secretsMgmnt.Encrypt(rawData);
 
             Assert.NotEqual(encryptedData, rawData);
@@ -31,7 +36,7 @@ namespace SecretsManagementTests
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
             var kvInfo = new KeyVaultMock(kvUri);
-            var secretsMgmnt = new SecretsManagement("enc_public", "dec_private", "sign", "verify", kvInfo, kvInfo);
+            var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
 
             // Encrypt
             var encryptedData = await secretsMgmnt.Encrypt(rawData);
@@ -51,7 +56,7 @@ namespace SecretsManagementTests
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
             var kvInfo = new KeyVaultMock(kvUri);
-            var secretsMgmnt = new SecretsManagement("enc_public", "dec_private", "sign", "verify", kvInfo, kvInfo);
+            var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
 
             // Sign the data
             var signature = await secretsMgmnt.Sign(rawData);
@@ -66,7 +71,7 @@ namespace SecretsManagementTests
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
             var kvInfo = new KeyVaultMock(kvUri);
-            var secretsMgmnt = new SecretsManagement("enc_public", "dec_private", "sign", "verify", kvInfo, kvInfo);
+            var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
 
             // Sign the data
             var signature = await secretsMgmnt.Sign(rawData);

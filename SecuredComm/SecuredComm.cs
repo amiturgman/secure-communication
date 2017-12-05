@@ -101,7 +101,7 @@ namespace SecuredCommunication
             m_channel.BasicCancel(consumerTag);
         }
 
-        public async void SendMsgAsync(string topic, Message msg)
+        public async Task SendMsgAsync(string topic, Message msg)
         {
             msg.isSigned = true;
             msg.sign = await m_secretMgmt.Sign(msg.data);
