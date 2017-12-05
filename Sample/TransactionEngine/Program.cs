@@ -12,25 +12,38 @@ namespace TransactionEngine
     /// </summary>
     class Program
     {
+        #region private members
+
+        private const string c_keyVaultUri = "https://eladiw-testkv.vault.azure.net/";
+        private const string c_encKeyName = "enc_public";
+        private const string c_decKeyName = "dec_private";
+        private const string c_signKeyName = "sign_private";
+        private const string c_verifyKeyName = "verify_public";
+        private const string c_password = "12345678";
+
+        #endregion
+
         static void Main(string[] args)
         {
             Console.WriteLine("TransactionEngine - I do as I told");
 
+            // Init
             var unitConverion = new Nethereum.Util.UnitConversion();
             var service = new Nethereum.KeyStore.KeyStoreService();
 
-            var kvInfo = new KeyVault("https://eladiw-testkv.vault.azure.net/");
-            var secretsMgmnt = new SecretsManagement("enc", "dec", "sign", "verify", kvInfo, kvInfo);
-
+            var kvInfo = new KeyVault(c_keyVaultUri);
+            var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
             var uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"]);
-            var securedComm = new SecuredComm(secretsMgmnt, uri, "verify", "sign", false, "enc", "dec");
+            var securedComm = new SecuredComm(secretsMgmnt, uri, c_verifyKeyName, c_signKeyName, false, c_encKeyName, c_decKeyName);
+
             var ethereumNodeWrapper = new EthereumNodeWrapper(kvInfo, secretsMgmnt);
 
+            // Listen on transactions requests, process them and notify the users when done
             var consumerTag =
                 securedComm.ListenOnQueue("transactions", new string[] { "*.transactions" },
                                           (msg) =>
                                           {
-                                              Console.WriteLine("GOT WORK!");
+                                              Console.WriteLine("Got work!");
 
                                               var msgArray = msg.data.Split(";");
                                               var amount = unitConverion.ToWei(msgArray[0]);
@@ -45,14 +58,16 @@ namespace TransactionEngine
                                               catch (Exception ex)
                                               {
                                                   Console.WriteLine(ex.Message);
+                                                  throw;
                                               }
 
                                               // Wait for miner
                                               Thread.Sleep(30000);
 
+                                              // notify a user about his balance change
                                               securedComm.SendMsgAsync(
-                                              "notifications.balance",
-                                               new Message(reciverAddress));
+                                                "notifications.balance",
+                                                new Message(reciverAddress)).Wait();
                                           });
         }
     }
