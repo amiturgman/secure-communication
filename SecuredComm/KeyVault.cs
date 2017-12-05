@@ -35,7 +35,7 @@ namespace SecuredCommunication
 
         public Task<SecretBundle> SetSecretAsync(string secretName, string value)
         {
-            return this.client.SetSecretAsync(GetUrl(), secretName, value);
+            return client.SetSecretAsync(GetUrl(), secretName, value);
         }
 
         public Task<KeyBundle> GetKeyAsync(string keyName, string keyVersion = null)
@@ -45,19 +45,19 @@ namespace SecuredCommunication
 
         }
 
-        public async Task<string> GetPrivateKey(string identifier)
+        public async Task<string> GetPrivateKeyAsync(string identifier)
         {
             var secret = await client.GetSecretAsync(GetUrl(), identifier + privateKeySuffix);
             return secret.Value;
         }
 
-        public async Task<string> GetPublicKey(string identifier)
+        public async Task<string> GetPublicKeyAsync(string identifier)
         {
             var secret = await client.GetSecretAsync(GetUrl(), identifier + publicKeySuffix); 
             return secret.Value;
         }
 
-        public async Task<bool> StoreKeyPair(string identifier, KeyPair key)
+        public async Task<bool> StoreKeyPairAsync(string identifier, KeyPair key)
         {
             try
             {
@@ -65,8 +65,9 @@ namespace SecuredCommunication
                 await client.SetSecretAsync(GetUrl(), identifier + privateKeySuffix, key.PrivateKey);
                 return true;
             }
-            catch (Exception)
+            catch (Exception exc)
             {
+                Console.WriteLine(exc);
                 throw;
             }
         }

@@ -13,12 +13,12 @@ public class KeyVaultMock : IKeyVault
         this.kvUri = kvUri;
     }
 
-    public Task<string> GetPrivateKey(string identifier)
+    public Task<string> GetPrivateKeyAsync(string identifier)
     {
         throw new NotImplementedException();
     }
 
-    public Task<string> GetPublicKey(string identifier)
+    public Task<string> GetPublicKeyAsync(string identifier)
     {
         throw new NotImplementedException();
     }
@@ -38,7 +38,7 @@ public class KeyVaultMock : IKeyVault
         throw new Exception();
     }
 
-    public Task<bool> StoreKeyPair(string identifier, KeyPair key)
+    public Task<bool> StoreKeyPairAsync(string identifier, KeyPair key)
     {
         throw new NotImplementedException();
     }

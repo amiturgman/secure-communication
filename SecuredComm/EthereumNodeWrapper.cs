@@ -88,8 +88,8 @@ namespace SecuredCommunication
         /// <returns>The public private key pair</returns>
         private async Task<KeyPair> LoadKeyPairFromKeyVault(string identifier)
         {
-            var publicKey = await m_kv.GetPublicKey(identifier);
-            var privateKey = await m_kv.GetPrivateKey(identifier);
+            var publicKey = await m_kv.GetPublicKeyAsync(identifier);
+            var privateKey = await m_kv.GetPrivateKeyAsync(identifier);
 
             return new KeyPair(publicKey, privateKey);
         }

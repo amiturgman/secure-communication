@@ -39,19 +39,19 @@ public interface IKeyVault
     /// <returns>The created key pair.</returns>
     /// <param name="identifier">key pair identifier.</param>
     /// <param name="key">The actual key pair.</param>
-    Task<bool> StoreKeyPair(string identifier, KeyPair key);
+    Task<bool> StoreKeyPairAsync(string identifier, KeyPair key);
 
     /// <summary>
     /// Gets public key from keyvault.
     /// </summary>
     /// <returns>The public key.</returns>
     /// <param name="identifier">the key's Identifier.</param>
-    Task<string> GetPublicKey(string identifier);
+    Task<string> GetPublicKeyAsync(string identifier);
 
     /// <summary>
     /// Gets private key from keyvault.
     /// </summary>
     /// <returns>The private key.</returns>
     /// <param name="identifier">Identifier.</param>
-    Task<string> GetPrivateKey(string identifier);
+    Task<string> GetPrivateKeyAsync(string identifier);
 }
