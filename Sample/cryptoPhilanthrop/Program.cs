@@ -42,12 +42,12 @@ namespace cryptoPhilanthrop
             var securedComm = new SecuredComm(secretsMgmnt, uri, c_verifyKeyName, c_signKeyName, false, c_encKeyName, c_decKeyName);
 
             // While there are sufficient funds, transfer some...
-            while (balance > 10000)
+            while (balance > 1)
             {
                 var amountToSend = 5000;
                 // Message structure: {amountToSend};{senderName};{reciverAddress}
                 securedComm.SendMsgAsync(
-                    "sender.transactions",
+                    "transactions",
                     new Message($"{amountToSend};sender;0x863c813c74acee5e4063bd65e880c0f06d3cc765")).Wait();
 
                 Thread.Sleep(60000);
