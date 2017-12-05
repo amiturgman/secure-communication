@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 
 [Serializable]
 public class Message
@@ -21,7 +20,7 @@ public class Message
 public interface ISecuredComm
 {
     /// <summary>
-    /// Sends the a message
+    /// Sends a message
     /// </summary>
     /// <param name="topic">Topic name.</param>
     /// <param name="msg">Message.</param>

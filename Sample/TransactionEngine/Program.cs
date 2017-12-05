@@ -31,7 +31,7 @@ namespace TransactionEngine
                                           (msg) =>
                                           {
                                               Console.WriteLine("GOT WORK!");
-                                              // todo: actually do work
+
                                               var msgArray = msg.data.Split(";");
                                               var amount = unitConverion.ToWei(msgArray[0]);
                                               var senderName = msgArray[1];

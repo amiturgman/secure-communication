@@ -1,21 +1,26 @@
 ﻿<Properties StartupConfiguration="{E0F1BD96-F330-4B4F-ADBB-9518779E60CB}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Sample/TransactionEngine/Program.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Contracts/IKeyVault.cs">
     <Files>
-      <File FileName="SecuredComm/EthereumNodeWrapper.cs" Line="18" Column="54" />
-      <File FileName="Contracts/ISecuredComm.cs" Line="21" Column="8" />
-      <File FileName="SecuredComm/SecuredComm.cs" Line="83" Column="43" />
-      <File FileName="SecuredComm/KeyVault.cs" Line="38" Column="47" />
-      <File FileName="Contracts/IKeyVault.cs" Line="7" Column="39" />
-      <File FileName="Contracts/ISecretsManagement.cs" Line="11" Column="23" />
-      <File FileName="SecretsManagementTests/KeyVaultMock.cs" Line="7" Column="29" />
-      <File FileName="SecuredComm/SecretsManagement.cs" Line="2" Column="1" />
-      <File FileName="SecretsManagementTests/SecretsManagerTests.cs" Line="20" Column="28" />
+      <File FileName="Contracts/ISecuredComm.cs" Line="2" Column="1" />
+      <File FileName="SecuredComm/SecuredComm.cs" Line="69" Column="36" />
+      <File FileName="SecuredComm/KeyVault.cs" Line="62" Column="16" />
+      <File FileName="Contracts/IKeyVault.cs" Line="20" Column="9" />
+      <File FileName="Contracts/ISecretsManagement.cs" Line="31" Column="62" />
+      <File FileName="SecretsManagementTests/KeyVaultMock.cs" Line="51" Column="67" />
+      <File FileName="SecuredComm/SecretsManagement.cs" Line="102" Column="121" />
+      <File FileName="SecretsManagementTests/SecretsManagerTests.cs" Line="45" Column="70" />
       <File FileName="SecuredCommTests/SecretsManagementMock.cs" Line="20" Column="49" />
-      <File FileName="SecuredCommTests/SecuredCommTests.cs" Line="9" Column="9" />
+      <File FileName="SecuredCommTests/SecuredCommTests.cs" Line="1" Column="1" />
       <File FileName="SecuredCommTests/EthereumNodeWrapperTest.cs" Line="24" Column="12" />
-      <File FileName="Sample/cryptoPhilanthrop/Program.cs" Line="31" Column="13" />
-      <File FileName="Sample/CryptoFan/Program.cs" Line="25" Column="102" />
-      <File FileName="Sample/TransactionEngine/Program.cs" Line="24" Column="13" />
+      <File FileName="Sample/cryptoPhilanthrop/Program.cs" Line="1" Column="1" />
+      <File FileName="Sample/CryptoFan/Program.cs" Line="1" Column="1" />
+      <File FileName="Sample/TransactionEngine/Program.cs" Line="1" Column="1" />
+      <File FileName="Sample/CryptoFan/App.config" Line="1" Column="1" />
+      <File FileName="Sample/cryptoPhilanthrop/App.config" Line="1" Column="1" />
+      <File FileName="SecuredCommTests/TestConstants.cs" Line="14" Column="1" />
+      <File FileName="Contracts/KeyPair.cs" Line="1" Column="1" />
+      <File FileName="SecuredComm/EthereumNodeWrapper.cs" Line="62" Column="115" />
+      <File FileName="Contracts/IBlockchainNodeWrapper.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
