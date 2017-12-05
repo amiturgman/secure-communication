@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 [Serializable]
 public class Message
@@ -24,7 +25,7 @@ public interface ISecuredComm
     /// </summary>
     /// <param name="topic">Topic name.</param>
     /// <param name="msg">Message.</param>
-    void SendMsgAsync(string topic, Message msg);
+    Task SendMsgAsync(string topic, Message msg);
 
     /// <summary>
     /// Creates a listener on a queue where messages are encrypted. The message's data is automatically decrypted
