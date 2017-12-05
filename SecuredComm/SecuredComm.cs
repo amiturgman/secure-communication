@@ -62,15 +62,8 @@ namespace SecuredCommunication
             m_isEncrypted = isEncrypted;
         }
 
-        public string ListenOnQueue(string queueName, string[] topics, Action<Message> cb)
+        public string ListenOnQueue(string queueName, Action<Message> cb)
         {
-            foreach (var topic in topics)
-            {
-                m_channel.QueueBind(queue: queueName,
-                                    exchange: c_exchangeName,
-                                    routingKey: topic);
-            }
-            
             m_consumer = new EventingBasicConsumer(m_channel);
             m_consumer.Received += async (ch, ea) =>
             {
@@ -101,8 +94,14 @@ namespace SecuredCommunication
             m_channel.BasicCancel(consumerTag);
         }
 
-        public async Task SendMsgAsync(string topic, Message msg)
+        public async Task SendMsgAsync(string queue, Message msg)
         {
+            CreateQueue(queue);
+
+            var properties = m_channel.CreateBasicProperties();
+            properties.Persistent = true;
+            m_channel.BasicQos(0, 1, false);
+
             msg.isSigned = true;
             msg.sign = await m_secretMgmt.Sign(msg.data);
             msg.isEncrypted = m_isEncrypted;
@@ -116,10 +115,19 @@ namespace SecuredCommunication
             var msgAsBytes = ToByteArray(msg);
             m_channel.BasicPublish(
                 exchange: c_exchangeName,
-                routingKey: topic,
+                routingKey: queue,
                 mandatory: false,
-                basicProperties: null,
+                basicProperties: properties,
                 body: msgAsBytes);
+        }
+
+        private void CreateQueue(string queueName)
+        {
+            m_channel.QueueDeclare(queue: queueName,
+                     durable: true,
+                     exclusive: false,
+                     autoDelete: false,
+                                   arguments: null);
         }
 
         #region private methods

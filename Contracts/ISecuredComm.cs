@@ -23,15 +23,15 @@ public interface ISecuredComm
     /// <summary>
     /// Sends a message
     /// </summary>
-    /// <param name="topic">Topic name.</param>
+    /// <param name="queue">Queue name.</param>
     /// <param name="msg">Message.</param>
-    Task SendMsgAsync(string topic, Message msg);
+    Task SendMsgAsync(string queue, Message msg);
 
     /// <summary>
     /// Creates a listener on a queue where messages are encrypted. The message's data is automatically decrypted
     /// </summary>
     /// <returns>The consumer tag</returns>
-    string ListenOnQueue(string queueName, string[] topics, Action<Message> cb);
+    string ListenOnQueue(string queueName, Action<Message> cb);
 
     /// <summary>
     /// Cancels a specific listener

@@ -40,7 +40,7 @@ namespace TransactionEngine
 
             // Listen on transactions requests, process them and notify the users when done
             var consumerTag =
-                securedComm.ListenOnQueue("transactions", new string[] { "*.transactions" },
+                securedComm.ListenOnQueue("transactions",
                                           (msg) =>
                                           {
                                               Console.WriteLine("Got work!");

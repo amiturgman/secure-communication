@@ -41,7 +41,6 @@ namespace CryptoFan
             // Listen on the notifications queue, check balance when a notification arrives
             var consumerTag =
                 securedComm.ListenOnQueue("notifications",
-                                          new string[] { "notifications.balance" },
                                           (msg) =>
                                           {
                                               if (msg.data.Equals(account.Address, StringComparison.OrdinalIgnoreCase))
