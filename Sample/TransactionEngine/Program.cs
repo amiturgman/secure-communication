@@ -34,18 +34,18 @@ namespace TransactionEngine
             var kvInfo = new KeyVault(c_keyVaultUri);
             var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
             var uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"]);
-            var securedComm = new SecuredComm(secretsMgmnt, uri, c_verifyKeyName, c_signKeyName, false, c_encKeyName, c_decKeyName);
+            var securedComm = new RabbitMQBusImpl(secretsMgmnt, uri, c_verifyKeyName, c_signKeyName, false, c_encKeyName, c_decKeyName);
 
             var ethereumNodeWrapper = new EthereumNodeWrapper(kvInfo, secretsMgmnt);
 
             // Listen on transactions requests, process them and notify the users when done
             var consumerTag =
-                securedComm.ListenOnQueue("transactions",
+                securedComm.Dequeue("transactions",
                                           (msg) =>
                                           {
                                               Console.WriteLine("Got work!");
 
-                                              var msgArray = msg.data.Split(";");
+                                               var msgArray = msg.data.Split(";");
                                               var amount = unitConverion.ToWei(msgArray[0]);
                                               var senderName = msgArray[1];
                                               var reciverAddress = msgArray[2];
@@ -65,8 +65,8 @@ namespace TransactionEngine
                                               Thread.Sleep(30000);
 
                                               // notify a user about his balance change
-                                              securedComm.SendMsgAsync(
-                                                "notifications.balance",
+                                              securedComm.EnqueueAsync(
+                                                "notifications",
                                                 new Message(reciverAddress)).Wait();
                                           });
         }

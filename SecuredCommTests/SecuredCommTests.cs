@@ -10,7 +10,7 @@ namespace SecuredCommTests
         public void Sanity_VerifyCanBeCreated()
         {
             var secretsMock = (ISecretsManagement)new SecretsManagementMock();
-            var sec = new SecuredComm(secretsMock,
+            var sec = new RabbitMQBusImpl(secretsMock,
                                       new Uri("amqp://user:pass@host:10000/vhost"), "verficationKey", "signKey", false);
 
         }

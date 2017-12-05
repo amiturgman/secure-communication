@@ -26,7 +26,7 @@ namespace SecuredCommunication
         /// Creates blockchain account and store the public and private keys in Azure KeyVault 
         /// </summary>
         /// <returns>The public private key vault</returns>
-        public async Task<KeyPair> GenerateAccount()
+        public async Task<KeyPair> CreateAccount()
         {
             var ecKey = EthECKey.GenerateKey();
 

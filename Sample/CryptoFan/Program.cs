@@ -14,8 +14,8 @@ namespace CryptoFan
     class Program
     {
         #region private members
-
-        private const string c_localKey = @"C:\temp\NetherumDemo\privchain\keystore\UTC--2017-11-30T13-36-01.594748200Z--863c813c74acee5e4063bd65e880c0f06d3cc765";
+        
+        private const string c_localKey = @"C:\temp\NetherumDemo\privchain\keystore\UTC--2017-12-05T14-16-16.671149200Z--ba0c386f5e72d9bd06ff2da9feec57497e8ce582";
         private const string c_password = "12345678";
         private const string c_keyVaultUri = "https://eladiw-testkv.vault.azure.net/";
         private const string c_encKeyName = "enc_public";
@@ -36,11 +36,11 @@ namespace CryptoFan
             var kvInfo = new KeyVault(c_keyVaultUri);
             var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
             var uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"]);
-            var securedComm = new SecuredComm(secretsMgmnt, uri, c_verifyKeyName, c_signKeyName, false, c_encKeyName, c_decKeyName);
+            var securedComm = new RabbitMQBusImpl(secretsMgmnt, uri, c_verifyKeyName, c_signKeyName, false, c_encKeyName, c_decKeyName);
 
             // Listen on the notifications queue, check balance when a notification arrives
             var consumerTag =
-                securedComm.ListenOnQueue("notifications",
+                securedComm.Dequeue("notifications",
                                           (msg) =>
                                           {
                                               if (msg.data.Equals(account.Address, StringComparison.OrdinalIgnoreCase))

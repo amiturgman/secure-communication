@@ -21,21 +21,15 @@ public class Message
 public interface ISecuredComm
 {
     /// <summary>
-    /// Sends a message
+    /// Enqueue a message to the queue
     /// </summary>
     /// <param name="queue">Queue name.</param>
     /// <param name="msg">Message.</param>
-    Task SendMsgAsync(string queue, Message msg);
+    Task EnqueueAsync(string queue, Message msg);
 
     /// <summary>
     /// Creates a listener on a queue where messages are encrypted. The message's data is automatically decrypted
     /// </summary>
     /// <returns>The consumer tag</returns>
-    string ListenOnQueue(string queueName, Action<Message> cb);
-
-    /// <summary>
-    /// Cancels a specific listener
-    /// </summary>
-    /// <param name="consumerTag">The listener's id</param>
-    void CancelListeningOnQueue(string consumerTag);
+    string Dequeue(string queueName, Action<Message> cb);
 }

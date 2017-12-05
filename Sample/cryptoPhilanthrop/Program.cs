@@ -15,7 +15,7 @@ namespace cryptoPhilanthrop
     {
         #region private members
 
-        private const string c_localKey = @"C:\temp\NetherumDemo\privchain\keystore\UTC--2017-11-30T13-34-42.742317500Z--bb6d204b166279511ce6cb4547275e805bc8cb82";
+        private const string c_localKey = @"C:\temp\NetherumDemo\privchain\keystore\UTC--2017-12-05T14-15-41.212709700Z--7a9758b84b851b3acfcd36ea1fccb054cbfcf257";
         private const string c_keyVaultUri = "https://eladiw-testkv.vault.azure.net/";
         private const string c_encKeyName = "enc_public";
         private const string c_decKeyName = "dec_private";
@@ -39,16 +39,16 @@ namespace cryptoPhilanthrop
             var kvInfo = new KeyVault(c_keyVaultUri);
             var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
             var uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"]);
-            var securedComm = new SecuredComm(secretsMgmnt, uri, c_verifyKeyName, c_signKeyName, false, c_encKeyName, c_decKeyName);
+            var securedComm = new RabbitMQBusImpl(secretsMgmnt, uri, c_verifyKeyName, c_signKeyName, false, c_encKeyName, c_decKeyName);
 
             // While there are sufficient funds, transfer some...
             while (balance > 1)
             {
                 var amountToSend = 5000;
                 // Message structure: {amountToSend};{senderName};{reciverAddress}
-                securedComm.SendMsgAsync(
+                securedComm.EnqueueAsync(
                     "transactions",
-                    new Message($"{amountToSend};sender;0x863c813c74acee5e4063bd65e880c0f06d3cc765")).Wait();
+                    new Message($"{amountToSend};sender;0xba0c386f5e72d9bd06ff2da9feec57497e8ce582")).Wait();
 
                 Thread.Sleep(60000);
                 

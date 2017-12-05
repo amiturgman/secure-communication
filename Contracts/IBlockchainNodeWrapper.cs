@@ -7,7 +7,7 @@ public interface IBlockchainNodeWrapper
     /// Creates blockchain account and store the public and private keys in Azure KeyVault 
     /// </summary>
     /// <returns>The public private key vault</returns>
-    Task<KeyPair> GenerateAccount();
+    Task<KeyPair> CreateAccount();
 
     /// <summary>
     /// Sign a blockchain transaction

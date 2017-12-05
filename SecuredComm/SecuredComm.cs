@@ -2,17 +2,12 @@
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
-
-// SB - if needed
-//using Microsoft.ServiceBus.Messaging;
-
-// Rabbit MQ
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
 namespace SecuredCommunication
 {
-    public class SecuredComm : ISecuredComm
+    public class RabbitMQBusImpl: ISecuredComm
     {
         private ISecretsManagement m_secretMgmt;
         private EventingBasicConsumer m_consumer;
@@ -25,19 +20,19 @@ namespace SecuredCommunication
         private string m_signKeyName;
         private bool m_isEncrypted;
 
-        public SecuredComm(
+        public RabbitMQBusImpl(
             ISecretsManagement secretMgmnt,
-            Uri queueUri, 
+            Uri queueUri,
             string verificationKeyName,
             string signKeyName,
-            bool isEncrypted) 
+            bool isEncrypted)
             : this(secretMgmnt, queueUri, verificationKeyName, signKeyName, isEncrypted, string.Empty, string.Empty)
         {
         }
 
-        public SecuredComm(
+        public RabbitMQBusImpl(
             ISecretsManagement secretMgmnt,
-            Uri queueUri, 
+            Uri queueUri,
             string verificationKeyName,
             string signKeyName,
             bool isEncrypted,
@@ -52,7 +47,7 @@ namespace SecuredCommunication
 
             m_channel = conn.CreateModel();
             // topic based...
-            m_channel.ExchangeDeclare(c_exchangeName, ExchangeType.Topic);
+            // m_channel.ExchangeDeclare(c_exchangeName, ExchangeType.Direct);
 
             m_secretMgmt = secretMgmnt;
             m_encryptionKeyName = encryptionKeyName;
@@ -62,7 +57,7 @@ namespace SecuredCommunication
             m_isEncrypted = isEncrypted;
         }
 
-        public string ListenOnQueue(string queueName, Action<Message> cb)
+        public string Dequeue(string queueName, Action<Message> cb)
         {
             m_consumer = new EventingBasicConsumer(m_channel);
             m_consumer.Received += async (ch, ea) =>
@@ -70,12 +65,14 @@ namespace SecuredCommunication
                 var body = ea.Body;
 
                 var msg = FromByteArray<Message>(body);
-                if (msg.isEncrypted) {
+                if (msg.isEncrypted)
+                {
                     msg.data = await m_secretMgmt.Decrypt(msg.data);
                 }
 
                 var verifyResult = await m_secretMgmt.Verify(msg.sign, msg.data);
-                if (verifyResult == false) {
+                if (verifyResult == false)
+                {
                     //throw;
                 }
 
@@ -94,7 +91,7 @@ namespace SecuredCommunication
             m_channel.BasicCancel(consumerTag);
         }
 
-        public async Task SendMsgAsync(string queue, Message msg)
+        public async Task EnqueueAsync(string queue, Message msg)
         {
             CreateQueue(queue);
 
@@ -128,6 +125,8 @@ namespace SecuredCommunication
                      exclusive: false,
                      autoDelete: false,
                                    arguments: null);
+
+            m_channel.QueueBind(queueName, c_exchangeName, queueName);
         }
 
         #region private methods
