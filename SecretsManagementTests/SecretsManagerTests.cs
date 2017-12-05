@@ -44,5 +44,35 @@ namespace SecretsManagementTests
             Assert.Equal(decryptedData, rawData);
             Assert.Equal(encryptedData.Substring(encryptedData.Length - 2, 2), "==");
         }
+
+        [Fact]
+        public async void Sanity_Sign()
+        {
+            var kvUri = "http://dummyKvUri";
+            var rawData = "Some data !!!";
+            var kvInfo = new KeyVaultMock(kvUri);
+            var secretsMgmnt = new SecretsManagement("enc_public", "dec_private", "sign", "verify", kvInfo, kvInfo);
+
+            // Sign the data
+            var signature = await secretsMgmnt.Sign(rawData);
+
+            // todo: check what the actual expected signature length
+            Assert.Equal(signature.Length, 256);
+        }
+
+        [Fact]
+        public async void Sanity_Verify()
+        {
+            var kvUri = "http://dummyKvUri";
+            var rawData = "Some data !!!";
+            var kvInfo = new KeyVaultMock(kvUri);
+            var secretsMgmnt = new SecretsManagement("enc_public", "dec_private", "sign", "verify", kvInfo, kvInfo);
+
+            // Sign the data
+            var signature = await secretsMgmnt.Sign(rawData);
+
+            // todo: check what the actual expected signature length
+            Assert.True(await secretsMgmnt.Verify(signature, rawData));
+        }
     }
 }

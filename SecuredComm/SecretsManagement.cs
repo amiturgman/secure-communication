@@ -101,7 +101,7 @@ namespace SecuredCommunication
 
             //var verify = await keyVault.client.VerifyAsync(key.KeyIdentifier.Identifier, "RS256", calculateDigest(data), signature);
             //return verify;
-            return await Task.FromResult(true);
+            return await Task.FromResult(false);
         }
 
         #region Private Methods
