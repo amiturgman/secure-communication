@@ -12,7 +12,7 @@ namespace CryptoFan
     class Program
     {
         #region private members
-        
+
         private const string c_keyVaultUri = "https://eladiw-testkv.vault.azure.net/";
         private const string c_encKeyName = "demo-encryption";
         private const string c_decKeyName = "demo-encryption";
@@ -41,20 +41,20 @@ namespace CryptoFan
             // Listen on the notifications queue, check balance when a notification arrives
             var consumerTag =
                 securedComm.Dequeue("notifications",
-                                          msg =>
-                                          {
-                                              var data = Utils.FromByteArray<string>(msg.Data);
-                                              if (data.Equals(reciverAddress, StringComparison.OrdinalIgnoreCase))
-                                              {
-                                                  Console.WriteLine("Great, Balance change!");
-                                                  PrintCurrentBalance(reciverAddress, ethereumNodeWrapper.GetCurrentBalance(reciverAddress).Result);
-                                              }
-                                              else
-                                              {
-                                                  Console.WriteLine("Not my balance!");
-                                                  Console.WriteLine(msg.Data);
-                                              }
-                                          });
+                    msg =>
+                    {
+                        var data = Utils.FromByteArray<string>(msg.Data);
+                        if (data.Equals(reciverAddress, StringComparison.OrdinalIgnoreCase))
+                        {
+                            Console.WriteLine("Great, Balance change!");
+                            PrintCurrentBalance(reciverAddress, ethereumNodeWrapper.GetCurrentBalance(reciverAddress).Result);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Not my balance!");
+                            Console.WriteLine(msg.Data);
+                        }
+                    });
 
             // wait 30 minutes
             Thread.Sleep(30 * 1000 * 60);

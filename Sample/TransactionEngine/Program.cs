@@ -31,8 +31,7 @@ namespace TransactionEngine
             var unitConverion = new Nethereum.Util.UnitConversion();
 
             var kvInfo = new KeyVault(c_keyVaultUri);
-            var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo,
-                kvInfo);
+            var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
             var uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"]);
             var securedComm = new RabbitMQBusImpl(secretsMgmnt, uri, true);
 
@@ -40,7 +39,7 @@ namespace TransactionEngine
 
             // Listen on transactions requests, process them and notify the users when done
             securedComm.Dequeue("transactions",
-                (msg) =>
+                msg =>
                 {
                     Console.WriteLine("Got work!");
 
