@@ -4,6 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Contracts;
 using Microsoft.Azure.KeyVault.Models;
+using SecuredCommunication;
 
 namespace SecuredCommTests
 {
@@ -23,8 +24,33 @@ namespace SecuredCommTests
 
         public Task<KeyOperationResult> EncryptAsync(string keyIdentifier, string algorithm, byte[] value)
         {
-            return Task.FromResult(new KeyOperationResult(result: new byte[] {}));
-        }
+            try
+            {
+                var key = GetPublicKeyAsync(keyIdentifier);
+                byte[] encryptedData;
+                //Create a new instance of RSACryptoServiceProvider.
+                using (RSACryptoServiceProvider RSA = new RSACryptoServiceProvider())
+                {
+
+                    //Import the RSA Key information. This only needs
+                    //toinclude the public key information.
+                 //   RSA.ImportParameters(new RSAParameters() {}(RSAKeyInfo);
+
+                    //Encrypt the passed byte array and specify OAEP padding.  
+                    //OAEP padding is only available on Microsoft Windows XP or
+                    //later.  
+                    encryptedData = RSA.Encrypt(value, false);
+                }
+                return Task.FromResult(new KeyOperationResult(Utils.FromByteArray<string>(encryptedData)));
+            }
+            //Catch and display a CryptographicException  
+            //to the console.
+            catch (CryptographicException e)
+            {
+                Console.WriteLine(e.Message);
+
+                return null;
+            }        }
 
         public Task<KeyOperationResult> DecryptAsync(string keyIdentifier, string algorithm, byte[] value)
         {
