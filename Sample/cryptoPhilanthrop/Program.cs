@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using SecuredCommunication;
-using System.Configuration;
+using SecuredComm;
 
 namespace cryptoPhilanthrop
 {
@@ -38,8 +38,8 @@ namespace cryptoPhilanthrop
             PrintCurrentBalance(senderAddress, balance);
 
             var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
-            var uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"]);
-            var securedComm = new RabbitMQBusImpl(secretsMgmnt, uri, true);
+            //var securedComm = new RabbitMQBusImpl(secretsMgmnt, true);
+            var securedComm = new AzureQueueImpl(secretsMgmnt, true);
 
             // While there are sufficient funds, transfer some...
             while (balance > 0)

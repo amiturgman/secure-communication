@@ -1,7 +1,8 @@
 ﻿using System;
 using SecuredCommunication;
-using System.Configuration;
 using System.Threading;
+using Contracts;
+using SecuredComm;
 
 namespace TransactionEngine
 {
@@ -32,9 +33,9 @@ namespace TransactionEngine
 
             var kvInfo = new KeyVault(c_keyVaultUri);
             var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
-            var uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"]);
-            var securedComm = new RabbitMQBusImpl(secretsMgmnt, uri, true);
 
+            //var securedComm = new RabbitMQBusImpl(secretsMgmnt, uri, true);
+            var securedComm = new AzureQueueImpl(secretsMgmnt, true);
             var ethereumNodeWrapper = new EthereumNodeWrapper(kvInfo, c_ethereumTestNodeUrl);
 
             // Listen on transactions requests, process them and notify the users when done
@@ -65,7 +66,7 @@ namespace TransactionEngine
 
                     // notify a user about his balance change
                     securedComm.EnqueueAsync("notifications", reciverAddress).Wait();
-                });
+                }).Wait();
         }
     }
 }

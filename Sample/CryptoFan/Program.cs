@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading;
 using SecuredCommunication;
-using System.Configuration;
+using Contracts;
+using SecuredComm;
 
 namespace CryptoFan
 {
@@ -35,8 +36,8 @@ namespace CryptoFan
             PrintCurrentBalance(reciverAddress, ethereumNodeWrapper.GetCurrentBalance(reciverAddress).Result);
 
             var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kv, kv);
-            var uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"]);
-            var securedComm = new RabbitMQBusImpl(secretsMgmnt, uri, true);
+            //var securedComm = new RabbitMQBusImpl(secretsMgmnt, true);
+            var securedComm = new AzureQueueImpl(secretsMgmnt, true);
 
             // Listen on the notifications queue, check balance when a notification arrives
             var consumerTag =
@@ -59,7 +60,7 @@ namespace CryptoFan
             // wait 30 minutes
             Thread.Sleep(30 * 1000 * 60);
 
-            securedComm.CancelListeningOnQueue(consumerTag);
+            securedComm.CancelListeningOnQueue(consumerTag.Result);
         }
 
         private static void PrintCurrentBalance(string address, decimal balance)

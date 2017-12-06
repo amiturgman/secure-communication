@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using Contracts;
 
@@ -10,7 +9,6 @@ namespace SecuredCommunication
     {
         private IKeyVault m_privateKeyVault;
         private IKeyVault m_publicKeyVault;
-
 
         private string m_decryptionKeyName;
         private string m_encryptionKeyName;

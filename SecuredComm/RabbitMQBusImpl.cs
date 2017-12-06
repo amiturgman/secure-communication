@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Threading.Tasks;
 using Contracts;
 using RabbitMQ.Client;
@@ -17,12 +18,11 @@ namespace SecuredCommunication
 
         public RabbitMQBusImpl(
             ISecretsManagement secretMgmnt,
-            Uri queueUri,
             bool isEncrypted)
         {
             ConnectionFactory factory = new ConnectionFactory
             {
-                Uri = queueUri
+                Uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"])
             };
             IConnection conn = factory.CreateConnection();
 
@@ -34,65 +34,34 @@ namespace SecuredCommunication
             m_isEncrypted = isEncrypted;
         }
 
-        public string Dequeue(string queueName, Action<Message> cb)
+        public Task<string> Dequeue(string queueName, Action<Message> cb)
         {
             m_consumer = new EventingBasicConsumer(m_channel);
             m_consumer.Received += async (ch, ea) =>
             {
-                var body = ea.Body;
-
-                var msg = Utils.FromByteArray<Message>(body);
-                if (msg.IsEncrypted)
-                {
-                    msg.Data = await m_secretMgmt.Decrypt(msg.Data);
-                }
-
-                var verifyResult = await m_secretMgmt.VerifyAsync(msg.Data, msg.Signature);
-                
                 // ack to the queue that we got the msg
                 // TODO: handle messages that failed
                 m_channel.BasicAck(ea.DeliveryTag, false);
 
-                if (verifyResult == false)
-                {
-                    throw new Exception("Verify failed!!");
-                }
-
-                cb(msg);
+                await Message.DecryptAndVerifyQueueMessage(ea.Body, m_secretMgmt, cb);
             };
 
             // return the consumer tag
-            return m_channel.BasicConsume(queueName, false, m_consumer);
+            return Task.FromResult(m_channel.BasicConsume(queueName, false, m_consumer));
         }
 
-        public async Task EnqueueAsync(string queue, string data)
+        public async Task EnqueueAsync(string queueName, string data)
         {
-            CreateQueue(queue);
+            CreateQueue(queueName);
 
             var properties = m_channel.CreateBasicProperties();
             properties.Persistent = true;
             m_channel.BasicQos(0, 1, false);
 
-            var dataInBytes = Utils.ToByteArray(data);
-            var msg = new Message();
-            msg.IsSigned = true;
-            msg.Signature = await m_secretMgmt.SignAsync(dataInBytes);
-            msg.IsEncrypted = m_isEncrypted;
-
-            if (m_isEncrypted)
-            {
-                var encMsg = await m_secretMgmt.Encrypt(dataInBytes);
-                msg.Data = encMsg;
-            }
-            else
-            {
-                msg.Data = dataInBytes;
-            }
-
-            var msgAsBytes = Utils.ToByteArray(msg);
+            var msgAsBytes = await Message.CreateMessageForQueue(data, m_secretMgmt, m_isEncrypted);
             m_channel.BasicPublish(
                 exchange: c_exchangeName,
-                routingKey: queue,
+                routingKey: queueName,
                 mandatory: false,
                 basicProperties: properties,
                 body: msgAsBytes);
