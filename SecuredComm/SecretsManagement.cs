@@ -29,13 +29,13 @@ namespace SecuredCommunication
             m_publicKeyVault = publicKv;
         }
 
-        public async Task<string> Decrypt(byte[] encryptedData)
+        public async Task<byte[]> Decrypt(byte[] encryptedData)
         {
             try
             {
                 var key = await m_privateKeyVault.GetKeyAsync(m_decryptionKeyName);
                 var result = await m_privateKeyVault.DecryptAsync(key.KeyIdentifier.Identifier, "RSA1_5", encryptedData);
-                return Encoding.Unicode.GetString(result.Result);
+                return result.Result;
             }
             catch (Exception exc)
             {
@@ -44,12 +44,12 @@ namespace SecuredCommunication
             }
         }
 
-        public async Task<byte[]> Encrypt(string data)
+        public async Task<byte[]> Encrypt(byte[] data)
         {
             try
             {
                 var key = await m_publicKeyVault.GetKeyAsync(m_encryptionKeyName);
-                var result = await m_publicKeyVault.EncryptAsync(key.KeyIdentifier.Identifier, "RSA1_5", Encoding.Unicode.GetBytes(data));
+                var result = await m_publicKeyVault.EncryptAsync(key.KeyIdentifier.Identifier, "RSA1_5", data);
                 return result.Result;
             }
             catch (Exception ex)
@@ -59,37 +59,32 @@ namespace SecuredCommunication
             }
         }
 
-        public async Task<byte[]> Sign(string data)
+        public async Task<byte[]> SignAsync(byte[] data)
         {
-            // For encryption use the private KV 
-            // (the one associated with the current service).
-            //var digest = calculateDigest(data);
-
-            //var key = await m_privateKeyVault.GetKeyAsync(m_signKeyName);
-
-            //var signature = await keyVault.SignAsync(key.KeyIdentifier.Identifier, "RS256", digest);
-            //return signature.Result;
-            return await Task.FromResult(new byte[] { });
+            //For encryption use the private KV
+            //(the one associated with the current service).
+            var digest = CalculateDigest(data);
+            var key = await m_privateKeyVault.GetKeyAsync(m_signKeyName);
+            var signature = await m_privateKeyVault.SignAsync(key.KeyIdentifier.Identifier, "RS256", digest);
+            return signature.Result;
         }
 
-        public async Task<bool> Verify(byte[] signature, string data)
+        public async Task<bool> VerifyAsync(byte[] data, byte[] signature)
         {
             //// For encryption use the global KV 
             //// (the one with just public keys).
-            //var key = await m_publicKeyVault.GetKeyAsync(m_verifyKeyName);
+            var key = await m_publicKeyVault.GetKeyAsync(m_verifyKeyName);
 
-            //var verify = await keyVault.client.VerifyAsync(key.KeyIdentifier.Identifier, "RS256", calculateDigest(data), signature);
-            //return verify;
-            return await Task.FromResult(false);
+            var verify = await m_publicKeyVault.VerifyAsync(key.KeyIdentifier.Identifier, "RS256", CalculateDigest(data), signature);
+            return verify;
         }
 
         #region Private Methods
 
-        private byte[] calculateDigest(string data)
+        private byte[] CalculateDigest(byte[] data)
         {
             var hasher = new SHA256CryptoServiceProvider();
-            var byteData = Encoding.Unicode.GetBytes(data);
-            var digest = hasher.ComputeHash(byteData);
+            var digest = hasher.ComputeHash(data);
             return digest;
         }
         #endregion

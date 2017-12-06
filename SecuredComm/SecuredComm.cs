@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using Contracts;
 using RabbitMQ.Client;
@@ -43,20 +41,22 @@ namespace SecuredCommunication
             {
                 var body = ea.Body;
 
-                var msg = FromByteArray<Message>(body);
+                var msg = Utils.FromByteArray<Message>(body);
                 if (msg.IsEncrypted)
                 {
-                    msg.Data = await m_secretMgmt.Decrypt(msg.EncryptedData);
+                    msg.Data = await m_secretMgmt.Decrypt(msg.Data);
                 }
 
-                var verifyResult = await m_secretMgmt.Verify(msg.Sign, msg.Data);
+                var verifyResult = await m_secretMgmt.VerifyAsync(msg.Data, msg.Signature);
+                
+                // ack to the queue that we got the msg
+                // TODO: handle messages that failed
+                m_channel.BasicAck(ea.DeliveryTag, false);
+
                 if (verifyResult == false)
                 {
-                    //throw;
+                    throw new Exception("Verify failed!!");
                 }
-
-                // ack to the queue that we got the msg
-                m_channel.BasicAck(ea.DeliveryTag, false);
 
                 cb(msg);
             };
@@ -65,12 +65,7 @@ namespace SecuredCommunication
             return m_channel.BasicConsume(queueName, false, m_consumer);
         }
 
-        public void CancelListeningOnQueue(string consumerTag)
-        {
-            m_channel.BasicCancel(consumerTag);
-        }
-
-        public async Task EnqueueAsync(string queue, Message msg)
+        public async Task EnqueueAsync(string queue, string data)
         {
             CreateQueue(queue);
 
@@ -78,14 +73,20 @@ namespace SecuredCommunication
             properties.Persistent = true;
             m_channel.BasicQos(0, 1, false);
 
+            var dataInBytes = Utils.ToByteArray(data);
+            var msg = new Message();
             msg.IsSigned = true;
-            msg.Sign = await m_secretMgmt.Sign(msg.Data);
+            msg.Signature = await m_secretMgmt.SignAsync(dataInBytes);
             msg.IsEncrypted = m_isEncrypted;
 
             if (m_isEncrypted)
             {
-                var encMsg = await m_secretMgmt.Encrypt(msg.Data);
-                msg.EncryptedData = encMsg;
+                var encMsg = await m_secretMgmt.Encrypt(dataInBytes);
+                msg.Data = encMsg;
+            }
+            else
+            {
+                msg.Data = dataInBytes;
             }
 
             var msgAsBytes = Utils.ToByteArray(msg);
@@ -95,6 +96,11 @@ namespace SecuredCommunication
                 mandatory: false,
                 basicProperties: properties,
                 body: msgAsBytes);
+        }
+
+        public void CancelListeningOnQueue(string consumerTag)
+        {
+            m_channel.BasicCancel(consumerTag);
         }
 
         private void CreateQueue(string queueName)
@@ -107,31 +113,5 @@ namespace SecuredCommunication
 
             m_channel.QueueBind(queueName, c_exchangeName, queueName);
         }
-
-        #region private methods
-
-        private byte[] ToByteArray<T>(T source)
-        {
-            var formatter = new BinaryFormatter();
-            using (var stream = new MemoryStream())
-            {
-                formatter.Serialize(stream, source);
-                return stream.ToArray();
-            }
-        }
-
-        private T FromByteArray<T>(byte[] data)
-        {
-            if (data == null)
-                return default(T);
-            BinaryFormatter bf = new BinaryFormatter();
-            using (MemoryStream ms = new MemoryStream(data))
-            {
-                object obj = bf.Deserialize(ms);
-                return (T) obj;
-            }
-        }
-
-        #endregion
     }
 }

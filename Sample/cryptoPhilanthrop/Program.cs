@@ -2,7 +2,6 @@
 using System.Threading;
 using SecuredCommunication;
 using System.Configuration;
-using Contracts;
 
 namespace cryptoPhilanthrop
 {
@@ -18,8 +17,8 @@ namespace cryptoPhilanthrop
         private const string c_ethereumTestNodeUrl = "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE";
         private const string c_encKeyName = "demo-encryption";
         private const string c_decKeyName = "demo-encryption";
-        private const string c_signKeyName = "sign_private";
-        private const string c_verifyKeyName = "verify_public";
+        private const string c_signKeyName = "demo-sign";
+        private const string c_verifyKeyName = "demo-sign";
         private const string c_senderId = "account1testnent";
         private const string c_ReciverId = "account2testnent";
 
@@ -49,7 +48,7 @@ namespace cryptoPhilanthrop
                 // Message structure: {amountToSend};{senderName};{reciverAddress}
                 securedComm.EnqueueAsync(
                     "transactions",
-                    new Message($"{amountToSend};{c_senderId};{reciverAddress}")).Wait();
+                    $"{amountToSend};{c_senderId};{reciverAddress}").Wait();
 
                 // Sleep 10 minutes
                 Thread.Sleep(600000);

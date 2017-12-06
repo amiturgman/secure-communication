@@ -9,21 +9,21 @@ namespace Contracts
         /// </summary>
         /// <returns>Encrypted data</returns>
         /// <param name="data">Data to be encrypted.</param>
-        Task<byte[]> Encrypt(string data);
+        Task<byte[]> Encrypt(byte[] data);
 
         /// <summary>
         /// Decrypt the specified encryptedData.
         /// </summary>
         /// <returns>The decrypted data</returns>
         /// <param name="encryptedData">Encrypted data.</param>
-        Task<string> Decrypt(byte[] encryptedData);
+        Task<byte[]> Decrypt(byte[] encryptedData);
 
         /// <summary>
         /// Sign the specified data.
         /// </summary>
         /// <returns>The signature</returns>
         /// <param name="data">The data to be signed</param>
-        Task<byte[]> Sign(string data);
+        Task<byte[]> SignAsync(byte[] data);
 
         /// <summary>
         /// Verify the specified signature and data.
@@ -31,6 +31,6 @@ namespace Contracts
         /// <returns>The verify.</returns>
         /// <param name="signature">The signature for verify</param>
         /// <param name="data">The data which match the signature</param>
-        Task<bool> Verify(byte[] signature, string data);
+        Task<bool> VerifyAsync(byte[] data, byte[] signature);
     }
 }

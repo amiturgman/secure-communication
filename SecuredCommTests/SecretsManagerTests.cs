@@ -24,7 +24,7 @@ namespace SecuredCommTests
             var rawData = "Some data !!!";
             var kvInfo = new KeyVaultMock(kvUri);
             var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
-            var encryptedData = await secretsMgmnt.Encrypt(rawData);
+            var encryptedData = await secretsMgmnt.Encrypt(Utils.ToByteArray(rawData));
 
 
             Assert.IsType<byte[]>(encryptedData);
@@ -39,15 +39,15 @@ namespace SecuredCommTests
             var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
 
             // Encrypt
-            var encryptedData = await secretsMgmnt.Encrypt(rawData);
+            var encryptedData = await secretsMgmnt.Encrypt(Utils.ToByteArray(rawData));
 
             // Decrypt
             var decryptedData = await secretsMgmnt.Decrypt(encryptedData);
 
             // Verify the process ended succesfully and the data is plain text
             Assert.IsType<byte[]>(encryptedData);
-            Assert.Equal(decryptedData, rawData);
-            //Assert.Equal(encryptedData.Substring(encryptedData.Length - 2, 2), "==");
+            Assert.Equal(256, encryptedData.Length);
+            Assert.Equal(Utils.FromByteArray<string>(decryptedData), rawData);
         }
 
         [Fact]
@@ -59,7 +59,7 @@ namespace SecuredCommTests
             var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
 
             // Sign the data
-            var signature = await secretsMgmnt.Sign(rawData);
+            var signature = await secretsMgmnt.SignAsync(Utils.ToByteArray(rawData));
 
             // todo: check what the actual expected signature length
             Assert.Equal(signature.Length, 256);
@@ -74,10 +74,10 @@ namespace SecuredCommTests
             var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
 
             // Sign the data
-            var signature = await secretsMgmnt.Sign(rawData);
+            var signature = await secretsMgmnt.SignAsync(Utils.ToByteArray(rawData));
 
             // todo: check what the actual expected signature length
-            Assert.True(await secretsMgmnt.Verify(signature, rawData));
+            Assert.True(await secretsMgmnt.VerifyAsync(signature, Utils.ToByteArray(rawData)));
         }
     }
 }

@@ -2,7 +2,6 @@
 using SecuredCommunication;
 using System.Configuration;
 using System.Threading;
-using Contracts;
 
 namespace TransactionEngine
 {
@@ -19,8 +18,8 @@ namespace TransactionEngine
         private const string c_ethereumTestNodeUrl = "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE";
         private const string c_encKeyName = "demo-encryption";
         private const string c_decKeyName = "demo-encryption";
-        private const string c_signKeyName = "sign_private";
-        private const string c_verifyKeyName = "verify_public";
+        private const string c_signKeyName = "demo-sign";
+        private const string c_verifyKeyName = "demo-sign";
 
         #endregion
 
@@ -45,7 +44,8 @@ namespace TransactionEngine
                 {
                     Console.WriteLine("Got work!");
 
-                    var msgArray = msg.Data.Split(";");
+                    var data = Utils.FromByteArray<string>(msg.Data);
+                    var msgArray = data.Split(";");
                     var amount = unitConverion.ToWei(msgArray[0]);
                     var senderName = msgArray[1];
                     var reciverAddress = msgArray[2];
@@ -65,7 +65,7 @@ namespace TransactionEngine
                     Thread.Sleep(30000);
 
                     // notify a user about his balance change
-                    securedComm.EnqueueAsync("notifications", new Message(reciverAddress)).Wait();
+                    securedComm.EnqueueAsync("notifications", reciverAddress).Wait();
                 });
         }
     }

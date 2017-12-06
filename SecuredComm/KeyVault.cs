@@ -59,6 +59,16 @@ namespace SecuredCommunication
             return await client.DecryptAsync(keyIdentifier, algorithm, value);
         }
 
+        public Task<KeyOperationResult> SignAsync(string keyIdentifier, string algorithm, byte[] digest)
+        {
+            return client.SignAsync(keyIdentifier, algorithm, digest);
+        }
+
+        public Task<bool> VerifyAsync(string keyIdentifier, string algorithm, byte[] digest, byte[] signature)
+        {
+            return client.VerifyAsync(keyIdentifier, algorithm, digest, signature);
+        }
+
         public async Task<string> GetPrivateKeyAsync(string identifier)
         {
             var secret = await client.GetSecretAsync(GetUrl(), identifier + privateKeySuffix);

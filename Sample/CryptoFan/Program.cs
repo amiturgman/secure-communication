@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading;
 using SecuredCommunication;
-using Nethereum.Web3.Accounts;
-using System.IO;
 using System.Configuration;
 
 namespace CryptoFan
@@ -16,10 +14,10 @@ namespace CryptoFan
         #region private members
         
         private const string c_keyVaultUri = "https://eladiw-testkv.vault.azure.net/";
-        private const string c_encKeyName = "enc_public";
-        private const string c_decKeyName = "dec_private";
-        private const string c_signKeyName = "sign_private";
-        private const string c_verifyKeyName = "verify_public";
+        private const string c_encKeyName = "demo-encryption";
+        private const string c_decKeyName = "demo-encryption";
+        private const string c_signKeyName = "demo-sign";
+        private const string c_verifyKeyName = "demo-sign";
         private const string c_ethereumTestNodeUrl = "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE";
         private const string c_ReciverId = "account2testnent";
 
@@ -45,7 +43,8 @@ namespace CryptoFan
                 securedComm.Dequeue("notifications",
                                           msg =>
                                           {
-                                              if (msg.Data.Equals(reciverAddress, StringComparison.OrdinalIgnoreCase))
+                                              var data = Utils.FromByteArray<string>(msg.Data);
+                                              if (data.Equals(reciverAddress, StringComparison.OrdinalIgnoreCase))
                                               {
                                                   Console.WriteLine("Great, Balance change!");
                                                   PrintCurrentBalance(reciverAddress, ethereumNodeWrapper.GetCurrentBalance(reciverAddress).Result);

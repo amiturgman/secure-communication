@@ -23,7 +23,7 @@ namespace SecuredCommTests
 
         public Task<KeyOperationResult> EncryptAsync(string keyIdentifier, string algorithm, byte[] value)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(new KeyOperationResult(result: new byte[] {}));
         }
 
         public Task<KeyOperationResult> DecryptAsync(string keyIdentifier, string algorithm, byte[] value)
@@ -85,6 +85,16 @@ namespace SecuredCommTests
                 };
                 return Task.FromResult(bundle);
             }
+        }
+
+        public Task<KeyOperationResult> SignAsync(string keyIdentifier, string algorithm, byte[] digest)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> VerifyAsync(string keyIdentifier, string algorithm, byte[] digest, byte[] signature)
+        {
+            throw new NotImplementedException();
         }
     }
 }

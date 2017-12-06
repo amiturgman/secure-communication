@@ -74,5 +74,9 @@ namespace Contracts
         /// <param name="value">The value to decrypt</param>
         /// <returns>The decrypted value</returns>
         Task<KeyOperationResult> DecryptAsync(string keyIdentifier, string algorithm, byte[] value);
+
+        Task<KeyOperationResult> SignAsync(string keyIdentifier, string algorithm, byte[] digest);
+
+        Task<bool> VerifyAsync(string keyIdentifier, string algorithm, byte[] digest, byte[] signature);
     }
 }
