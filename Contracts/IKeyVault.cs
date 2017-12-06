@@ -75,8 +75,23 @@ namespace Contracts
         /// <returns>The decrypted value</returns>
         Task<KeyOperationResult> DecryptAsync(string keyIdentifier, string algorithm, byte[] value);
 
+        /// <summary>
+        /// Signs the async.
+        /// </summary>
+        /// <returns>The async.</returns>
+        /// <param name="keyIdentifier">Key identifier.</param>
+        /// <param name="algorithm">Algorithm.</param>
+        /// <param name="digest">Digest.</param>
         Task<KeyOperationResult> SignAsync(string keyIdentifier, string algorithm, byte[] digest);
 
+        /// <summary>
+        /// Verifies the async.
+        /// </summary>
+        /// <returns>The async.</returns>
+        /// <param name="keyIdentifier">Key identifier.</param>
+        /// <param name="algorithm">Algorithm.</param>
+        /// <param name="digest">Digest.</param>
+        /// <param name="signature">Signature.</param>
         Task<bool> VerifyAsync(string keyIdentifier, string algorithm, byte[] digest, byte[] signature);
     }
 }

@@ -22,39 +22,19 @@ namespace SecuredCommTests
             return Task.FromResult(TestConstants.privateKey);
         }
 
-        public Task<KeyOperationResult> EncryptAsync(string keyIdentifier, string algorithm, byte[] value)
+        public async Task<KeyOperationResult> EncryptAsync(string keyIdentifier, string algorithm, byte[] value)
         {
-            try
+            var encryptedData = new byte[256];
+            for (int i = 0; i < encryptedData.Length; i++)
             {
-                var key = GetPublicKeyAsync(keyIdentifier);
-                byte[] encryptedData;
-                //Create a new instance of RSACryptoServiceProvider.
-                using (RSACryptoServiceProvider RSA = new RSACryptoServiceProvider())
-                {
-
-                    //Import the RSA Key information. This only needs
-                    //toinclude the public key information.
-                 //   RSA.ImportParameters(new RSAParameters() {}(RSAKeyInfo);
-
-                    //Encrypt the passed byte array and specify OAEP padding.  
-                    //OAEP padding is only available on Microsoft Windows XP or
-                    //later.  
-                    encryptedData = RSA.Encrypt(value, false);
-                }
-                return Task.FromResult(new KeyOperationResult(Utils.FromByteArray<string>(encryptedData)));
+                encryptedData[i] = 0x20;
             }
-            //Catch and display a CryptographicException  
-            //to the console.
-            catch (CryptographicException e)
-            {
-                Console.WriteLine(e.Message);
+            return new KeyOperationResult(keyIdentifier, encryptedData);
+        }
 
-                return null;
-            }        }
-
-        public Task<KeyOperationResult> DecryptAsync(string keyIdentifier, string algorithm, byte[] value)
+        public async Task<KeyOperationResult> DecryptAsync(string keyIdentifier, string algorithm, byte[] value)
         {
-            throw new NotImplementedException();
+            return new KeyOperationResult(keyIdentifier, Utils.ToByteArray("Hi"));
         }
 
         public Task<string> GetPublicKeyAsync(string identifier)
@@ -82,7 +62,7 @@ namespace SecuredCommTests
             throw new NotImplementedException();
         }
 
-        Task<KeyBundle> IKeyVault.GetKeyAsync(string keyName, string keyVersion)
+        public Task<KeyBundle> GetKeyAsync(string keyName, string keyVersion)
         {
 
             var x = new X509Certificate2("../../../testCert.pfx", "abc123ABC", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
@@ -93,7 +73,7 @@ namespace SecuredCommTests
                 var shouldGetPrivate = keyName.Contains("private");
                 var parameters = rsa.ExportParameters(shouldGetPrivate);
                 KeyBundle bundle = new KeyBundle
-                {
+                { 
                     Key = new Microsoft.Azure.KeyVault.WebKey.JsonWebKey
                     {
                         Kty = Microsoft.Azure.KeyVault.WebKey.JsonWebKeyType.Rsa,
@@ -106,21 +86,23 @@ namespace SecuredCommTests
                         QI = parameters.InverseQ,
                         // Public stuff
                         N = parameters.Modulus,
-                        E = parameters.Exponent,
+                        E = parameters.Exponent, 
+                        Kid = "https://mykv.vault.azure.net:443/keys/" + keyName + "/"
                     },
                 };
                 return Task.FromResult(bundle);
             }
         }
 
+        byte[] sig = Utils.ToByteArray<string>("Signature");
         public Task<KeyOperationResult> SignAsync(string keyIdentifier, string algorithm, byte[] digest)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(new KeyOperationResult(keyIdentifier, sig));
         }
 
         public Task<bool> VerifyAsync(string keyIdentifier, string algorithm, byte[] digest, byte[] signature)
         {
-            throw new NotImplementedException();
-        }
+            return Task.FromResult(true);
+         }
     }
 }
