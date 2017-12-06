@@ -15,43 +15,45 @@ namespace CryptoFan
     {
         #region private members
         
-        private const string c_localKey = @"C:\temp\NetherumDemo\privchain\keystore\UTC--2017-12-05T14-16-16.671149200Z--ba0c386f5e72d9bd06ff2da9feec57497e8ce582";
-        private const string c_password = "12345678";
         private const string c_keyVaultUri = "https://eladiw-testkv.vault.azure.net/";
         private const string c_encKeyName = "enc_public";
         private const string c_decKeyName = "dec_private";
         private const string c_signKeyName = "sign_private";
         private const string c_verifyKeyName = "verify_public";
+        private const string c_ethereumTestNodeUrl = "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE";
+        private const string c_ReciverId = "account2testnent";
+
         #endregion
 
         static void Main(string[] args)
         {
+            // Init
+            var kv = new KeyVault(c_keyVaultUri);
+            var ethereumNodeWrapper = new EthereumNodeWrapper(kv, c_ethereumTestNodeUrl);
+
             Console.WriteLine("Reciever - I just love getting new crypto coins");
 
-            // Init
-            var account = Account.LoadFromKeyStore(File.ReadAllText(c_localKey), c_password);
+            var reciverAddress = kv.GetPublicKeyAsync(c_ReciverId).Result;
+            PrintCurrentBalance(reciverAddress, ethereumNodeWrapper.GetCurrentBalance(reciverAddress).Result);
 
-            PrintCurrentBalance(account, EthereumNodeWrapper.GetCurrentBalance(account.Address).Result);
-
-            var kvInfo = new KeyVault(c_keyVaultUri);
-            var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
+            var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kv, kv);
             var uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"]);
             var securedComm = new RabbitMQBusImpl(secretsMgmnt, uri, c_verifyKeyName, c_signKeyName, false, c_encKeyName, c_decKeyName);
 
             // Listen on the notifications queue, check balance when a notification arrives
             var consumerTag =
                 securedComm.Dequeue("notifications",
-                                          (msg) =>
+                                          msg =>
                                           {
-                                              if (msg.data.Equals(account.Address, StringComparison.OrdinalIgnoreCase))
+                                              if (msg.Data.Equals(reciverAddress, StringComparison.OrdinalIgnoreCase))
                                               {
                                                   Console.WriteLine("Great, Balance change!");
-                                                  PrintCurrentBalance(account, EthereumNodeWrapper.GetCurrentBalance(account.Address).Result);
+                                                  PrintCurrentBalance(reciverAddress, ethereumNodeWrapper.GetCurrentBalance(reciverAddress).Result);
                                               }
                                               else
                                               {
                                                   Console.WriteLine("Not my balance!");
-                                                  Console.WriteLine(msg.data);
+                                                  Console.WriteLine(msg.Data);
                                               }
                                           });
 
@@ -61,9 +63,9 @@ namespace CryptoFan
             securedComm.CancelListeningOnQueue(consumerTag);
         }
 
-        private static void PrintCurrentBalance(Account account, decimal balance)
+        private static void PrintCurrentBalance(string address, decimal balance)
         {
-            Console.WriteLine($"Account {account.Address} balance: {balance}");
+            Console.WriteLine($"Account {address} balance: {balance}");
         }
     }
 }

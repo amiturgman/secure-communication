@@ -1,8 +1,8 @@
-﻿using Nethereum.JsonRpc.IpcClient;
-using Nethereum.Signer;
+﻿using Nethereum.Signer;
 using Nethereum.Web3;
 using System.Numerics;
 using System.Threading.Tasks;
+using Contracts;
 
 namespace SecuredCommunication
 {
@@ -11,15 +11,14 @@ namespace SecuredCommunication
     /// </summary>
     public class EthereumNodeWrapper : IBlockchainNodeWrapper
     {
-        private ISecretsManagement secretsManagement;
+        private Web3 web3;
         private IKeyVault m_kv;
 
         #region Public Methods
-        public EthereumNodeWrapper(IKeyVault keyVault, ISecretsManagement secretsManagement)
+        public EthereumNodeWrapper(IKeyVault keyVault, string nodeUrl)
         {
             m_kv = keyVault;
-
-            this.secretsManagement = secretsManagement;
+            web3 = new Web3(nodeUrl);
         }
 
         /// <summary>
@@ -36,12 +35,10 @@ namespace SecuredCommunication
         /// <summary>
         /// Send the transaction to the public node. 
         /// </summary>
-        /// <param name="transactionHash">The transaction hash</param>
+        /// <param name="hash">The transaction hash</param>
         /// <returns>The transaction result</returns>
         public async Task<string> SendTransaction(string hash)
         {
-            var client = new IpcClient("geth.ipc");
-            var web3 = new Web3(client);
             var transactionResult = await web3.Eth.Transactions.SendRawTransaction.SendRequestAsync(hash);
             return transactionResult;
         }
@@ -55,9 +52,6 @@ namespace SecuredCommunication
         /// <returns>The transaction hash</returns>
         public async Task<string> SignTransaction(string senderIdentifier, string recieverAddress, BigInteger amountInWei)
         {
-            var client = new IpcClient("geth.ipc");
-            var web3 = new Web3(client);
-
             var senderKeyPair = await LoadKeyPairFromKeyVault(senderIdentifier);
             var txCount = await web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(senderKeyPair.PublicKey);
             var transactionHash = Web3.OfflineTransactionSigner.SignTransaction(senderKeyPair.PrivateKey, recieverAddress, amountInWei, txCount.Value);
@@ -70,10 +64,8 @@ namespace SecuredCommunication
         /// </summary>
         /// <param name="address">The public address of the acocount</param>
         /// <returns>Returns the balance in ether.</returns>
-        public static async Task<decimal> GetCurrentBalance(string address)
+        public async Task<decimal> GetCurrentBalance(string address)
         {
-            var client = new IpcClient("geth.ipc");
-            var web3 = new Web3(client);
             var unitConverion = new Nethereum.Util.UnitConversion();
             var currentBalance = unitConverion.FromWei(await web3.Eth.GetBalance.SendRequestAsync(address));
             return currentBalance;

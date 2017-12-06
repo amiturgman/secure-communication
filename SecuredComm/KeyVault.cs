@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure.KeyVault.Models;
 using System;
+using Contracts;
 
 namespace SecuredCommunication
 {

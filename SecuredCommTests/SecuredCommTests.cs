@@ -1,4 +1,5 @@
 using System;
+using Contracts;
 using Xunit;
 using SecuredCommunication;
 

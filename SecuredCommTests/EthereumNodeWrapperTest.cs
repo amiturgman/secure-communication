@@ -5,22 +5,24 @@ namespace SecuredCommTests
 {
     public class EthereumNodeWrapperTest
     {
-     /*   [Fact]
+        [Fact]
         public async void Sanity_Sign_Transaction()
         {
-            var secretManagmentMock = new SecretsManagementMock();
-            var ethereumWallet = new EthereumNodeWrapper("http://someurl", secretManagmentMock);
-            var trnsactionHash = await ethereumWallet.SignTransaction("sender", TestConstants.publicKey, 10000);
+            var kvInfo = new KeyVaultMock("http://dummyKvUri");
+            var ethereumWallet = new EthereumNodeWrapper(kvInfo, "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE");
+            var transactionHash = await ethereumWallet.SignTransaction("sender", TestConstants.publicKey, 10000);
 
-            Assert.Equal(208, trnsactionHash.Length);
+            Assert.Equal(208, transactionHash.Length);
         }
 
         [Fact]
         public async void Sanity_Get_Balance()
         {
-            var trnsactionHash = await EthereumNodeWrapper.GetCurrentBalance(TestConstants.publicKey);
+            var kvInfo = new KeyVaultMock("http://dummyKvUri");
+            var ethereumWallet = new EthereumNodeWrapper(kvInfo, "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE");
+            var transactionHash = await ethereumWallet.GetCurrentBalance(TestConstants.publicKey);
 
-            Assert.IsType<decimal>(trnsactionHash);
-        }*/
+            Assert.IsType<decimal>(transactionHash);
+        }
     }
 }

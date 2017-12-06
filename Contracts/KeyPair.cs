@@ -1,12 +1,15 @@
-﻿public class KeyPair
+﻿namespace Contracts
 {
-    public string PrivateKey { get; set; }
-    public string PublicKey { get; set; }
-
-    public KeyPair(string publicKey, string privateKey)
+    public class KeyPair
     {
-        PrivateKey = privateKey;
-        PublicKey = publicKey;
+        public string PrivateKey { get; set; }
+        public string PublicKey { get; set; }
+
+        public KeyPair(string publicKey, string privateKey)
+        {
+            PrivateKey = privateKey;
+            PublicKey = publicKey;
+        }
     }
 }
 

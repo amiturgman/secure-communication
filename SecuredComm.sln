@@ -14,8 +14,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TransactionEngine", "Sample
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SecuredCommTests", "SecuredCommTests\SecuredCommTests.csproj", "{089B2DF9-C31B-4D7B-A710-03E623B91D06}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SecretsManagementTests", "SecretsManagementTests\SecretsManagementTests.csproj", "{9CAAC24C-4F26-4726-8DFF-0D7DA1793941}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts", "Contracts\Contracts.csproj", "{2FF945C0-097B-4452-AF82-D20C38DD86C6}"
 EndProject
 Global
@@ -44,10 +42,6 @@ Global
 		{089B2DF9-C31B-4D7B-A710-03E623B91D06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{089B2DF9-C31B-4D7B-A710-03E623B91D06}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{089B2DF9-C31B-4D7B-A710-03E623B91D06}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9CAAC24C-4F26-4726-8DFF-0D7DA1793941}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9CAAC24C-4F26-4726-8DFF-0D7DA1793941}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9CAAC24C-4F26-4726-8DFF-0D7DA1793941}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9CAAC24C-4F26-4726-8DFF-0D7DA1793941}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2FF945C0-097B-4452-AF82-D20C38DD86C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2FF945C0-097B-4452-AF82-D20C38DD86C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FF945C0-097B-4452-AF82-D20C38DD86C6}.Release|Any CPU.ActiveCfg = Release|Any CPU

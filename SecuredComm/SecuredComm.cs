@@ -2,6 +2,7 @@
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
+using Contracts;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -65,12 +66,12 @@ namespace SecuredCommunication
                 var body = ea.Body;
 
                 var msg = FromByteArray<Message>(body);
-                if (msg.isEncrypted)
+                if (msg.IsEncrypted)
                 {
-                    msg.data = await m_secretMgmt.Decrypt(msg.data);
+                    msg.Data = await m_secretMgmt.Decrypt(msg.Data);
                 }
 
-                var verifyResult = await m_secretMgmt.Verify(msg.sign, msg.data);
+                var verifyResult = await m_secretMgmt.Verify(msg.Sign, msg.Data);
                 if (verifyResult == false)
                 {
                     //throw;
@@ -99,14 +100,14 @@ namespace SecuredCommunication
             properties.Persistent = true;
             m_channel.BasicQos(0, 1, false);
 
-            msg.isSigned = true;
-            msg.sign = await m_secretMgmt.Sign(msg.data);
-            msg.isEncrypted = m_isEncrypted;
+            msg.IsSigned = true;
+            msg.Sign = await m_secretMgmt.Sign(msg.Data);
+            msg.IsEncrypted = m_isEncrypted;
 
             if (m_isEncrypted)
             {
-                var encMsg = await m_secretMgmt.Encrypt(msg.data);
-                msg.data = encMsg;
+                var encMsg = await m_secretMgmt.Encrypt(msg.Data);
+                msg.Data = encMsg;
             }
 
             var msgAsBytes = ToByteArray(msg);
