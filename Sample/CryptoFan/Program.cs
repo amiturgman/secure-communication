@@ -38,7 +38,7 @@ namespace CryptoFan
 
             var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kv, kv);
             var uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"]);
-            var securedComm = new RabbitMQBusImpl(secretsMgmnt, uri, c_verifyKeyName, c_signKeyName, false, c_encKeyName, c_decKeyName);
+            var securedComm = new RabbitMQBusImpl(secretsMgmnt, uri, true);
 
             // Listen on the notifications queue, check balance when a notification arrives
             var consumerTag =

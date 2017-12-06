@@ -29,26 +29,13 @@ namespace SecuredCommunication
             m_publicKeyVault = publicKv;
         }
 
-        public async Task<string> Decrypt(string encryptedData)
+        public async Task<string> Decrypt(byte[] encryptedData)
         {
             try
             {
-                // var key = await keyVault.client.GetKeyAsync(keyVault.Url, keyName, null);
-                var key = await m_privateKeyVault.GetKeyAsync(m_decryptionKeyName, null);
-
-                using (var rsa = new RSACryptoServiceProvider())
-                {
-                    var p = new RSAParameters() { Modulus = key.Key.N, Exponent = key.Key.E, D=key.Key.D,  DP = key.Key.DP, DQ = key.Key.DQ,  InverseQ = key.Key.QI,  P = key.Key.P,  Q = key.Key.Q };
-                    rsa.ImportParameters(p);
-
-                    // Decrypt
-                    var encryptedTextNew = Convert.FromBase64String(encryptedData);
-                    var decryptedData = rsa.Decrypt(encryptedTextNew, true);
-
-                    var decryptedText = Encoding.Unicode.GetString(decryptedData);
-
-                    return decryptedText;
-                }
+                var key = await m_privateKeyVault.GetKeyAsync(m_decryptionKeyName);
+                var result = await m_privateKeyVault.DecryptAsync(key.KeyIdentifier.Identifier, "RSA1_5", encryptedData);
+                return Encoding.Unicode.GetString(result.Result);
             }
             catch (Exception exc)
             {
@@ -57,26 +44,17 @@ namespace SecuredCommunication
             }
         }
 
-        public async Task<string> Encrypt(string data)
+        public async Task<byte[]> Encrypt(string data)
         {
             try
             {
-                var key = await m_publicKeyVault.GetKeyAsync(m_encryptionKeyName, null);
-
-                var publicKey = Convert.ToBase64String(key.Key.N);
-                using (var rsa = new RSACryptoServiceProvider())
-                {
-                    var p = new RSAParameters() { Modulus = key.Key.N, Exponent = key.Key.E };
-                    rsa.ImportParameters(p);
-                    var byteData = Encoding.Unicode.GetBytes(data);
-
-                    // Encrypt
-                    var encryptedText = rsa.Encrypt(byteData, true);
-                    return Convert.ToBase64String(encryptedText);
-               }
+                var key = await m_publicKeyVault.GetKeyAsync(m_encryptionKeyName);
+                var result = await m_publicKeyVault.EncryptAsync(key.KeyIdentifier.Identifier, "RSA1_5", Encoding.Unicode.GetBytes(data));
+                return result.Result;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 throw;
             }
         }
@@ -87,7 +65,7 @@ namespace SecuredCommunication
             // (the one associated with the current service).
             //var digest = calculateDigest(data);
 
-            //var key = await m_privateKeyVault.GetKeyAsync(m_signKeyName, null);
+            //var key = await m_privateKeyVault.GetKeyAsync(m_signKeyName);
 
             //var signature = await keyVault.SignAsync(key.KeyIdentifier.Identifier, "RS256", digest);
             //return signature.Result;
@@ -98,7 +76,7 @@ namespace SecuredCommunication
         {
             //// For encryption use the global KV 
             //// (the one with just public keys).
-            //var key = await m_publicKeyVault.GetKeyAsync(m_verifyKeyName, null);
+            //var key = await m_publicKeyVault.GetKeyAsync(m_verifyKeyName);
 
             //var verify = await keyVault.client.VerifyAsync(key.KeyIdentifier.Identifier, "RS256", calculateDigest(data), signature);
             //return verify;

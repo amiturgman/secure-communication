@@ -6,12 +6,12 @@ namespace SecuredCommTests
 {
     public class SecretsManagementMock : ISecretsManagement
     {
-        Task<string> ISecretsManagement.Decrypt(string encryptedData)
+        Task<string> ISecretsManagement.Decrypt(byte[] encryptedData)
         {
             throw new NotImplementedException();
         }
 
-        Task<string> ISecretsManagement.Encrypt(string data)
+        Task<byte[]> ISecretsManagement.Encrypt(string data)
         {
             throw new NotImplementedException();
         }

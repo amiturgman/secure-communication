@@ -9,14 +9,14 @@ namespace Contracts
         /// </summary>
         /// <returns>Encrypted data</returns>
         /// <param name="data">Data to be encrypted.</param>
-        Task<string> Encrypt(string data);
+        Task<byte[]> Encrypt(string data);
 
         /// <summary>
         /// Decrypt the specified encryptedData.
         /// </summary>
         /// <returns>The decrypted data</returns>
         /// <param name="encryptedData">Encrypted data.</param>
-        Task<string> Decrypt(string encryptedData);
+        Task<string> Decrypt(byte[] encryptedData);
 
         /// <summary>
         /// Sign the specified data.

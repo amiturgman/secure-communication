@@ -56,5 +56,23 @@ namespace Contracts
         /// <returns>The private key.</returns>
         /// <param name="identifier">Identifier.</param>
         Task<string> GetPrivateKeyAsync(string identifier);
+
+        /// <summary>
+        /// Encrypts the provided value
+        /// </summary>
+        /// <param name="keyIdentifier">The key encryption identifier in Azure Key Vault</param>
+        /// <param name="algorithm">The ecryption transcation</param>
+        /// <param name="value">The value to encrypt</param>
+        /// <returns>The encrypted value</returns>
+        Task<KeyOperationResult> EncryptAsync(string keyIdentifier, string algorithm, byte[] value);
+
+        /// <summary>
+        /// Decrypts the provided value
+        /// </summary>
+        /// <param name="keyIdentifier">The key encryption identifier in Azure Key Vault</param>
+        /// <param name="algorithm">The ecryption transcation</param>
+        /// <param name="value">The value to decrypt</param>
+        /// <returns>The decrypted value</returns>
+        Task<KeyOperationResult> DecryptAsync(string keyIdentifier, string algorithm, byte[] value);
     }
 }

@@ -41,9 +41,22 @@ namespace SecuredCommunication
 
         public Task<KeyBundle> GetKeyAsync(string keyName, string keyVersion = null)
         {
+            if (keyVersion == null)
+            {
+                return client.GetKeyAsync(this.Url, keyName);
+            }
 
-            return client.GetKeyAsync(this.Url, keyName, null);
+            return client.GetKeyAsync(this.Url, keyName, keyVersion);
+        }
 
+        public Task<KeyOperationResult> EncryptAsync(string keyIdentifier, string algorithm, byte[] value)
+        {
+            return client.EncryptAsync(keyIdentifier, algorithm, value);
+        }
+
+        public async Task<KeyOperationResult> DecryptAsync(string keyIdentifier, string algorithm, byte[] value)
+        {
+            return await client.DecryptAsync(keyIdentifier, algorithm, value);
         }
 
         public async Task<string> GetPrivateKeyAsync(string identifier)

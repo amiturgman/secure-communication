@@ -17,8 +17,8 @@ namespace TransactionEngine
 
         private const string c_keyVaultUri = "https://eladiw-testkv.vault.azure.net/";
         private const string c_ethereumTestNodeUrl = "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE";
-        private const string c_encKeyName = "enc_public";
-        private const string c_decKeyName = "dec_private";
+        private const string c_encKeyName = "demo-encryption";
+        private const string c_decKeyName = "demo-encryption";
         private const string c_signKeyName = "sign_private";
         private const string c_verifyKeyName = "verify_public";
 
@@ -35,8 +35,7 @@ namespace TransactionEngine
             var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo,
                 kvInfo);
             var uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"]);
-            var securedComm = new RabbitMQBusImpl(secretsMgmnt, uri, c_verifyKeyName, c_signKeyName, false,
-                c_encKeyName, c_decKeyName);
+            var securedComm = new RabbitMQBusImpl(secretsMgmnt, uri, true);
 
             var ethereumNodeWrapper = new EthereumNodeWrapper(kvInfo, c_ethereumTestNodeUrl);
 

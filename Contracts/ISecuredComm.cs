@@ -13,6 +13,7 @@ namespace Contracts
         public bool IsEncrypted;
         public bool IsSigned;
         public string Data;
+        public byte[] EncryptedData;
         public byte[] Sign;
 
         // used to let the listener know which cert is for verification.

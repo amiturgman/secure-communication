@@ -21,6 +21,16 @@ namespace SecuredCommTests
             return Task.FromResult(TestConstants.privateKey);
         }
 
+        public Task<KeyOperationResult> EncryptAsync(string keyIdentifier, string algorithm, byte[] value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<KeyOperationResult> DecryptAsync(string keyIdentifier, string algorithm, byte[] value)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<string> GetPublicKeyAsync(string identifier)
         {
             return Task.FromResult(TestConstants.publicKey);

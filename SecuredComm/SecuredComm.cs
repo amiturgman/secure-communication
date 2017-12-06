@@ -8,37 +8,19 @@ using RabbitMQ.Client.Events;
 
 namespace SecuredCommunication
 {
-    public class RabbitMQBusImpl: ISecuredComm
+    public class RabbitMQBusImpl : ISecuredComm
     {
         private ISecretsManagement m_secretMgmt;
         private EventingBasicConsumer m_consumer;
         private IModel m_channel;
 
         private static string c_exchangeName = "securedCommExchange";
-        private string m_encryptionKeyName;
-        private string m_decryptionKeyName;
-        private string m_verificationKeyName;
-        private string m_signKeyName;
         private bool m_isEncrypted;
 
         public RabbitMQBusImpl(
             ISecretsManagement secretMgmnt,
             Uri queueUri,
-            string verificationKeyName,
-            string signKeyName,
             bool isEncrypted)
-            : this(secretMgmnt, queueUri, verificationKeyName, signKeyName, isEncrypted, string.Empty, string.Empty)
-        {
-        }
-
-        public RabbitMQBusImpl(
-            ISecretsManagement secretMgmnt,
-            Uri queueUri,
-            string verificationKeyName,
-            string signKeyName,
-            bool isEncrypted,
-            string encryptionKeyName,
-            string decryptionKeyName)
         {
             ConnectionFactory factory = new ConnectionFactory
             {
@@ -51,10 +33,6 @@ namespace SecuredCommunication
             // m_channel.ExchangeDeclare(c_exchangeName, ExchangeType.Direct);
 
             m_secretMgmt = secretMgmnt;
-            m_encryptionKeyName = encryptionKeyName;
-            m_decryptionKeyName = decryptionKeyName;
-            m_verificationKeyName = verificationKeyName;
-            m_signKeyName = signKeyName;
             m_isEncrypted = isEncrypted;
         }
 
@@ -68,7 +46,7 @@ namespace SecuredCommunication
                 var msg = FromByteArray<Message>(body);
                 if (msg.IsEncrypted)
                 {
-                    msg.Data = await m_secretMgmt.Decrypt(msg.Data);
+                    msg.Data = await m_secretMgmt.Decrypt(msg.EncryptedData);
                 }
 
                 var verifyResult = await m_secretMgmt.Verify(msg.Sign, msg.Data);
@@ -107,10 +85,10 @@ namespace SecuredCommunication
             if (m_isEncrypted)
             {
                 var encMsg = await m_secretMgmt.Encrypt(msg.Data);
-                msg.Data = encMsg;
+                msg.EncryptedData = encMsg;
             }
 
-            var msgAsBytes = ToByteArray(msg);
+            var msgAsBytes = Utils.ToByteArray(msg);
             m_channel.BasicPublish(
                 exchange: c_exchangeName,
                 routingKey: queue,
@@ -122,10 +100,10 @@ namespace SecuredCommunication
         private void CreateQueue(string queueName)
         {
             m_channel.QueueDeclare(queue: queueName,
-                     durable: true,
-                     exclusive: false,
-                     autoDelete: false,
-                                   arguments: null);
+                durable: true,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null);
 
             m_channel.QueueBind(queueName, c_exchangeName, queueName);
         }
@@ -150,7 +128,7 @@ namespace SecuredCommunication
             using (MemoryStream ms = new MemoryStream(data))
             {
                 object obj = bf.Deserialize(ms);
-                return (T)obj;
+                return (T) obj;
             }
         }
 
