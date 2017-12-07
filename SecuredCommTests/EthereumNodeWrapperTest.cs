@@ -24,5 +24,33 @@ namespace SecuredCommTests
 
             Assert.IsType<decimal>(transactionHash);
         }
+
+        [Fact]
+        public async void Test_Create_account_returns_KeyPair_As_Expected()
+        {
+            var kvInfo = new KeyVaultMock("http://dummyKvUri");
+            var ethereumWallet = new EthereumNodeWrapper(kvInfo, "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE");
+            var accountKeyPair = await ethereumWallet.CreateAccount();
+
+            Assert.Equal(42, accountKeyPair.PublicKey.Length);
+            Assert.True(accountKeyPair.PublicKey.StartsWith("0x"));
+            Assert.Equal(66, accountKeyPair.PrivateKey.Length);
+            Assert.True(accountKeyPair.PrivateKey.StartsWith("0x"));
+        }
+
+        [Fact]
+        public async void Test_SendTransaction()
+        {
+            var kvInfo = new KeyVaultMock("http://dummyKvUri");
+            var ethereumWallet = new EthereumNodeWrapper(kvInfo, "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE");
+            var transactionHash = await 
+                ethereumWallet.SignTransaction(TestConstants.publicKey, TestConstants.publicKey, 100);
+            var transactionResult = await ethereumWallet.SendTransaction(transactionHash);
+
+            Assert.True(transactionResult.StartsWith("0x"));
+            Assert.Equal(66, transactionResult.Length);
+        }
+
+
     }
 }
