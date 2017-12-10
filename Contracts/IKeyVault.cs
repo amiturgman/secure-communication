@@ -19,13 +19,12 @@ namespace Contracts
         Task<SecretBundle> GetSecretAsync(string secretName);
 
         /// <summary>
-        /// Gets the specified key
+        /// Gets the specified key (both public and private portions)
         /// </summary>
         /// <returns>The key.</returns>
         /// <param name="keyName">Key identifier.</param>
         /// <param name="keyVersion">Key version.</param>
-        Task<KeyBundle> GetKeyAsync(string keyName,
-            string keyVersion = null);
+        Task<KeyBundle> GetKeyAsync(string keyName, string keyVersion = null);
 
         /// <summary>
         /// Sets a secret in keyvault
