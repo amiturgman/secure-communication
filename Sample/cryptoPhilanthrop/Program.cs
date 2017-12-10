@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using SecuredCommunication;
-using SecuredComm;
 
 namespace cryptoPhilanthrop
 {

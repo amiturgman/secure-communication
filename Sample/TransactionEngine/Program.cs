@@ -2,7 +2,6 @@
 using SecuredCommunication;
 using System.Threading;
 using Contracts;
-using SecuredComm;
 
 namespace TransactionEngine
 {

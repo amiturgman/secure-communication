@@ -2,7 +2,6 @@
 using System.Threading;
 using SecuredCommunication;
 using Contracts;
-using SecuredComm;
 
 namespace CryptoFan
 {
@@ -60,7 +59,9 @@ namespace CryptoFan
             // wait 30 minutes
             Thread.Sleep(30 * 1000 * 60);
 
-            securedComm.CancelListeningOnQueue(consumerTag.Result);
+            // switch based on the chosen queue
+            //securedComm.CancelListeningOnQueue(consumerTag.Result);
+            securedComm.CancelListeningOnQueue();
         }
 
         private static void PrintCurrentBalance(string address, decimal balance)
