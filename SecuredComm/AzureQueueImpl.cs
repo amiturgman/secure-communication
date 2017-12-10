@@ -6,7 +6,7 @@ using Contracts;
 using Microsoft.WindowsAzure.Storage; 
 using Microsoft.WindowsAzure.Storage.Queue;
 
-namespace SecuredComm
+namespace SecuredCommunication
 {
     public class AzureQueueImpl : ISecuredComm
     {

@@ -27,7 +27,6 @@ namespace SecuredCommunication
             IConnection conn = factory.CreateConnection();
 
             m_channel = conn.CreateModel();
-            // topic based...
             // m_channel.ExchangeDeclare(c_exchangeName, ExchangeType.Direct);
 
             m_secretMgmt = secretMgmnt;

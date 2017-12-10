@@ -4,7 +4,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Contracts;
 using Microsoft.Azure.KeyVault.Models;
-using SecuredCommunication;
 
 namespace SecuredCommTests
 {
@@ -22,19 +21,19 @@ namespace SecuredCommTests
             return Task.FromResult(TestConstants.privateKey);
         }
 
-        public async Task<KeyOperationResult> EncryptAsync(string keyIdentifier, string algorithm, byte[] value)
+        public Task<KeyOperationResult> EncryptAsync(string keyIdentifier, string algorithm, byte[] value)
         {
             var encryptedData = new byte[256];
             for (int i = 0; i < encryptedData.Length; i++)
             {
                 encryptedData[i] = 0x20;
             }
-            return new KeyOperationResult(keyIdentifier, encryptedData);
+            return Task.FromResult(new KeyOperationResult(keyIdentifier, encryptedData));
         }
 
-        public async Task<KeyOperationResult> DecryptAsync(string keyIdentifier, string algorithm, byte[] value)
+        public Task<KeyOperationResult> DecryptAsync(string keyIdentifier, string algorithm, byte[] value)
         {
-            return new KeyOperationResult(keyIdentifier, Utils.ToByteArray("Hi"));
+            return Task.FromResult(new KeyOperationResult(keyIdentifier, Utils.ToByteArray("Hi")));
         }
 
         public Task<string> GetPublicKeyAsync(string identifier)

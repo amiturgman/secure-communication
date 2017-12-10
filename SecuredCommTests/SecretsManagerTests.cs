@@ -77,7 +77,6 @@ namespace SecuredCommTests
             // Sign the data
             var signature = await secretsMgmnt.SignAsync(Utils.ToByteArray(rawData));
 
-            // todo: check what the actual expected signature length
             Assert.True(await secretsMgmnt.VerifyAsync(signature, Utils.ToByteArray(rawData)));
         }
     }

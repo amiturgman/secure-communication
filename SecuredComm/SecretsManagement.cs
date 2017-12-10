@@ -7,6 +7,9 @@ namespace SecuredCommunication
 {
     public class SecretsManagement : ISecretsManagement
     {
+        
+        #region private memebers
+
         private IKeyVault m_privateKeyVault;
         private IKeyVault m_publicKeyVault;
 
@@ -14,6 +17,8 @@ namespace SecuredCommunication
         private string m_encryptionKeyName;
         private string m_signKeyName;
         private string m_verifyKeyName;
+
+        #endregion
 
 
         public SecretsManagement(string encryptionKeyName, string decryptionKeyName, string signKeyName, string verifyKeyName, IKeyVault privateKv, IKeyVault publicKv)
