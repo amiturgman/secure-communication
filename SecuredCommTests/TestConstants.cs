@@ -1,4 +1,4 @@
-﻿namespace SecuredCommTests
+﻿namespace UnitTests
 {
     public class TestConstants
     {

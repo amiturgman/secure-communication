@@ -3,7 +3,7 @@ using Xunit;
 using SecuredCommunication;
 using System.Configuration;
 
-namespace SecuredCommTests
+namespace UnitTests
 {
     public class CommunicationTests
     {

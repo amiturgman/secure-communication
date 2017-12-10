@@ -2,7 +2,7 @@ using Contracts;
 using SecuredCommunication;
 using Xunit;
 
-namespace SecuredCommTests
+namespace UnitTests
 {
     public class SecretsManagerTests
     {

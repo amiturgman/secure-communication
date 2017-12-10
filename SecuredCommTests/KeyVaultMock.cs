@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Contracts;
 using Microsoft.Azure.KeyVault.Models;
 
-namespace SecuredCommTests
+namespace UnitTests
 {
     public class KeyVaultMock : IKeyVault
     {

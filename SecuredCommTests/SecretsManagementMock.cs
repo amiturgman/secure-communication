@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Contracts;
 
-namespace SecuredCommTests
+namespace UnitTests
 {
     public class SecretsManagementMock : ISecretsManagement
     {

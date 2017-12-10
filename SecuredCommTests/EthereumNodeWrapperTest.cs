@@ -1,7 +1,7 @@
 ﻿using SecuredCommunication;
 using Xunit;
 
-namespace SecuredCommTests
+namespace UnitTests
 {
     public class EthereumNodeWrapperTest
     {
