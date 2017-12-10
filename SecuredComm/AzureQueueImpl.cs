@@ -37,7 +37,7 @@ namespace SecuredCommunication
 
         public async Task<string> Dequeue(string queueName, Action<Message> cb)
         {
-            m_isCancelled = true;
+            m_isCancelled = false;
 
             var queue = queueClient.GetQueueReference(queueName);
             await queue.CreateIfNotExistsAsync();
@@ -47,7 +47,10 @@ namespace SecuredCommunication
                 try
                 {
                     var retrievedMessage = await queue.GetMessageAsync();
-                    await Message.DecryptAndVerifyQueueMessage(retrievedMessage.AsBytes, m_secretMgmt, cb);
+                    if (retrievedMessage != null)
+                    {
+                        await Message.DecryptAndVerifyQueueMessage(retrievedMessage.AsBytes, m_secretMgmt, cb);
+                    }
                 }
                 catch(Exception exc) {
                     Console.WriteLine("Caught an exception: " + exc);
