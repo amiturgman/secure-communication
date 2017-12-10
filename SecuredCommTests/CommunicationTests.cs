@@ -20,7 +20,7 @@ namespace SecuredCommTests
         {
             // todo:
             // var secretsMock = (ISecretsManagement)new SecretsManagementMock();
-            // var sec = new RabbitMQBusImpl(secretsMock, false);
+            // var sec = new RabbitMQBusImpl(secretsMock, false, "securedCommExchange");
         }
 
         /// <summary>

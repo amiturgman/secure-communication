@@ -35,7 +35,7 @@ namespace CryptoFan
             PrintCurrentBalance(reciverAddress, ethereumNodeWrapper.GetCurrentBalance(reciverAddress).Result);
 
             var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kv, kv);
-            //var securedComm = new RabbitMQBusImpl(secretsMgmnt, true);
+            //var securedComm = new RabbitMQBusImpl(secretsMgmnt, true, "securedCommExchange");
             var securedComm = new AzureQueueImpl(secretsMgmnt, true);
 
             // Listen on the notifications queue, check balance when a notification arrives

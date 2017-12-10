@@ -17,7 +17,8 @@ namespace SecuredCommunication
 
         public AzureQueueImpl(ISecretsManagement secretMgmnt, bool isEncrypted)
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["AzureStorageConnectionString"]);
+            CloudStorageAccount storageAccount = 
+                CloudStorageAccount.Parse(ConfigurationManager.AppSettings["AzureStorageConnectionString"]);
             queueClient = storageAccount.CreateCloudQueueClient();
             m_secretMgmt = secretMgmnt;
             m_isEncrypted = isEncrypted;
@@ -28,19 +29,30 @@ namespace SecuredCommunication
         {
             var queue = queueClient.GetQueueReference(queueName);
             await queue.CreateIfNotExistsAsync();
-            var message = CloudQueueMessage.CreateCloudQueueMessageFromByteArray(await Message.CreateMessageForQueue(msg, m_secretMgmt, m_isEncrypted));
+            var message = 
+                CloudQueueMessage.CreateCloudQueueMessageFromByteArray(
+                    await Message.CreateMessageForQueue(msg, m_secretMgmt, m_isEncrypted));
             await queue.AddMessageAsync(message);
         }
 
         public async Task<string> Dequeue(string queueName, Action<Message> cb)
         {
+            m_isCancelled = true;
+
             var queue = queueClient.GetQueueReference(queueName);
             await queue.CreateIfNotExistsAsync();
 
             while (!m_isCancelled)
             {
-                CloudQueueMessage retrievedMessage = await queue.GetMessageAsync();
-                await Message.DecryptAndVerifyQueueMessage(retrievedMessage.AsBytes, m_secretMgmt, cb);
+                try
+                {
+                    var retrievedMessage = await queue.GetMessageAsync();
+                    await Message.DecryptAndVerifyQueueMessage(retrievedMessage.AsBytes, m_secretMgmt, cb);
+                }
+                catch(Exception exc) {
+                    Console.WriteLine("Caught an exception: " + exc);
+                    // Don't rethrow as we want the dequeue loop to continue
+                }
 
                 Thread.Sleep(3000);
             }
@@ -49,6 +61,9 @@ namespace SecuredCommunication
             return "success";
         }
 
+        /// <summary>
+        /// Stops the dequeuing process
+        /// </summary>
         public void CancelListeningOnQueue()
         {
             m_isCancelled = true;

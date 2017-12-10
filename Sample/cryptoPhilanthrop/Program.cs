@@ -37,7 +37,7 @@ namespace cryptoPhilanthrop
             PrintCurrentBalance(senderAddress, balance);
 
             var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
-            //var securedComm = new RabbitMQBusImpl(secretsMgmnt, true);
+            //var securedComm = new RabbitMQBusImpl(secretsMgmnt, true, "securedCommExchange");
             var securedComm = new AzureQueueImpl(secretsMgmnt, true);
 
             // While there are sufficient funds, transfer some...

@@ -33,7 +33,7 @@ namespace TransactionEngine
             var kvInfo = new KeyVault(c_keyVaultUri);
             var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
 
-            //var securedComm = new RabbitMQBusImpl(secretsMgmnt, uri, true);
+            //var securedComm = new RabbitMQBusImpl(secretsMgmnt, true, "securedCommExchange");
             var securedComm = new AzureQueueImpl(secretsMgmnt, true);
             var ethereumNodeWrapper = new EthereumNodeWrapper(kvInfo, c_ethereumTestNodeUrl);
 

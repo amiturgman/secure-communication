@@ -7,19 +7,21 @@ using RabbitMQ.Client.Events;
 
 namespace SecuredCommunication
 {
+    // An implementation using the RabbitMQ service
     public class RabbitMQBusImpl : ISecuredComm
     {
         private ISecretsManagement m_secretMgmt;
         private EventingBasicConsumer m_consumer;
         private IModel m_channel;
-
-        private static string c_exchangeName = "securedCommExchange";
         private bool m_isEncrypted;
+        private string m_exchangeName;
 
         public RabbitMQBusImpl(
             ISecretsManagement secretMgmnt,
-            bool isEncrypted)
+            bool isEncrypted,
+            string exchangeName)
         {
+            m_exchangeName = exchangeName;
             ConnectionFactory factory = new ConnectionFactory
             {
                 Uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"])
@@ -27,7 +29,7 @@ namespace SecuredCommunication
             IConnection conn = factory.CreateConnection();
 
             m_channel = conn.CreateModel();
-            // m_channel.ExchangeDeclare(c_exchangeName, ExchangeType.Direct);
+            m_channel.ExchangeDeclare(m_exchangeName, ExchangeType.Direct);
 
             m_secretMgmt = secretMgmnt;
             m_isEncrypted = isEncrypted;
@@ -59,7 +61,7 @@ namespace SecuredCommunication
 
             var msgAsBytes = await Message.CreateMessageForQueue(data, m_secretMgmt, m_isEncrypted);
             m_channel.BasicPublish(
-                exchange: c_exchangeName,
+                exchange: m_exchangeName,
                 routingKey: queueName,
                 mandatory: false,
                 basicProperties: properties,
@@ -79,7 +81,7 @@ namespace SecuredCommunication
                 autoDelete: false,
                 arguments: null);
 
-            m_channel.QueueBind(queueName, c_exchangeName, queueName);
+            m_channel.QueueBind(queueName, m_exchangeName, queueName);
         }
     }
 }
