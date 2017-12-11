@@ -1,0 +1,88 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "kv_location": {
+            "value": "uksouth"
+        },
+        "sku": {
+            "value": "Standard"
+        },
+        "storage_location": {
+            "value": "uksouth"
+        },
+        "accountType": {
+            "value": "Standard_LRS"
+        },
+        "kind": {
+            "value": "Storage"
+        },
+        "httpsTrafficOnlyEnabled": {
+            "value": true
+        },
+        "accessPolicies": {
+            "value": [
+                {
+                    "objectId": "[Add_here_user_object_id_name]",
+                    "tenantId": "[Add_here_user_tenant_id_name]",
+                    "permissions": {
+                        "keys": [
+                            "Get",
+                            "List",
+                            "Update",
+                            "Create",
+                            "Import",
+                            "Delete",
+                            "Recover",
+                            "Backup",
+                            "Restore",
+                            "Decrypt",
+                            "Encrypt",
+                            "UnwrapKey",
+                            "WrapKey",
+                            "Verify",
+                            "Sign"
+                        ],
+                        "secrets": [
+                            "Get",
+                            "List",
+                            "Set",
+                            "Delete",
+                            "Recover",
+                            "Backup",
+                            "Restore"
+                        ],
+                        "certificates": [
+                            "Get",
+                            "List",
+                            "Update",
+                            "Create",
+                            "Import",
+                            "Delete",
+                            "Recover",
+                            "ManageContacts",
+                            "ManageIssuers",
+                            "GetIssuers",
+                            "ListIssuers",
+                            "SetIssuers",
+                            "DeleteIssuers"
+                        ]
+                    },
+                    "applicationId": null
+                }
+            ]
+        },
+        "tenant": {
+            "value": "[Add_here_user_tenant_id_name]"
+        },
+        "enabledForDeployment": {
+            "value": false
+        },
+        "enabledForTemplateDeployment": {
+            "value": false
+        },
+        "enabledForDiskEncryption": {
+            "value": false
+        }
+    }
+}
