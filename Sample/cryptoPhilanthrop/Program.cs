@@ -12,14 +12,14 @@ namespace cryptoPhilanthrop
     {
         #region private members
 
-        private const string c_keyVaultUri = "https://ilanasecurecommkv.vault.azure.net/";
+        private const string c_keyVaultUri = "https://<Place holder>.vault.azure.net/";
+        private const string c_encKeyName = "<Place Holder>";
+        private const string c_decKeyName = "<Place Holder>";
+        private const string c_signKeyName = "<Place Holder>";
+        private const string c_verifyKeyName = "<Place Holder>";
         private const string c_ethereumTestNodeUrl = "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE";
-        private const string c_encKeyName = "testser";
-        private const string c_decKeyName = "testser";
-        private const string c_signKeyName = "testser";
-        private const string c_verifyKeyName = "testser";
-        private const string c_senderId = "account1testnent";
         private const string c_ReciverId = "account2testnent";
+        private const string c_senderId = "account1testnent";
 
         #endregion
 

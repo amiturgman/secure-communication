@@ -14,12 +14,12 @@ namespace TransactionEngine
     {
         #region private members
 
-        private const string c_keyVaultUri = "https://ilanasecurecommkv.vault.azure.net/";
+        private const string c_keyVaultUri = "https://<Place holder>.vault.azure.net/";
+        private const string c_encKeyName = "<Place Holder>";
+        private const string c_decKeyName = "<Place Holder>";
+        private const string c_signKeyName = "<Place Holder>";
+        private const string c_verifyKeyName = "<Place Holder>";
         private const string c_ethereumTestNodeUrl = "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE";
-        private const string c_encKeyName = "testser";
-        private const string c_decKeyName = "testser";
-        private const string c_signKeyName = "testser";
-        private const string c_verifyKeyName = "testser";
 
         #endregion
 
@@ -51,8 +51,8 @@ namespace TransactionEngine
 
                     try
                     {
-                        //var transactionHash = ethereumNodeWrapper.SignTransaction(senderName, reciverAddress, amount).Result;
-                        //var transactionResult = ethereumNodeWrapper.SendTransaction(transactionHash).Result;
+                        var transactionHash = ethereumNodeWrapper.SignTransaction(senderName, reciverAddress, amount).Result;
+                        var transactionResult = ethereumNodeWrapper.SendTransaction(transactionHash).Result;
                     }
                     catch (Exception ex)
                     {
@@ -61,7 +61,7 @@ namespace TransactionEngine
                     }
 
                     // Wait for miner
-                    Thread.Sleep(30000);
+                    Thread.Sleep(3000);
 
                     // notify a user about his balance change
                     securedComm.EnqueueAsync("notifications", reciverAddress).Wait();

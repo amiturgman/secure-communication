@@ -9,7 +9,7 @@ namespace SecuredCommunication
 {
     public class SecretsManagement : ISecretsManagement
     {
-        
+
         #region private memebers
 
         private IKeyVault m_privateKeyVault;
@@ -38,7 +38,7 @@ namespace SecuredCommunication
         {
             try
             {
-                var secret = await m_publicKeyVault.GetSecretAsync("PfxFile");
+                var secret = await m_privateKeyVault.GetSecretAsync(m_decryptionKeyName);
                 var x509 = new X509Certificate2(Base64.Decode(secret.Value));
                 return DecryptDataOaepSha1(x509, encryptedData);
                 //var key = await m_privateKeyVault.GetKeyAsync(m_decryptionKeyName);
@@ -66,7 +66,7 @@ namespace SecuredCommunication
         {
             try
             {
-                var secret = await m_publicKeyVault.GetSecretAsync("PfxFile");
+                var secret = await m_publicKeyVault.GetSecretAsync(m_encryptionKeyName);
                 var x509 = new X509Certificate2(Base64.Decode(secret.Value));
                 var encrypted = EncryptDataOaepSha1(x509, data);
                 return encrypted;
@@ -93,69 +93,39 @@ namespace SecuredCommunication
             }
         }
 
-        public Task<byte[]> SignAsync(byte[] data)
+        public static byte[] SignData(X509Certificate2 cert, byte[] data)
+        {
+            using (RSA rsa = cert.GetRSAPrivateKey())
+            {
+                return rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+            }
+        }
+
+        public static bool VerifyData(X509Certificate2 cert, byte[] data, byte[] signature)
+        {
+            using (RSA rsa = cert.GetRSAPublicKey())
+            {
+                return rsa.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+            }
+        }
+
+        public async Task<byte[]> SignAsync(byte[] data)
         {
             //For encryption use the private KV
             //(the one associated with the current service).
 
-            RSACryptoServiceProvider RSAalg = new RSACryptoServiceProvider();
-
-            RSAParameters Key = RSAalg.ExportParameters(true);
-
-            try
-            {
-                RSAalg.ImportParameters(Key);
-
-                return Task.FromResult(RSAalg.SignData(data, new SHA1CryptoServiceProvider()));
-            }
-            catch (CryptographicException e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-
-            /* var digest = CalculateDigest(data);
-            var key = await m_privateKeyVault.GetKeyAsync(m_signKeyName);
-            var signature = await m_privateKeyVault.SignAsync(key.KeyIdentifier.Identifier, "RS256", digest);
-            return signature.Result; */
+            var secret = await m_publicKeyVault.GetSecretAsync(m_signKeyName);
+            var x509 = new X509Certificate2(Base64.Decode(secret.Value));
+            return SignData(x509, data);
         }
 
-        public Task<bool> VerifyAsync(byte[] data, byte[] signature)
+        public async Task<bool> VerifyAsync(byte[] data, byte[] signature)
         {
             //// For encryption use the global KV 
             //// (the one with just public keys).
-            /* var key = await m_publicKeyVault.GetKeyAsync(m_verifyKeyName);
-
-            var verify = await m_publicKeyVault.VerifyAsync(key.KeyIdentifier.Identifier, "RS256", CalculateDigest(data), signature);
-            return verify; */
-            try
-            {
-                // Create a new instance of RSACryptoServiceProvider using the 
-                // key from RSAParameters.
-                RSACryptoServiceProvider RSAalg = new RSACryptoServiceProvider();
-
-                RSAParameters Key = RSAalg.ExportParameters(false);
-
-                RSAalg.ImportParameters(Key);
-
-                return Task.FromResult(RSAalg.VerifyData(data, new SHA1CryptoServiceProvider(), signature));
-
-            }
-            catch (CryptographicException e)
-            {
-                Console.WriteLine(e.Message);
-                throw;
-            }
+            var secret = await m_publicKeyVault.GetSecretAsync(m_verifyKeyName);
+            var x509 = new X509Certificate2(Base64.Decode(secret.Value));
+            return VerifyData(x509, data, signature);
         }
-
-        #region Private Methods
-
-        private byte[] CalculateDigest(byte[] data)
-        {
-            var hasher = new SHA256CryptoServiceProvider();
-            var digest = hasher.ComputeHash(data);
-            return digest;
-        }
-        #endregion
     }
 }

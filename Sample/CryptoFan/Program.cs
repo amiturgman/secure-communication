@@ -13,11 +13,11 @@ namespace CryptoFan
     {
         #region private members
 
-        private const string c_keyVaultUri = "https://eladiw-testkv.vault.azure.net/";
-        private const string c_encKeyName = "demo-encryption";
-        private const string c_decKeyName = "demo-encryption";
-        private const string c_signKeyName = "demo-sign";
-        private const string c_verifyKeyName = "demo-sign";
+        private const string c_keyVaultUri = "https://ilanasecurecommkv1012.vault.azure.net/";
+        private const string c_encKeyName = "newname";
+        private const string c_decKeyName = "newname";
+        private const string c_signKeyName = "newname";
+        private const string c_verifyKeyName = "newname";
         private const string c_ethereumTestNodeUrl = "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE";
         private const string c_ReciverId = "account2testnent";
 
@@ -31,7 +31,7 @@ namespace CryptoFan
 
             Console.WriteLine("Reciever - I just love getting new crypto coins");
 
-            var reciverAddress = kv.GetPublicKeyAsync(c_ReciverId).Result;
+            var reciverAddress = "0xEfD6AD01A596e0f56E8b3b19bFb636A0CC2af7ec"; //kvInfo.GetPublicKeyAsync(c_ReciverId).Result;            
             PrintCurrentBalance(reciverAddress, ethereumNodeWrapper.GetCurrentBalance(reciverAddress).Result);
 
             var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kv, kv);
