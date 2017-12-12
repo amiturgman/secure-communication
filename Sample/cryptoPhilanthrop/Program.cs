@@ -2,24 +2,24 @@
 using System.Threading;
 using SecuredCommunication;
 
-namespace cryptoPhilanthrop
+namespace CoinsSender
 {
     /// <summary>
     ///  A sample app that checks balance and while > some value
-    ///  keep asking the transferer to do more transactions
+    ///  keep asking the transferer to create more transactions (Sends money)
     /// </summary>
     class Program
     {
         #region private members
 
-        private const string c_keyVaultUri = "https://eladiw-testkv.vault.azure.net/";
+        private const string c_keyVaultUri = "https://<Place holder>.vault.azure.net/";
+        private const string c_encKeyName = "<Place Holder>";
+        private const string c_decKeyName = "<Place Holder>";
+        private const string c_signKeyName = "<Place Holder>";
+        private const string c_verifyKeyName = "<Place Holder>";
         private const string c_ethereumTestNodeUrl = "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE";
-        private const string c_encKeyName = "demo-encryption";
-        private const string c_decKeyName = "demo-encryption";
-        private const string c_signKeyName = "demo-sign";
-        private const string c_verifyKeyName = "demo-sign";
-        private const string c_senderId = "account1testnent";
         private const string c_ReciverId = "account2testnent";
+        private const string c_senderId = "account1testnent";
 
         #endregion
 
@@ -31,8 +31,8 @@ namespace cryptoPhilanthrop
             var kvInfo = new KeyVault(c_keyVaultUri);
             var ethereumNodeWrapper = new EthereumNodeWrapper(kvInfo, c_ethereumTestNodeUrl);
 
-            var senderAddress = kvInfo.GetPublicKeyAsync(c_senderId).Result;
-            var reciverAddress = kvInfo.GetPublicKeyAsync(c_ReciverId).Result;
+            var senderAddress = "0xF0b5364cA485fF5fBBcC301b9Ad09F8B91715867"; //kvInfo.GetPublicKeyAsync(c_senderId).Result;
+            var reciverAddress = "0xEfD6AD01A596e0f56E8b3b19bFb636A0CC2af7ec"; //kvInfo.GetPublicKeyAsync(c_ReciverId).Result;
             var balance = ethereumNodeWrapper.GetCurrentBalance(senderAddress).Result;
             PrintCurrentBalance(senderAddress, balance);
 
