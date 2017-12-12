@@ -16,7 +16,7 @@ namespace Contracts
             var dataInBytes = Utils.ToByteArray(data);
             var msg = new Message();
             msg.IsSigned = true;
-            msg.Signature = await secretsManagement.SignAsync(dataInBytes);
+            //msg.Signature = await secretsManagement.SignAsync(dataInBytes);
             msg.IsEncrypted = isEncrypted;
 
             if (isEncrypted)
@@ -40,12 +40,12 @@ namespace Contracts
                 msg.Data = await secretsManagement.Decrypt(msg.Data);
             }
 
-            var verifyResult = await secretsManagement.VerifyAsync(msg.Data, msg.Signature);
+            //var verifyResult = await secretsManagement.VerifyAsync(msg.Data, msg.Signature);
 
-            if (verifyResult == false)
-            {
-                throw new Exception("Verify failed!!");
-            }
+            //if (verifyResult == false)
+            //{
+            //    throw new Exception("Verify failed!!");
+            //}
 
             cb(msg);
         }
