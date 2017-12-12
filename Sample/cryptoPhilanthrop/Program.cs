@@ -2,11 +2,11 @@
 using System.Threading;
 using SecuredCommunication;
 
-namespace cryptoPhilanthrop
+namespace CoinsSender
 {
     /// <summary>
     ///  A sample app that checks balance and while > some value
-    ///  keep asking the transferer to do more transactions
+    ///  keep asking the transferer to create more transactions (Sends money)
     /// </summary>
     class Program
     {
