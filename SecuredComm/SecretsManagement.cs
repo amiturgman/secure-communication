@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Contracts;
+using Org.BouncyCastle.Utilities.Encoders;
 
 namespace SecuredCommunication
 {
     public class SecretsManagement : ISecretsManagement
     {
-        
+
         #region private memebers
 
         private IKeyVault m_privateKeyVault;
@@ -36,9 +38,12 @@ namespace SecuredCommunication
         {
             try
             {
-                var key = await m_privateKeyVault.GetKeyAsync(m_decryptionKeyName);
-                var result = await m_privateKeyVault.DecryptAsync(key.KeyIdentifier.Identifier, "RSA1_5", encryptedData);
-                return result.Result;
+                var secret = await m_privateKeyVault.GetSecretAsync(m_decryptionKeyName);
+                var x509 = new X509Certificate2(Base64.Decode(secret.Value));
+                return DecryptDataOaepSha1(x509, encryptedData);
+                //var key = await m_privateKeyVault.GetKeyAsync(m_decryptionKeyName);
+                //var result = await m_privateKeyVault.DecryptAsync(key.KeyIdentifier.Identifier, "RSA1_5", encryptedData);
+                //return result.Result;
             }
             catch (Exception exc)
             {
@@ -47,13 +52,27 @@ namespace SecuredCommunication
             }
         }
 
+        public static byte[] DecryptDataOaepSha1(X509Certificate2 cert, byte[] data)
+        {
+            // GetRSAPrivateKey returns an object with an independent lifetime, so it should be
+            // handled via a using statement.
+            using (RSA rsa = cert.GetRSAPrivateKey())
+            {
+                return rsa.Decrypt(data, RSAEncryptionPadding.OaepSHA1);
+            }
+        }
+
         public async Task<byte[]> Encrypt(byte[] data)
         {
             try
             {
-                var key = await m_publicKeyVault.GetKeyAsync(m_encryptionKeyName);
-                var result = await m_publicKeyVault.EncryptAsync(key.KeyIdentifier.Identifier, "RSA1_5", data);
-                return result.Result;
+                var secret = await m_publicKeyVault.GetSecretAsync(m_encryptionKeyName);
+                var x509 = new X509Certificate2(Base64.Decode(secret.Value));
+                var encrypted = EncryptDataOaepSha1(x509, data);
+                return encrypted;
+                //var key = await m_publicKeyVault.GetKeyAsync(m_encryptionKeyName);
+                //var result = await m_publicKeyVault.EncryptAsync(key.KeyIdentifier.Identifier, "RSA1_5", data);
+                //return result.Result;
             }
             catch (Exception ex)
             {
@@ -62,34 +81,51 @@ namespace SecuredCommunication
             }
         }
 
+        public static byte[] EncryptDataOaepSha1(X509Certificate2 cert, byte[] data)
+        {
+            // GetRSAPublicKey returns an object with an independent lifetime, so it should be
+            // handled via a using statement.
+            using (RSA rsa = cert.GetRSAPublicKey())
+            {
+                // OAEP allows for multiple hashing algorithms, what was formermly just "OAEP" is
+                // now OAEP-SHA1.
+                return rsa.Encrypt(data, RSAEncryptionPadding.OaepSHA1);
+            }
+        }
+
+        public static byte[] SignData(X509Certificate2 cert, byte[] data)
+        {
+            using (RSA rsa = cert.GetRSAPrivateKey())
+            {
+                return rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+            }
+        }
+
+        public static bool VerifyData(X509Certificate2 cert, byte[] data, byte[] signature)
+        {
+            using (RSA rsa = cert.GetRSAPublicKey())
+            {
+                return rsa.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+            }
+        }
+
         public async Task<byte[]> SignAsync(byte[] data)
         {
             //For encryption use the private KV
             //(the one associated with the current service).
-            var digest = CalculateDigest(data);
-            var key = await m_privateKeyVault.GetKeyAsync(m_signKeyName);
-            var signature = await m_privateKeyVault.SignAsync(key.KeyIdentifier.Identifier, "RS256", digest);
-            return signature.Result;
+
+            var secret = await m_publicKeyVault.GetSecretAsync(m_signKeyName);
+            var x509 = new X509Certificate2(Base64.Decode(secret.Value));
+            return SignData(x509, data);
         }
 
         public async Task<bool> VerifyAsync(byte[] data, byte[] signature)
         {
             //// For encryption use the global KV 
             //// (the one with just public keys).
-            var key = await m_publicKeyVault.GetKeyAsync(m_verifyKeyName);
-
-            var verify = await m_publicKeyVault.VerifyAsync(key.KeyIdentifier.Identifier, "RS256", CalculateDigest(data), signature);
-            return verify;
+            var secret = await m_publicKeyVault.GetSecretAsync(m_verifyKeyName);
+            var x509 = new X509Certificate2(Base64.Decode(secret.Value));
+            return VerifyData(x509, data, signature);
         }
-
-        #region Private Methods
-
-        private byte[] CalculateDigest(byte[] data)
-        {
-            var hasher = new SHA256CryptoServiceProvider();
-            var digest = hasher.ComputeHash(data);
-            return digest;
-        }
-        #endregion
     }
 }
