@@ -1,21 +1,29 @@
- This script creates a resource group and deploys into it an Azure KeyVault and AzureStorage.
+# This script creates a resource group and deploys into it an Azure KeyVault and AzureStorage.
 # Next, it populates the KeyVault with a certificate stored as a secret (pfx - which contains public and private key)
 
 # parameters
-$resourceGroupName = 'elad_arm_template2'
-$location = 'uksouth'
-$plainpass = 'passw0rd!'
-$pfxFilePath = 'c:\temp\cert2.pfx'
-$secretName = 'newname'
-$vaultName = 'eladsecurecommkv2'
-$dnsName = 'testcert.petri.com'
-$storageName = 'eladstorage123'
+$resourceGroupName = '[The resource group name]'
+$location = '[The resources location]'
+$plainpass = '[Certificate password]'
+$pfxFilePath = '[The pfx temporary file]'
+$secretName = '[The keyvault secret name]'
+$vaultName = '[The vault name]'
+$dnsName = '[The certificate dns name, example: testcert.contoso.com]'
+$storageName = '[Azure storage name]'
+$tenant  = '[Azure tenant id]'
+$applicationId= '[Azure application id]'
+$key = "[Azure application key]"
+
+# Login to Azure with service principal
+$SecurePassword = $key | ConvertTo-SecureString -AsPlainText -Force
+$cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $applicationId, $SecurePassword
+Add-AzureRmAccount -Credential $cred -Tenant $tenant -ServicePrincipal
+
 # Create resource group
-az group create --name $resourceGroupName --location $location
+New-AzureRmResourceGroup -Name $resourceGroupName -Location $location
 
 # Deploys the ARM template
-New-AzureRmResourceGroupDeployment -Name arm_first_version -ResourceGroupName $resourceGroupName -TemplateFile template.json -kv_name $vaultName -storage_name $storageName -TemplateParameterFile parameters.json 
-#az group deployment create  --name arm_first_version --resource-group $resourceGroupName --template-file template.json --kv_name $vaultName --storage_name $storageName
+New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile template.json -kv_name $vaultName -storage_name $storageName -location $location -TemplateParameterFile parameters.json -tenant $tenant
 
 # Creates the certificate
 $cert = New-SelfSignedCertificate -certstorelocation cert:\localmachine\my -dnsname $dnsName
@@ -32,7 +40,8 @@ $clearBytes = $collection.Export($pkcs12ContentType)
 $fileContentEncoded = [System.Convert]::ToBase64String($clearBytes)
 $secret = ConvertTo-SecureString -String $fileContentEncoded -Force -AsPlainText
 $secretContentType = 'application/x-pkcs12'
+Set-AzureRmKeyVaultAccessPolicy -VaultName $vaultName -ServicePrincipalName $applicationId -PermissionsToSecrets set,delete,get,list
 Set-AzureKeyVaultSecret -VaultName $vaultName -Name $secretName -SecretValue $Secret -ContentType $secretContentType
 
 # Delete local file 
-#Remove-Item –path $pfxFilePath
+Remove-Item -path $pfxFilePath
