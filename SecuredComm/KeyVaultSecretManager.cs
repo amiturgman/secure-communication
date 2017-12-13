@@ -7,7 +7,7 @@ using Org.BouncyCastle.Utilities.Encoders;
 
 namespace SecuredCommunication
 {
-    public class SecretsManagement : ISecretsManagement
+    public class KeyVaultSecretManager : IEncryptionManager
     {
 
         #region private memebers
@@ -23,7 +23,7 @@ namespace SecuredCommunication
         #endregion
 
 
-        public SecretsManagement(string encryptionKeyName, string decryptionKeyName, string signKeyName, string verifyKeyName, IKeyVault privateKv, IKeyVault publicKv)
+        public KeyVaultSecretManager(string encryptionKeyName, string decryptionKeyName, string signKeyName, string verifyKeyName, IKeyVault privateKv, IKeyVault publicKv)
         {
             m_decryptionKeyName = decryptionKeyName;
             m_encryptionKeyName = encryptionKeyName;
@@ -41,9 +41,6 @@ namespace SecuredCommunication
                 var secret = await m_privateKeyVault.GetSecretAsync(m_decryptionKeyName);
                 var x509 = new X509Certificate2(Base64.Decode(secret.Value));
                 return DecryptDataOaepSha1(x509, encryptedData);
-                //var key = await m_privateKeyVault.GetKeyAsync(m_decryptionKeyName);
-                //var result = await m_privateKeyVault.DecryptAsync(key.KeyIdentifier.Identifier, "RSA1_5", encryptedData);
-                //return result.Result;
             }
             catch (Exception exc)
             {

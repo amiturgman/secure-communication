@@ -2,7 +2,7 @@
 
 namespace Contracts
 {
-    public interface ISecretsManagement
+    public interface IEncryptionManager
     {
         /// <summary>
         /// Encrypt the specified data.

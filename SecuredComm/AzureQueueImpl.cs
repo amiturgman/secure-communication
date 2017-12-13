@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using System.Threading;
 using System.Threading.Tasks;
 using Contracts;
@@ -11,14 +10,13 @@ namespace SecuredCommunication
     public class AzureQueueImpl : ISecuredComm
     {
         private CloudQueueClient queueClient;
-        private ISecretsManagement m_secretMgmt;
-        private bool m_isEncrypted;
+        private IEncryptionManager m_secretMgmt;
+        private readonly bool m_isEncrypted;
         private bool m_isCancelled;
 
-        public AzureQueueImpl(ISecretsManagement secretMgmnt, bool isEncrypted)
+        public AzureQueueImpl(string connectionString, IEncryptionManager secretMgmnt, bool isEncrypted)
         {
-            CloudStorageAccount storageAccount = 
-                CloudStorageAccount.Parse(ConfigurationManager.AppSettings["AzureStorageConnectionString"]);
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
             queueClient = storageAccount.CreateCloudQueueClient();
             m_secretMgmt = secretMgmnt;
             m_isEncrypted = isEncrypted;
@@ -41,7 +39,7 @@ namespace SecuredCommunication
 
             var queue = queueClient.GetQueueReference(queueName);
             await queue.CreateIfNotExistsAsync();
-
+           
             while (!m_isCancelled)
             {
                 try
@@ -50,6 +48,7 @@ namespace SecuredCommunication
                     if (retrievedMessage != null)
                     {
                         await Message.DecryptAndVerifyQueueMessage(retrievedMessage.AsBytes, m_secretMgmt, cb);
+                        continue;
                     }
                 }
                 catch(Exception exc) {

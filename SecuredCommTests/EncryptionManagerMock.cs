@@ -4,7 +4,7 @@ using Contracts;
 
 namespace UnitTests
 {
-    public class SecretsManagementMock : ISecretsManagement
+    public class EncryptionManagerMock : IEncryptionManager
     {
         public Task<byte[]> Encrypt(byte[] data)
         {

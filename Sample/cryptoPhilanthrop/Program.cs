@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Threading;
 using SecuredCommunication;
 
@@ -36,9 +37,9 @@ namespace CoinsSender
             var balance = ethereumNodeWrapper.GetCurrentBalance(senderAddress).Result;
             PrintCurrentBalance(senderAddress, balance);
 
-            var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
-            //var securedComm = new RabbitMQBusImpl(secretsMgmnt, true, "securedCommExchange");
-            var securedComm = new AzureQueueImpl(secretsMgmnt, true);
+            var secretsMgmnt = new KeyVaultSecretManager(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
+            //var securedComm = new RabbitMQBusImpl(ConfigurationManager.AppSettings["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");
+            var securedComm = new AzureQueueImpl(ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt, true);
 
             // While there are sufficient funds, transfer some...
             while (balance > 0)

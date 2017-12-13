@@ -24,7 +24,7 @@ namespace UnitTests
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
             var kvInfo = new KeyVaultMock(kvUri);
-            var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
+            var secretsMgmnt = new KeyVaultSecretManager(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
 
             var encryptedData = await secretsMgmnt.Encrypt(Utils.ToByteArray(rawData));
 
@@ -38,7 +38,7 @@ namespace UnitTests
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
             var kvInfo = new KeyVaultMock(kvUri);
-            var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
+            var secretsMgmnt = new KeyVaultSecretManager(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
 
             // Encrypt
             var encryptedData = await secretsMgmnt.Encrypt(Utils.ToByteArray(rawData));
@@ -57,7 +57,7 @@ namespace UnitTests
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
             var kvInfo = new KeyVaultMock(kvUri);
-            var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
+            var secretsMgmnt = new KeyVaultSecretManager(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
 
             // Sign the data
             var signature = await secretsMgmnt.SignAsync(Utils.ToByteArray(rawData));
@@ -72,7 +72,7 @@ namespace UnitTests
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
             var kvInfo = new KeyVaultMock(kvUri);
-            var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
+            var secretsMgmnt = new KeyVaultSecretManager(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
 
             // Sign the data
             var signature = await secretsMgmnt.SignAsync(Utils.ToByteArray(rawData));

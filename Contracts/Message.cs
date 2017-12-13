@@ -10,35 +10,36 @@ namespace Contracts
         public byte[] Data;
         public byte[] Signature;
 
-        public static async Task<byte[]> CreateMessageForQueue(string data, ISecretsManagement secretsManagement, bool isEncrypted)
+        public Message(bool isEncrypted, byte[] data, byte[] signature)
+        {
+            IsEncrypted = isEncrypted;
+            Data = data;
+            Signature = signature;
+        }
+
+        public static async Task<byte[]> CreateMessageForQueue(string data, IEncryptionManager encryptionManager, bool isEncrypted)
         {
             var dataInBytes = Utils.ToByteArray(data);
-            var msg = new Message();
-            msg.Signature = await secretsManagement.SignAsync(dataInBytes);
-            msg.IsEncrypted = isEncrypted;
+            var signature = await encryptionManager.SignAsync(dataInBytes);
 
             if (isEncrypted)
             {
-                var encMsg = await secretsManagement.Encrypt(dataInBytes);
-                msg.Data = encMsg;
-            }
-            else
-            {
-                msg.Data = dataInBytes;
+                dataInBytes = await encryptionManager.Encrypt(dataInBytes);
             }
 
+            var msg = new Message(isEncrypted, dataInBytes, signature);
             return Utils.ToByteArray(msg);
         }
 
-        public static async Task DecryptAndVerifyQueueMessage(byte[] body, ISecretsManagement secretsManagement, Action<Message> cb)
+        public static async Task DecryptAndVerifyQueueMessage(byte[] body, IEncryptionManager encryptionManager, Action<Message> cb)
         {
             var msg = Utils.FromByteArray<Message>(body);
             if (msg.IsEncrypted)
             {
-                msg.Data = await secretsManagement.Decrypt(msg.Data);
+                msg.Data = await encryptionManager.Decrypt(msg.Data);
             }
 
-            var verifyResult = await secretsManagement.VerifyAsync(msg.Data, msg.Signature);
+            var verifyResult = await encryptionManager.VerifyAsync(msg.Data, msg.Signature);
 
             if (verifyResult == false)
             {

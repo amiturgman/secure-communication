@@ -10,21 +10,22 @@ namespace SecuredCommunication
     // An implementation using the RabbitMQ service
     public class RabbitMQBusImpl : ISecuredComm
     {
-        private ISecretsManagement m_secretMgmt;
+        private IEncryptionManager m_secretMgmt;
         private EventingBasicConsumer m_consumer;
         private IModel m_channel;
         private bool m_isEncrypted;
         private string m_exchangeName;
 
         public RabbitMQBusImpl(
-            ISecretsManagement secretMgmnt,
+            string rabitMqUri,
+            IEncryptionManager secretMgmnt,
             bool isEncrypted,
             string exchangeName)
         {
             m_exchangeName = exchangeName;
             ConnectionFactory factory = new ConnectionFactory
             {
-                Uri = new Uri(ConfigurationManager.AppSettings["rabbitMqUri"])
+                Uri = new Uri(rabitMqUri)
             };
             IConnection conn = factory.CreateConnection();
 

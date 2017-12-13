@@ -29,8 +29,8 @@ namespace UnitTests
         [Fact]
         public void Sanity_VerifyAzureQueueImplCanBeCreated()
         {
-            var secretsMock = (ISecretsManagement)new SecretsManagementMock();
-            var sec = new AzureQueueImpl(secretsMock, false);
+            var secretsMock = (IEncryptionManager)new EncryptionManagerMock();
+            var sec = new AzureQueueImpl("onnectionstring", secretsMock, false);
 
         }
     }

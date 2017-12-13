@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using SecuredCommunication;
 using System.Threading;
 using Contracts;
@@ -31,10 +32,10 @@ namespace TransactionEngine
             var unitConverion = new Nethereum.Util.UnitConversion();
 
             var kvInfo = new KeyVault(c_keyVaultUri);
-            var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
+            var secretsMgmnt = new KeyVaultSecretManager(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
 
-            //var securedComm = new RabbitMQBusImpl(secretsMgmnt, true, "securedCommExchange");
-            var securedComm = new AzureQueueImpl(secretsMgmnt, true);
+            //var securedComm = new RabbitMQBusImpl(ConfigurationManager.AppSettings["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");
+            var securedComm = new AzureQueueImpl(ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt, true);
             var ethereumNodeWrapper = new EthereumNodeWrapper(kvInfo, c_ethereumTestNodeUrl);
 
             // Listen on transactions requests, process them and notify the users when done
