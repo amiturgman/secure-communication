@@ -33,7 +33,7 @@ namespace SecuredCommunication
             await queue.AddMessageAsync(message);
         }
 
-        public async Task<string> Dequeue(string queueName, Action<Message> cb)
+        public async Task<string> DequeueAsync(string queueName, Action<Message> cb)
         {
             m_isCancelled = false;
 
@@ -48,6 +48,7 @@ namespace SecuredCommunication
                     if (retrievedMessage != null)
                     {
                         await Message.DecryptAndVerifyQueueMessage(retrievedMessage.AsBytes, m_secretMgmt, cb);
+                        await queue.DeleteMessageAsync(retrievedMessage);
                         continue;
                     }
                 }

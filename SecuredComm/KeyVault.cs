@@ -4,34 +4,33 @@ using System.Configuration;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure.KeyVault.Models;
-using System;
 using Contracts;
 
 namespace SecuredCommunication
 {
     public class KeyVault : IKeyVault
     {
-        public string Url;
-        private const string publicKeySuffix = "-public";
-        private const string privateKeySuffix = "-private";
         public KeyVaultClient client;
+        private readonly string _url;
 
         public KeyVault(string kvUrl)
         {
-            Url = kvUrl;
-            client = new KeyVaultClient(
-                                    new KeyVaultClient.AuthenticationCallback(GetAccessTokenAsync),
-                                    new HttpClient());
+            _url = kvUrl;
+            client = new KeyVaultClient(GetAccessTokenAsync, new HttpClient());
         }
 
+        /// <summary>
+        /// Get the Azure Key Vault Url
+        /// </summary>
+        /// <returns>The KeyVault Url</returns>
         public string GetUrl()
         {
-            return this.Url;
+            return _url;
         }
 
         public Task<SecretBundle> GetSecretAsync(string secretName) 
         { 
-            return client.GetSecretAsync(GetUrl(), secretName);;
+            return client.GetSecretAsync(GetUrl(), secretName);
         } 
 
         public Task<SecretBundle> SetSecretAsync(string secretName, string value)
@@ -41,12 +40,7 @@ namespace SecuredCommunication
 
         public Task<KeyBundle> GetKeyAsync(string keyName, string keyVersion = null)
         {
-            if (keyVersion == null)
-            {
-                return client.GetKeyAsync(this.Url, keyName);
-            }
-
-            return client.GetKeyAsync(this.Url, keyName, keyVersion);
+            return keyVersion == null ? client.GetKeyAsync(GetUrl(), keyName) : client.GetKeyAsync(GetUrl(), keyName, keyVersion);
         }
 
         public Task<KeyOperationResult> EncryptAsync(string keyIdentifier, string algorithm, byte[] value)
@@ -69,33 +63,7 @@ namespace SecuredCommunication
             return client.VerifyAsync(keyIdentifier, algorithm, digest, signature);
         }
 
-        public async Task<string> GetPrivateKeyAsync(string identifier)
-        {
-            var secret = await client.GetSecretAsync(GetUrl(), identifier + privateKeySuffix);
-            return secret.Value;
-        }
-
-        public async Task<string> GetPublicKeyAsync(string identifier)
-        {
-            var secret = await client.GetSecretAsync(GetUrl(), identifier + publicKeySuffix); 
-            return secret.Value;
-        }
-
-        public async Task<bool> StoreKeyPairAsync(string identifier, KeyPair key)
-        {
-            try
-            {
-                await client.SetSecretAsync(GetUrl(), identifier + publicKeySuffix, key.PublicKey);
-                await client.SetSecretAsync(GetUrl(), identifier + privateKeySuffix, key.PrivateKey);
-                return true;
-            }
-            catch (Exception exc)
-            {
-                Console.WriteLine(exc);
-                throw;
-            }
-        }
-
+#region Private Methods
         private static async Task<string> GetAccessTokenAsync(
           string authority,
           string resource,
@@ -103,8 +71,8 @@ namespace SecuredCommunication
         {
             //clientID and clientSecret are obtained by registering
             //the application in Azure AD
-            var clientId = ConfigurationManager.AppSettings["clientId"];
-            var clientSecret = ConfigurationManager.AppSettings["clientSecret"];
+            var clientId = ConfigurationManager.AppSettings["applicationId"];
+            var clientSecret = ConfigurationManager.AppSettings["applicationSecret"];
 
             var clientCredential = new ClientCredential(clientId, clientSecret);
             var context = new AuthenticationContext(authority, TokenCache.DefaultShared);
@@ -112,5 +80,6 @@ namespace SecuredCommunication
 
             return result.AccessToken;
         }
+#endregion
     }
 }

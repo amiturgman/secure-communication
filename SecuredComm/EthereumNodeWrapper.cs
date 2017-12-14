@@ -1,4 +1,5 @@
-﻿using Nethereum.Signer;
+﻿using System;
+using Nethereum.Signer;
 using Nethereum.Web3;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -13,6 +14,8 @@ namespace SecuredCommunication
     {
         private Web3 web3;
         private IKeyVault m_kv;
+        private const string publicKeySuffix = "-public";
+        private const string privateKeySuffix = "-private";
 
         #region Public Methods
         public EthereumNodeWrapper(IKeyVault keyVault, string nodeUrl)
@@ -25,22 +28,48 @@ namespace SecuredCommunication
         /// Creates blockchain account and store the public and private keys in Azure KeyVault 
         /// </summary>
         /// <returns>The public private key vault</returns>
-        public async Task<KeyPair> CreateAccount()
+        public KeyPair CreateAccount()
         {
             var ecKey = EthECKey.GenerateKey();
 
-            return await Task.FromResult(new KeyPair(ecKey.GetPublicAddress(), ecKey.GetPrivateKey()));
+            return new KeyPair(ecKey.GetPublicAddress(), ecKey.GetPrivateKey());
+        }
+
+        public async Task<bool> StoreAccountAsync(string identifier, KeyPair key)
+        {
+            try
+            {
+                await m_kv.SetSecretAsync(identifier + publicKeySuffix, key.PublicKey);
+                await m_kv.SetSecretAsync(identifier + privateKeySuffix, key.PrivateKey);
+                return true;
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine(exc);
+                throw;
+            }
         }
 
         /// <summary>
-        /// Send the transaction to the public node. 
+        /// Returns the private key by the key vault identifier
         /// </summary>
-        /// <param name="hash">The transaction hash</param>
-        /// <returns>The transaction result</returns>
-        public async Task<string> SendTransaction(string hash)
+        /// <param name="identifier">The user id</param>
+        /// <returns>The user's public key</returns>
+        public async Task<string> GetPrivateKeyAsync(string identifier)
         {
-            var transactionResult = await web3.Eth.Transactions.SendRawTransaction.SendRequestAsync(hash);
-            return transactionResult;
+            var secret = await m_kv.GetSecretAsync(identifier + privateKeySuffix);
+            return secret.Value;
+        }
+
+        /// <summary>
+        /// Returns the public key by the key vault identifier
+        /// </summary>
+        /// <param name="identifier">The user id</param>
+        /// <returns>The user's public key</returns>
+        public async Task<string> GetPublicKeyAsync(string identifier)
+        {
+            var secret = await m_kv.GetSecretAsync(identifier + publicKeySuffix);
+            return secret.Value;
         }
 
         /// <summary>
@@ -54,9 +83,17 @@ namespace SecuredCommunication
         {
             var senderKeyPair = await LoadKeyPairFromKeyVault(senderIdentifier);
             var txCount = await web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(senderKeyPair.PublicKey);
-            var transactionHash = Web3.OfflineTransactionSigner.SignTransaction(senderKeyPair.PrivateKey, recieverAddress, amountInWei, txCount.Value);
+            return Web3.OfflineTransactionSigner.SignTransaction(senderKeyPair.PrivateKey, recieverAddress, amountInWei, txCount.Value);
+        }
 
-            return await Task.FromResult(transactionHash);
+        /// <summary>
+        /// Send the transaction to the public node. 
+        /// </summary>
+        /// <param name="hash">The transaction hash</param>
+        /// <returns>The transaction result</returns>
+        public async Task<string> SendRawTransaction(string hash)
+        {
+            return await web3.Eth.Transactions.SendRawTransaction.SendRequestAsync(hash);
         }
 
         /// <summary>
@@ -67,8 +104,7 @@ namespace SecuredCommunication
         public async Task<decimal> GetCurrentBalance(string address)
         {
             var unitConverion = new Nethereum.Util.UnitConversion();
-            var currentBalance = unitConverion.FromWei(await web3.Eth.GetBalance.SendRequestAsync(address));
-            return currentBalance;
+            return unitConverion.FromWei(await web3.Eth.GetBalance.SendRequestAsync(address));
         }
         #endregion
 
@@ -80,10 +116,10 @@ namespace SecuredCommunication
         /// <returns>The public private key pair</returns>
         private async Task<KeyPair> LoadKeyPairFromKeyVault(string identifier)
         {
-            var publicKey = await m_kv.GetPublicKeyAsync(identifier);
-            var privateKey = await m_kv.GetPrivateKeyAsync(identifier);
+            var publicKey = await m_kv.GetSecretAsync(string.Concat(identifier, publicKeySuffix));
+            var privateKey = await m_kv.GetSecretAsync(string.Concat(identifier, privateKeySuffix));
 
-            return new KeyPair(publicKey, privateKey);
+            return new KeyPair(publicKey.Value, privateKey.Value);
         }
 
         #endregion

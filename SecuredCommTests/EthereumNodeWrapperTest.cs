@@ -26,11 +26,11 @@ namespace UnitTests
         }
 
         [Fact]
-        public async void Test_Create_account_returns_KeyPair_As_Expected()
+        public void Test_Create_account_returns_KeyPair_As_Expected()
         {
             var kvInfo = new KeyVaultMock("http://dummyKvUri");
             var ethereumWallet = new EthereumNodeWrapper(kvInfo, "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE");
-            var accountKeyPair = await ethereumWallet.CreateAccount();
+            var accountKeyPair = ethereumWallet.CreateAccount();
 
             Assert.Equal(42, accountKeyPair.PublicKey.Length);
             Assert.True(accountKeyPair.PublicKey.StartsWith("0x"));
@@ -45,7 +45,7 @@ namespace UnitTests
             var ethereumWallet = new EthereumNodeWrapper(kvInfo, "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE");
             var transactionHash = await 
                 ethereumWallet.SignTransaction(TestConstants.publicKey, TestConstants.publicKey, 100);
-            var transactionResult = await ethereumWallet.SendTransaction(transactionHash);
+            var transactionResult = await ethereumWallet.SendRawTransaction(transactionHash);
 
             Assert.True(transactionResult.StartsWith("0x"));
             Assert.Equal(66, transactionResult.Length);

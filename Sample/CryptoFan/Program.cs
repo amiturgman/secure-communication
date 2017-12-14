@@ -14,34 +14,34 @@ namespace CryptoFan
     {
         #region private members
 
-        private const string c_keyVaultUri = "https://ilanasecurecommkv1012.vault.azure.net/";
-        private const string c_encKeyName = "newname";
-        private const string c_decKeyName = "newname";
-        private const string c_signKeyName = "newname";
-        private const string c_verifyKeyName = "newname";
-        private const string c_ethereumTestNodeUrl = "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE";
-        private const string c_ReciverId = "account2testnent";
+
+        private const string c_ReciverId = "reciverAccount";
 
         #endregion
 
         static void Main(string[] args)
         {
             // Init
-            var kv = new KeyVault(c_keyVaultUri);
-            var ethereumNodeWrapper = new EthereumNodeWrapper(kv, c_ethereumTestNodeUrl);
+            var kv = new KeyVault(ConfigurationManager.AppSettings["AzureKeyVaultUri"]);
+            var ethereumNodeWrapper = new EthereumNodeWrapper(kv, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
 
             Console.WriteLine("Reciever - I just love getting new crypto coins");
 
-            var reciverAddress = "0xEfD6AD01A596e0f56E8b3b19bFb636A0CC2af7ec"; //kvInfo.GetPublicKeyAsync(c_ReciverId).Result;            
+            var reciverAddress = ethereumNodeWrapper.GetPublicKeyAsync(c_ReciverId).Result;            
             PrintCurrentBalance(reciverAddress, ethereumNodeWrapper.GetCurrentBalance(reciverAddress).Result);
 
-            var secretsMgmnt = new KeyVaultSecretManager(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kv, kv);
+            var encryptionKeyName = ConfigurationManager.AppSettings["EncryptionKeyName"];
+            var decryptionKeyName = ConfigurationManager.AppSettings["DecryptionKeyName"];
+            var signKeyName = ConfigurationManager.AppSettings["SignKeyName"];
+            var verifyKeyName = ConfigurationManager.AppSettings["VerifyKeyName"];
+
+            var secretsMgmnt = new KeyVaultSecretManager(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, kv, kv);
             //var securedComm = new RabbitMQBusImpl(ConfigurationManager.AppSettings["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");
             var securedComm = new AzureQueueImpl(ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt, true);
 
             // Listen on the notifications queue, check balance when a notification arrives
             var consumerTag =
-                securedComm.Dequeue("notifications",
+                securedComm.DequeueAsync("notifications",
                     msg =>
                     {
                         var data = Utils.FromByteArray<string>(msg.Data);

@@ -27,8 +27,7 @@ namespace Contracts
                 dataInBytes = await encryptionManager.Encrypt(dataInBytes);
             }
 
-            var msg = new Message(isEncrypted, dataInBytes, signature);
-            return Utils.ToByteArray(msg);
+            return Utils.ToByteArray(new Message(isEncrypted, dataInBytes, signature));
         }
 
         public static async Task DecryptAndVerifyQueueMessage(byte[] body, IEncryptionManager encryptionManager, Action<Message> cb)

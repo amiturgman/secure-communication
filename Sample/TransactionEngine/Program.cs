@@ -13,17 +13,6 @@ namespace TransactionEngine
     /// </summary>
     class Program
     {
-        #region private members
-
-        private const string c_keyVaultUri = "https://<Place holder>.vault.azure.net/";
-        private const string c_encKeyName = "<Place Holder>";
-        private const string c_decKeyName = "<Place Holder>";
-        private const string c_signKeyName = "<Place Holder>";
-        private const string c_verifyKeyName = "<Place Holder>";
-        private const string c_ethereumTestNodeUrl = "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE";
-
-        #endregion
-
         static void Main(string[] args)
         {
             Console.WriteLine("TransactionEngine - I do as I told");
@@ -31,15 +20,21 @@ namespace TransactionEngine
             // Init
             var unitConverion = new Nethereum.Util.UnitConversion();
 
-            var kvInfo = new KeyVault(c_keyVaultUri);
-            var secretsMgmnt = new KeyVaultSecretManager(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
+            var kv = new KeyVault(ConfigurationManager.AppSettings["AzureKeyVaultUri"]);
+
+            var encryptionKeyName = ConfigurationManager.AppSettings["EncryptionKeyName"];
+            var decryptionKeyName = ConfigurationManager.AppSettings["DecryptionKeyName"];
+            var signKeyName = ConfigurationManager.AppSettings["SignKeyName"];
+            var verifyKeyName = ConfigurationManager.AppSettings["VerifyKeyName"];
+
+            var secretsMgmnt = new KeyVaultSecretManager(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, kv, kv);
 
             //var securedComm = new RabbitMQBusImpl(ConfigurationManager.AppSettings["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");
             var securedComm = new AzureQueueImpl(ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt, true);
-            var ethereumNodeWrapper = new EthereumNodeWrapper(kvInfo, c_ethereumTestNodeUrl);
+            var ethereumNodeWrapper = new EthereumNodeWrapper(kv, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
 
             // Listen on transactions requests, process them and notify the users when done
-            securedComm.Dequeue("transactions",
+            securedComm.DequeueAsync("transactions",
                 msg =>
                 {
                     Console.WriteLine("Got work!");
@@ -53,7 +48,7 @@ namespace TransactionEngine
                     try
                     {
                         var transactionHash = ethereumNodeWrapper.SignTransaction(senderName, reciverAddress, amount).Result;
-                        var transactionResult = ethereumNodeWrapper.SendTransaction(transactionHash).Result;
+                        var transactionResult = ethereumNodeWrapper.SendRawTransaction(transactionHash).Result;
                     }
                     catch (Exception ex)
                     {

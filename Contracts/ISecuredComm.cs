@@ -16,6 +16,6 @@ namespace Contracts
         /// Creates a listener on a queue where messages are encrypted. The message's data is automatically decrypted
         /// </summary>
         /// <returns>The consumer tag</returns>
-        Task<string> Dequeue(string queueName, Action<Message> cb);
+        Task<string> DequeueAsync(string queueName, Action<Message> cb);
     }
 }

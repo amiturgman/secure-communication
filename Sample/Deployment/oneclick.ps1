@@ -1,29 +1,47 @@
 # This script creates a resource group and deploys into it an Azure KeyVault and AzureStorage.
 # Next, it populates the KeyVault with a certificate stored as a secret (pfx - which contains public and private key)
+# Run this script with Admin Privileges
 
-# parameters
-$resourceGroupName = '[The resource group name]'
-$location = '[The resources location]'
-$plainpass = '[Certificate password]'
-$pfxFilePath = '[The pfx temporary file]'
-$secretName = '[The keyvault secret name]'
-$vaultName = '[The vault name]'
-$dnsName = '[The certificate dns name, example: testcert.contoso.com]'
-$storageName = '[Azure storage name]'
-$tenant  = '[Azure tenant id]'
+# Parameters
+
+# The Azure tenant id (under active directory properties -> directory Id)
+$tenantId  = '[Azure tenant id]' 
+# The Azure Service principal application id
 $applicationId= '[Azure application id]'
-$key = "[Azure application key]"
+# The  Azure Service principal secret
+$applicationSecret = "[Azure application key]"
+# The Azure resource group name that will hold all the resources
+$resourceGroupName = '[The resource group name]'
+# The Azure resources geo location
+$resourcesLocation = '[The resources location]'
+
+# The Azure KeyVault Name
+$keyvaultName = '[The vault name]'
+# The Azure KeyVault secret name
+$secretName = '[The keyvault secret name example: encryptionCert]'
+# Azure storage name to create - will hold the Azure Queue
+$storageName = '[Azure storage name]'
+
+#certificate configuration
+# The temporary pfx location
+$pfxFilePath = '[The pfx temporary file, example: c:\temp\certificate.pfx]'
+# Temporary password, for installong and exporting the certificate
+$plainpass = '123456' 
+# The certificate DNS name
+$dnsName = '[The certificate dns name, example: testcert.contoso.com]'
+
+# SCRIPT START
 
 # Login to Azure with service principal
-$SecurePassword = $key | ConvertTo-SecureString -AsPlainText -Force
+$SecurePassword = $applicationSecret | ConvertTo-SecureString -AsPlainText -Force
 $cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $applicationId, $SecurePassword
-Add-AzureRmAccount -Credential $cred -Tenant $tenant -ServicePrincipal
+Add-AzureRmAccount -Credential $cred -Tenant $tenantId -ServicePrincipal
 
-# Create resource group
-New-AzureRmResourceGroup -Name $resourceGroupName -Location $location
+# Create Azure Resource group
+New-AzureRmResourceGroup -Name $resourceGroupName -Location $resourcesLocation
 
 # Deploys the ARM template
-New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile template.json -kv_name $vaultName -storage_name $storageName -location $location -TemplateParameterFile parameters.json -tenant $tenant
+New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile template.json -kv_name $keyvaultName -storage_name $storageName -location $resourcesLocation -TemplateParameterFile parameters.json -tenant $tenantId
 
 # Creates the certificate
 $cert = New-SelfSignedCertificate -certstorelocation cert:\localmachine\my -dnsname $dnsName
@@ -40,8 +58,8 @@ $clearBytes = $collection.Export($pkcs12ContentType)
 $fileContentEncoded = [System.Convert]::ToBase64String($clearBytes)
 $secret = ConvertTo-SecureString -String $fileContentEncoded -Force -AsPlainText
 $secretContentType = 'application/x-pkcs12'
-Set-AzureRmKeyVaultAccessPolicy -VaultName $vaultName -ServicePrincipalName $applicationId -PermissionsToSecrets set,delete,get,list
-Set-AzureKeyVaultSecret -VaultName $vaultName -Name $secretName -SecretValue $Secret -ContentType $secretContentType
+Set-AzureRmKeyVaultAccessPolicy -VaultName $keyvaultName -ServicePrincipalName $applicationId -PermissionsToSecrets set,delete,get,list
+Set-AzureKeyVaultSecret -VaultName $keyvaultName -Name $secretName -SecretValue $Secret -ContentType $secretContentType
 
-# Delete local file 
+# Delete local Certificate 
 Remove-Item -path $pfxFilePath

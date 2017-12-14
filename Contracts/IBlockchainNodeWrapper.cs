@@ -9,7 +9,15 @@ namespace Contracts
         /// Creates blockchain account and store the public and private keys in Azure KeyVault 
         /// </summary>
         /// <returns>The public private key vault</returns>
-        Task<KeyPair> CreateAccount();
+        KeyPair CreateAccount();
+
+        /// <summary>
+        /// Stores a key pair into the Azure KeyVault.
+        /// </summary>
+        /// <returns>The created key pair.</returns>
+        /// <param name="identifier">key pair identifier.</param>
+        /// <param name="key">The actual key pair.</param>
+        Task<bool> StoreAccountAsync(string identifier, KeyPair key);
 
         /// <summary>
         /// Sign a blockchain transaction
@@ -21,10 +29,24 @@ namespace Contracts
         Task<string> SignTransaction(string senderIdentifier, string recieverAddress, BigInteger amount);
 
         /// <summary>
-        /// Send the transaction to the public node. 
+        /// Send the raw transaction to the public node. 
         /// </summary>
         /// <param name="transactionHash">The transaction hash</param>
         /// <returns>The transaction result</returns>
-        Task<string> SendTransaction(string transactionHash);
+        Task<string> SendRawTransaction(string transactionHash);
+
+        /// <summary>
+        /// Returns the private key by the key vault identifier
+        /// </summary>
+        /// <param name="identifier">The user id</param>
+        /// <returns>The user's private key</returns>
+        Task<string> GetPrivateKeyAsync(string identifier);
+
+        /// <summary>
+        /// Returns the public key by the key vault identifier
+        /// </summary>
+        /// <param name="identifier">The user id</param>
+        /// <returns>The user's public key</returns>
+        Task<string> GetPublicKeyAsync(string identifier);
     }
 }

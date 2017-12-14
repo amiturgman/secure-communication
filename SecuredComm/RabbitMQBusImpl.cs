@@ -36,7 +36,7 @@ namespace SecuredCommunication
             m_isEncrypted = isEncrypted;
         }
 
-        public Task<string> Dequeue(string queueName, Action<Message> cb)
+        public Task<string> DequeueAsync(string queueName, Action<Message> cb)
         {
             m_consumer = new EventingBasicConsumer(m_channel);
             m_consumer.Received += async (ch, ea) =>

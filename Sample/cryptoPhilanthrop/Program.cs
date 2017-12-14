@@ -13,33 +13,67 @@ namespace CoinsSender
     {
         #region private members
 
-        private const string c_keyVaultUri = "https://<Place holder>.vault.azure.net/";
-        private const string c_encKeyName = "<Place Holder>";
-        private const string c_decKeyName = "<Place Holder>";
-        private const string c_signKeyName = "<Place Holder>";
-        private const string c_verifyKeyName = "<Place Holder>";
-        private const string c_ethereumTestNodeUrl = "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE";
-        private const string c_ReciverId = "account2testnent";
-        private const string c_senderId = "account1testnent";
+        private const string c_ReciverId = "reciverAccount";
+        private const string c_senderId = "senderAccount";
 
         #endregion
 
         static void Main(string[] args)
         {
+            var kv = new KeyVault(ConfigurationManager.AppSettings["AzureKeyVaultUri"]);
+            var ethereumNodeWrapper = new EthereumNodeWrapper(kv, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
+
+            while (true)
+            {
+                Console.WriteLine("To create new accounts press 1");
+                Console.WriteLine("If you already created sender and reciver accounts press 2");
+                Console.WriteLine("Press any other key to exit");
+                Console.WriteLine();
+
+                var userInput = double.Parse(Console.ReadLine());
+
+                switch (userInput)
+                {
+                    case 1:
+                        var senderAccount = ethereumNodeWrapper.CreateAccount();
+                        var result = ethereumNodeWrapper.StoreAccountAsync(c_senderId, senderAccount).Result;
+
+                        var reciverAccount = ethereumNodeWrapper.CreateAccount();
+                        result = ethereumNodeWrapper.StoreAccountAsync(c_ReciverId, reciverAccount).Result;
+
+                        Console.WriteLine("Accounts were created. " +
+                                          $"To continue the demo please send ether to address {senderAccount.PublicKey}{Environment.NewLine}" +
+                                          "You can send ether for: https://www.rinkeby.io/#faucet");
+                        continue;
+                    case 2:
+                        SendCoins(kv, ethereumNodeWrapper);
+                        continue;
+                    default:
+                        return;
+                }
+            }
+        }
+
+        private static void SendCoins(KeyVault kv, EthereumNodeWrapper ethereumNodeWrapper)
+        {
             Console.WriteLine("Sender - Happy to transfer my crypto coins!");
 
             // Init
-            var kvInfo = new KeyVault(c_keyVaultUri);
-            var ethereumNodeWrapper = new EthereumNodeWrapper(kvInfo, c_ethereumTestNodeUrl);
-
-            var senderAddress = "0xF0b5364cA485fF5fBBcC301b9Ad09F8B91715867"; //kvInfo.GetPublicKeyAsync(c_senderId).Result;
-            var reciverAddress = "0xEfD6AD01A596e0f56E8b3b19bFb636A0CC2af7ec"; //kvInfo.GetPublicKeyAsync(c_ReciverId).Result;
+            var senderAddress = ethereumNodeWrapper.GetPublicKeyAsync(c_senderId).Result;
+            var reciverAddress = ethereumNodeWrapper.GetPublicKeyAsync(c_ReciverId).Result;
             var balance = ethereumNodeWrapper.GetCurrentBalance(senderAddress).Result;
             PrintCurrentBalance(senderAddress, balance);
 
-            var secretsMgmnt = new KeyVaultSecretManager(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
+            var encryptionKeyName = ConfigurationManager.AppSettings["EncryptionKeyName"];
+            var decryptionKeyName = ConfigurationManager.AppSettings["DecryptionKeyName"];
+            var signKeyName = ConfigurationManager.AppSettings["SignKeyName"];
+            var verifyKeyName = ConfigurationManager.AppSettings["VerifyKeyName"];
+
+            var secretsMgmnt =
+                new KeyVaultSecretManager(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, kv, kv);
             //var securedComm = new RabbitMQBusImpl(ConfigurationManager.AppSettings["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");
-            var securedComm = new AzureQueueImpl(ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt, true);
+            var securedComm = new AzureQueueImpl(ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt,
+                true);
 
             // While there are sufficient funds, transfer some...
             while (balance > 0)
