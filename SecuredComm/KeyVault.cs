@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.KeyVault;
+﻿using System;
+using Microsoft.Azure.KeyVault;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace SecuredCommunication
     public class KeyVault : IKeyVault
     {
         #region private members
+
         private KeyVaultClient m_kvClient;
         private readonly string m_url;
         private readonly string m_applicationId;
@@ -34,17 +36,33 @@ namespace SecuredCommunication
             return m_url;
         }
 
-        public Task<SecretBundle> GetSecretAsync(string secretName) 
-        { 
-            return m_kvClient.GetSecretAsync(GetUrl(), secretName);
-        } 
-
-        public Task<SecretBundle> SetSecretAsync(string secretName, string value)
+        public async Task<SecretBundle> GetSecretAsync(string secretName)
         {
-            return m_kvClient.SetSecretAsync(GetUrl(), secretName, value);
+            try
+            {
+                return await m_kvClient.GetSecretAsync(GetUrl(), secretName);
+            }
+            catch (KeyVaultErrorException ex)
+            {
+                Console.WriteLine($"Exception while trying to get secret {secretName}, {ex.Message}");
+                throw;
+            }
         }
-       
-        #region Private Methods
+
+        public async Task<SecretBundle> SetSecretAsync(string secretName, string value)
+        {
+            try
+            {
+                return await m_kvClient.SetSecretAsync(GetUrl(), secretName, value);
+            }
+            catch (KeyVaultErrorException ex)
+            {
+                Console.WriteLine($"Exception while trying to set secret {secretName}, {ex.Message}");
+                throw;
+            }
+        }
+
+    #region Private Methods
 
         private async Task<string> GetAccessTokenAsync(
           string authority,

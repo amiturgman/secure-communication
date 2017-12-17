@@ -12,7 +12,6 @@ namespace SecuredCommunication
     /// </summary>
     public class KeyVaultSecretManager : IEncryptionManager
     {
-
         #region private memebers
 
         private IKeyVault m_privateKeyVault;

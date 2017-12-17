@@ -5,7 +5,7 @@ namespace UnitTests
 {
     public class EthereumNodeWrapperTest
     {
-       /* [Fact]
+        [Fact]
         public async void Sanity_Sign_Transaction()
         {
             var kvInfo = new KeyVaultMock("http://dummyKvUri");
@@ -44,13 +44,11 @@ namespace UnitTests
             var kvInfo = new KeyVaultMock("http://dummyKvUri");
             var ethereumWallet = new EthereumNodeWrapper(kvInfo, "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE");
             var transactionHash = await 
-                ethereumWallet.SignTransaction(TestConstants.publicKey, TestConstants.publicKey, 100);
+                ethereumWallet.SignTransaction("sender", TestConstants.publicKey, 100);
             var transactionResult = await ethereumWallet.SendRawTransaction(transactionHash);
 
             Assert.True(transactionResult.StartsWith("0x"));
             Assert.Equal(66, transactionResult.Length);
         }
-
-*/
     }
 }

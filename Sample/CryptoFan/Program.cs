@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Configuration;
 using System.Threading;
-using SecuredCommunication;
 using Contracts;
+using SecuredCommunication;
 
-namespace CryptoFan
+namespace CoinsReceiver
 {
     /// <summary>
     /// A sample app that registers on a queue, whenver it gets update

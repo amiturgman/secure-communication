@@ -109,7 +109,7 @@ namespace CoinsSender
                         continue;
                     case 2:
                         SendCoins(kv, ethereumNodeWrapper);
-                        continue;
+                        break;
                     default:
                         return;
                 }
@@ -146,8 +146,8 @@ namespace CoinsSender
                     "transactions",
                     $"{amountToSend};{c_senderId};{reciverAddress}").Wait();
 
-                // Sleep 10 minutes
-                Thread.Sleep(600000);
+                // Sleep 1 minute
+                Thread.Sleep(60000);
 
                 var newBalance = ethereumNodeWrapper.GetCurrentBalance(senderAddress).Result;
                 PrintCurrentBalance(senderAddress, newBalance);
