@@ -6,6 +6,10 @@ using Org.BouncyCastle.Utilities.Encoders;
 
 namespace SecuredCommunication
 {
+    /// <summary>
+    /// An implementation of <see cref="IEncryptionManager"/>, in this implemetation the certificates
+    /// are loaded from two given key vaults
+    /// </summary>
     public class KeyVaultSecretManager : IEncryptionManager
     {
 
@@ -28,6 +32,9 @@ namespace SecuredCommunication
 
         #endregion
 
+        /// <summary>
+        /// Initialize the <see cref="EncryptionHelper"/> object with all the certificates taken from the keyvaults
+        /// </summary>
         private async Task Initialize() {
 
             var encryptSecretTask = m_publicKeyVault.GetSecretAsync(m_encryptionKeyName);

@@ -1,5 +1,8 @@
 ﻿namespace Contracts
 {
+    /// <summary>
+    /// Simple wrapper for a public-private key pair
+    /// </summary>
     public class KeyPair
     {
         public string PrivateKey { get; set; }

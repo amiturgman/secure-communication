@@ -7,14 +7,18 @@ using Contracts;
 namespace SecuredCommunication
 {
     /// <summary>
-    /// Encryption helper - manages the crypto operations which can be applied on a message.
+    /// Manages the crypto operations which can be applied on a message using the loaded certificates.
     /// </summary>
     public class EncryptionHelper : IEncryptionManager
     {
-        readonly X509Certificate2 m_encryptionCert;
-        readonly X509Certificate2 m_decryptionCert;
-        readonly X509Certificate2 m_signCert;
-        readonly X509Certificate2 m_verifyCert;
+        #region private members
+
+        private readonly X509Certificate2 m_encryptionCert;
+        private readonly X509Certificate2 m_decryptionCert;
+        private readonly X509Certificate2 m_signCert;
+        private readonly X509Certificate2 m_verifyCert;
+
+        #endregion
 
         public EncryptionHelper(X509Certificate2 encryptionCert, X509Certificate2 decryptionCert, X509Certificate2 signCert, X509Certificate2 verifyCert)
         {

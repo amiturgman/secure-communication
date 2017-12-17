@@ -61,38 +61,6 @@ namespace UnitTests
             throw new NotImplementedException();
         }
 
-        public Task<KeyBundle> GetKeyAsync(string keyName, string keyVersion)
-        {
-
-            var x = new X509Certificate2("../../../testCert.pfx", "abc123ABC", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
-
-            var key = keyName.Contains("private") ? x.GetRSAPrivateKey() : x.GetRSAPublicKey();
-            using (RSA rsa = key)
-            {
-                var shouldGetPrivate = keyName.Contains("private");
-                var parameters = rsa.ExportParameters(shouldGetPrivate);
-                KeyBundle bundle = new KeyBundle
-                { 
-                    Key = new Microsoft.Azure.KeyVault.WebKey.JsonWebKey
-                    {
-                        Kty = Microsoft.Azure.KeyVault.WebKey.JsonWebKeyType.Rsa,
-                        // Private stuff
-                        D = parameters.D,
-                        DP = parameters.DP,
-                        DQ = parameters.DQ,
-                        P = parameters.P,
-                        Q = parameters.Q,
-                        QI = parameters.InverseQ,
-                        // Public stuff
-                        N = parameters.Modulus,
-                        E = parameters.Exponent, 
-                        Kid = "https://mykv.vault.azure.net:443/keys/" + keyName + "/"
-                    },
-                };
-                return Task.FromResult(bundle);
-            }
-        }
-
         byte[] sig = Utils.ToByteArray<string>("Signature");
         public Task<KeyOperationResult> SignAsync(string keyIdentifier, string algorithm, byte[] digest)
         {

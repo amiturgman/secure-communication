@@ -1,8 +1,10 @@
 ﻿using System;
-using System.Threading.Tasks;
 
 namespace Contracts
 {
+    /// <summary>
+    /// A message object which is passed on the communication pipeline.
+    /// </summary>
     [Serializable]
     public class Message
     {
@@ -15,36 +17,5 @@ namespace Contracts
             IsEncrypted = isEncrypted;
             Data = data;
             Signature = signature;
-        }
-
-        public static async Task<byte[]> CreateMessageForQueue(string data, IEncryptionManager encryptionManager, bool isEncrypted)
-        {
-            var dataInBytes = Utils.ToByteArray(data);
-            var signature = await encryptionManager.SignAsync(dataInBytes);
-
-            if (isEncrypted)
-            {
-                dataInBytes = await encryptionManager.Encrypt(dataInBytes);
-            }
-
-            return Utils.ToByteArray(new Message(isEncrypted, dataInBytes, signature));
-        }
-
-        public static async Task DecryptAndVerifyQueueMessage(byte[] body, IEncryptionManager encryptionManager, Action<Message> cb)
-        {
-            var msg = Utils.FromByteArray<Message>(body);
-            if (msg.IsEncrypted)
-            {
-                msg.Data = await encryptionManager.Decrypt(msg.Data);
-            }
-
-            var verifyResult = await encryptionManager.VerifyAsync(msg.Data, msg.Signature);
-
-            if (verifyResult == false)
-            {
-                throw new Exception("Verify failed!!");
-            }
-
-            cb(msg);
         }
     }}

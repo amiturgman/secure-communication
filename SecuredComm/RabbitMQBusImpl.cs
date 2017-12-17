@@ -8,13 +8,17 @@ using RabbitMQ.Client.Events;
 namespace SecuredCommunication
 {
     // An implementation using the RabbitMQ service
-    public class RabbitMQBusImpl : ISecuredComm
+    public class RabbitMQBusImpl : IQueueCommunication
     {
-        private IEncryptionManager m_secretMgmt;
+        #region private members
+
+        private readonly IEncryptionManager m_secretMgmt;
+        private readonly IModel m_channel;
+        private readonly bool m_isEncrypted;
+        private readonly string m_exchangeName;
         private EventingBasicConsumer m_consumer;
-        private IModel m_channel;
-        private bool m_isEncrypted;
-        private string m_exchangeName;
+
+        #endregion
 
         public RabbitMQBusImpl(
             string rabitMqUri,
@@ -45,7 +49,7 @@ namespace SecuredCommunication
                 // TODO: handle messages that failed
                 m_channel.BasicAck(ea.DeliveryTag, false);
 
-                await Message.DecryptAndVerifyQueueMessage(ea.Body, m_secretMgmt, cb);
+                await MessageUtils.DecryptAndVerifyQueueMessage(ea.Body, m_secretMgmt, cb);
             };
 
             // return the consumer tag
@@ -60,7 +64,7 @@ namespace SecuredCommunication
             properties.Persistent = true;
             m_channel.BasicQos(0, 1, false);
 
-            var msgAsBytes = await Message.CreateMessageForQueue(data, m_secretMgmt, m_isEncrypted);
+            var msgAsBytes = await MessageUtils.CreateMessageForQueue(data, m_secretMgmt, m_isEncrypted);
             m_channel.BasicPublish(
                 exchange: m_exchangeName,
                 routingKey: queueName,

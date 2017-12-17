@@ -3,12 +3,15 @@ using System.Threading.Tasks;
 
 namespace Contracts
 {
+    /// <summary>
+    /// Blockchain node wrapper - allows for operations against the blockchain network (e.g. send transaction)
+    /// </summary>
     public interface IBlockchainNodeWrapper
     {
         /// <summary>
         /// Creates blockchain account and store the public and private keys in Azure KeyVault 
         /// </summary>
-        /// <returns>The public private key vault</returns>
+        /// <returns>The public private key pair</returns>
         KeyPair CreateAccount();
 
         /// <summary>
@@ -20,9 +23,9 @@ namespace Contracts
         Task<bool> StoreAccountAsync(string identifier, KeyPair key);
 
         /// <summary>
-        /// Sign a blockchain transaction
+        /// Signs a blockchain transaction
         /// </summary>
-        /// <param name="senderIdentifier">The sender identifier (Id, name etc.)</param>
+        /// <param name="senderIdentifier">The sender identifier (Id, name, etc...)</param>
         /// <param name="recieverAddress">The reciver address</param>
         /// <param name="amount">The amount to send</param>
         /// <returns>The transaction hash</returns>

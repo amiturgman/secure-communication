@@ -3,7 +3,10 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Contracts
 {
-    public class Utils
+    /// <summary>
+    /// Provides utility helper methods
+    /// </summary>
+    public static class Utils
     {
         public static byte[] ToByteArray<T>(T source)
         {

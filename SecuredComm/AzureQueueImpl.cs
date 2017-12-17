@@ -7,37 +7,54 @@ using Microsoft.WindowsAzure.Storage.Queue;
 
 namespace SecuredCommunication
 {
-    public class AzureQueueImpl : ISecuredComm
+    public class AzureQueueImpl : IQueueCommunication
     {
-        private CloudQueueClient queueClient;
-        private IEncryptionManager m_secretMgmt;
+        #region private members
+
+        private readonly CloudQueueClient m_queueClient;
+        private readonly IEncryptionManager m_secretMgmt;
         private readonly bool m_isEncrypted;
         private bool m_isCancelled;
+
+        #endregion
 
         public AzureQueueImpl(string connectionString, IEncryptionManager secretMgmnt, bool isEncrypted)
         {
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
-            queueClient = storageAccount.CreateCloudQueueClient();
+            m_queueClient = storageAccount.CreateCloudQueueClient();
             m_secretMgmt = secretMgmnt;
             m_isEncrypted = isEncrypted;
             m_isCancelled = false;
         }
 
+        /// <summary>
+        /// Enqueues a message, it will be automatically signed and if chosen (ctor) encrypted as well
+        /// </summary>
+        /// <returns>The async.</returns>
+        /// <param name="queueName">Queue name.</param>
+        /// <param name="msg">Message.</param>
         public async Task EnqueueAsync(string queueName, string msg)
         {
-            var queue = queueClient.GetQueueReference(queueName);
+            var queue = m_queueClient.GetQueueReference(queueName);
             await queue.CreateIfNotExistsAsync();
             var message = 
                 CloudQueueMessage.CreateCloudQueueMessageFromByteArray(
-                    await Message.CreateMessageForQueue(msg, m_secretMgmt, m_isEncrypted));
+                    await MessageUtils.CreateMessageForQueue(msg, m_secretMgmt, m_isEncrypted));
             await queue.AddMessageAsync(message);
         }
 
+        /// <summary>
+        /// Dequeues a message. The signature will be verified, in case of a verification failure an exception will be thrown.
+        /// The callback recieves a single argument which is the decryted and verified message
+        /// </summary>
+        /// <returns>The async.</returns>
+        /// <param name="queueName">Queue name.</param>
+        /// <param name="cb">Callback</param>
         public async Task<string> DequeueAsync(string queueName, Action<Message> cb)
         {
             m_isCancelled = false;
 
-            var queue = queueClient.GetQueueReference(queueName);
+            var queue = m_queueClient.GetQueueReference(queueName);
             await queue.CreateIfNotExistsAsync();
            
             while (!m_isCancelled)
@@ -47,8 +64,10 @@ namespace SecuredCommunication
                     var retrievedMessage = await queue.GetMessageAsync();
                     if (retrievedMessage != null)
                     {
-                        await Message.DecryptAndVerifyQueueMessage(retrievedMessage.AsBytes, m_secretMgmt, cb);
+                        await MessageUtils.DecryptAndVerifyQueueMessage(retrievedMessage.AsBytes, m_secretMgmt, cb);
                         await queue.DeleteMessageAsync(retrievedMessage);
+
+                        // no need to sleep, try again
                         continue;
                     }
                 }

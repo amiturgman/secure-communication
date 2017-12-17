@@ -45,7 +45,7 @@ namespace CryptoFan
                 securedComm.DequeueAsync("notifications",
                     msg =>
                     {
-                        var data = Utils.FromByteArray<string>(msg.Data);
+                        var data = Utils.FromByteArray<string>(msg.m_data);
                         if (data.Equals(reciverAddress, StringComparison.OrdinalIgnoreCase))
                         {
                             Console.WriteLine("Great, Balance change!");
@@ -54,7 +54,7 @@ namespace CryptoFan
                         else
                         {
                             Console.WriteLine("Not my balance!");
-                            Console.WriteLine(msg.Data);
+                            Console.WriteLine(msg.m_data);
                         }
                     });
 

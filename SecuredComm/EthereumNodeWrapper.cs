@@ -35,6 +35,12 @@ namespace SecuredCommunication
             return new KeyPair(ecKey.GetPublicAddress(), ecKey.GetPrivateKey());
         }
 
+        /// <summary>
+        /// Stores the account async.
+        /// </summary>
+        /// <returns>The account async.</returns>
+        /// <param name="identifier">Identifier.</param>
+        /// <param name="key">Key.</param>
         public async Task<bool> StoreAccountAsync(string identifier, KeyPair key)
         {
             try
