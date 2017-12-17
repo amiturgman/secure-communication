@@ -1,0 +1,81 @@
+﻿using System;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
+using Contracts;
+
+namespace SecuredCommunication
+{
+    /// <summary>
+    /// Encryption helper - manages the crypto operations which can be applied on a message.
+    /// </summary>
+    public class EncryptionHelper : IEncryptionManager
+    {
+        readonly X509Certificate2 m_encryptionCert;
+        readonly X509Certificate2 m_decryptionCert;
+        readonly X509Certificate2 m_signCert;
+        readonly X509Certificate2 m_verifyCert;
+
+        public EncryptionHelper(X509Certificate2 encryptionCert, X509Certificate2 decryptionCert, X509Certificate2 signCert, X509Certificate2 verifyCert)
+        {
+            m_signCert = signCert;
+            m_verifyCert = verifyCert;
+            m_encryptionCert = encryptionCert;
+            m_decryptionCert = decryptionCert;
+        }
+
+        public Task<byte[]> Decrypt(byte[] encryptedData)
+        {
+            try
+            {
+                // GetRSAPrivateKey returns an object with an independent lifetime, so it should be
+                // handled via a using statement.
+                using (RSA rsa = m_decryptionCert.GetRSAPrivateKey())
+                {
+                    return Task.FromResult(rsa.Decrypt(encryptedData, RSAEncryptionPadding.OaepSHA1));
+                }
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine("Exception was thrown: " + exc);
+                throw;
+            }
+        }
+
+        public Task<byte[]> Encrypt(byte[] data)
+        {
+            try
+            {
+                // GetRSAPublicKey returns an object with an independent lifetime, so it should be
+                // handled via a using statement.
+                using (RSA rsa = m_encryptionCert.GetRSAPublicKey())
+                {
+                    // OAEP allows for multiple hashing algorithms, what was formermly just "OAEP" is
+                    // now OAEP-SHA1.
+                    return Task.FromResult(rsa.Encrypt(data, RSAEncryptionPadding.OaepSHA1));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+        }
+       
+        public Task<byte[]> SignAsync(byte[] data)
+        {
+            using (RSA rsa = m_signCert.GetRSAPrivateKey())
+            {
+                return Task.FromResult(rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1));
+            }
+        }
+
+        public Task<bool> VerifyAsync(byte[] data, byte[] signature)
+        {
+            using (RSA rsa = m_verifyCert.GetRSAPublicKey())
+            {
+                return Task.FromResult(rsa.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1));
+            }
+        }
+    }
+}

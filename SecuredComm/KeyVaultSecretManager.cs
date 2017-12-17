@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Contracts;
@@ -20,11 +19,73 @@ namespace SecuredCommunication
         private string m_signKeyName;
         private string m_verifyKeyName;
 
+        private X509Certificate2 m_encryptionCert;
+        private X509Certificate2 m_decryptionCert;
+        private X509Certificate2 m_signCert;
+        private X509Certificate2 m_verifyCert;
+        private EncryptionHelper m_encryptionHelper;
+        private bool m_isInit;
+
         #endregion
 
+        private async Task Initialize() {
 
+            var encryptSecretTask = m_publicKeyVault.GetSecretAsync(m_encryptionKeyName);
+            var decryptSecretTask = m_privateKeyVault.GetSecretAsync(m_decryptionKeyName);
+            var signSecretTask = m_publicKeyVault.GetSecretAsync(m_signKeyName);
+            var verifySecretTask = m_publicKeyVault.GetSecretAsync(m_verifyKeyName);
+
+            // wait on all of the tasks concurrently
+            var tasks = new Task[] { encryptSecretTask, decryptSecretTask, signSecretTask, verifySecretTask };
+            await Task.WhenAll(tasks);
+
+            // when using 'Result' we know that the task is actually done already
+            m_encryptionCert = SecretToCertificate(encryptSecretTask.Result.Value);
+            m_decryptionCert = SecretToCertificate(decryptSecretTask.Result.Value);
+            m_signCert = SecretToCertificate(signSecretTask.Result.Value);
+            m_verifyCert = SecretToCertificate(verifySecretTask.Result.Value);
+
+            // Now, we have an 'EncryptionHelper', which can help us encrypt, decrypt, sign and verify using
+            // the prefetched certificates
+            m_encryptionHelper = 
+                new EncryptionHelper(m_encryptionCert, m_decryptionCert, m_signCert, m_verifyCert);
+
+            m_isInit = true;
+        }
+
+        /// <summary>
+        /// Takes a Base64 representation of a certificate and creates a new certificate
+        /// object
+        /// </summary>
+        /// <returns>The certificate object</returns>
+        /// <param name="secret">Base64 string representation of a certificate</param>
+        private X509Certificate2 SecretToCertificate(string secret) {
+            return new X509Certificate2(Base64.Decode(secret));
+        }
+
+        /// <summary>
+        /// If marked as not initialized, runs the initialize method
+        /// </summary>
+        private async Task VerifyInitialized(){
+            if (!m_isInit) {
+                await Initialize();
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:SecuredCommunication.KeyVaultSecretManager"/> class.
+        /// </summary>
+        /// <param name="encryptionKeyName">Encryption key name.</param>
+        /// <param name="decryptionKeyName">Decryption key name.</param>
+        /// <param name="signKeyName">Sign key name.</param>
+        /// <param name="verifyKeyName">Verify key name.</param>
+        /// <param name="privateKv">A KV with private keys. Will be used for decryption and signing</param>
+        /// <param name="publicKv">A KV just with public keys. Will be used for encryption and verifying</param>
         public KeyVaultSecretManager(string encryptionKeyName, string decryptionKeyName, string signKeyName, string verifyKeyName, IKeyVault privateKv, IKeyVault publicKv)
         {
+            // marked as false as we still need to initialize the EncryptionHelper later
+            m_isInit = false;
+
             m_decryptionKeyName = decryptionKeyName;
             m_encryptionKeyName = encryptionKeyName;
             m_signKeyName = signKeyName;
@@ -36,11 +97,11 @@ namespace SecuredCommunication
 
         public async Task<byte[]> Decrypt(byte[] encryptedData)
         {
+            await VerifyInitialized();
+
             try
             {
-                var secret = await m_privateKeyVault.GetSecretAsync(m_decryptionKeyName);
-                var x509 = new X509Certificate2(Base64.Decode(secret.Value));
-                return DecryptDataOaepSha1(x509, encryptedData);
+                return await m_encryptionHelper.Decrypt(encryptedData);
             }
             catch (Exception exc)
             {
@@ -49,27 +110,13 @@ namespace SecuredCommunication
             }
         }
 
-        public static byte[] DecryptDataOaepSha1(X509Certificate2 cert, byte[] data)
-        {
-            // GetRSAPrivateKey returns an object with an independent lifetime, so it should be
-            // handled via a using statement.
-            using (RSA rsa = cert.GetRSAPrivateKey())
-            {
-                return rsa.Decrypt(data, RSAEncryptionPadding.OaepSHA1);
-            }
-        }
-
         public async Task<byte[]> Encrypt(byte[] data)
         {
+            await VerifyInitialized();
+
             try
             {
-                var secret = await m_publicKeyVault.GetSecretAsync(m_encryptionKeyName);
-                var x509 = new X509Certificate2(Base64.Decode(secret.Value));
-                var encrypted = EncryptDataOaepSha1(x509, data);
-                return encrypted;
-                //var key = await m_publicKeyVault.GetKeyAsync(m_encryptionKeyName);
-                //var result = await m_publicKeyVault.EncryptAsync(key.KeyIdentifier.Identifier, "RSA1_5", data);
-                //return result.Result;
+                return await m_encryptionHelper.Encrypt(data);
             }
             catch (Exception ex)
             {
@@ -78,51 +125,34 @@ namespace SecuredCommunication
             }
         }
 
-        public static byte[] EncryptDataOaepSha1(X509Certificate2 cert, byte[] data)
-        {
-            // GetRSAPublicKey returns an object with an independent lifetime, so it should be
-            // handled via a using statement.
-            using (RSA rsa = cert.GetRSAPublicKey())
-            {
-                // OAEP allows for multiple hashing algorithms, what was formermly just "OAEP" is
-                // now OAEP-SHA1.
-                return rsa.Encrypt(data, RSAEncryptionPadding.OaepSHA1);
-            }
-        }
-
-        public static byte[] SignData(X509Certificate2 cert, byte[] data)
-        {
-            using (RSA rsa = cert.GetRSAPrivateKey())
-            {
-                return rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-            }
-        }
-
-        public static bool VerifyData(X509Certificate2 cert, byte[] data, byte[] signature)
-        {
-            using (RSA rsa = cert.GetRSAPublicKey())
-            {
-                return rsa.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-            }
-        }
-
         public async Task<byte[]> SignAsync(byte[] data)
         {
-            //For encryption use the private KV
-            //(the one associated with the current service).
+            await VerifyInitialized();
 
-            var secret = await m_publicKeyVault.GetSecretAsync(m_signKeyName);
-            var x509 = new X509Certificate2(Base64.Decode(secret.Value));
-            return SignData(x509, data);
+            try
+            {
+                return await m_encryptionHelper.SignAsync(data);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
         }
 
         public async Task<bool> VerifyAsync(byte[] data, byte[] signature)
         {
-            //// For encryption use the global KV 
-            //// (the one with just public keys).
-            var secret = await m_publicKeyVault.GetSecretAsync(m_verifyKeyName);
-            var x509 = new X509Certificate2(Base64.Decode(secret.Value));
-            return VerifyData(x509, data, signature);
+            await VerifyInitialized();
+
+            try
+            {
+                return await m_encryptionHelper.VerifyAsync(data, signature);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
         }
     }
 }
