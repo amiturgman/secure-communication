@@ -40,7 +40,7 @@ namespace TransactionEngine
                 {
                     Console.WriteLine("Got work!");
 
-                    var data = Utils.FromByteArray<string>(msg.Data);
+                    var data = Utils.FromByteArray<string>(msg.m_data);
                     var msgArray = data.Split(";");
                     var amount = unitConverion.ToWei(msgArray[0]);
                     var senderName = msgArray[1];

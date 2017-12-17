@@ -8,14 +8,14 @@ namespace Contracts
     [Serializable]
     public class Message
     {
-        public bool IsEncrypted;
-        public byte[] Data;
-        public byte[] Signature;
+        public bool m_isEncrypted;
+        public byte[] m_data;
+        public byte[] m_signature;
 
         public Message(bool isEncrypted, byte[] data, byte[] signature)
         {
-            IsEncrypted = isEncrypted;
-            Data = data;
-            Signature = signature;
+            m_isEncrypted = isEncrypted;
+            m_data = data;
+            m_signature = signature;
         }
     }}
