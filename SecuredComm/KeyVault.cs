@@ -9,10 +9,8 @@ namespace SecuredCommunication
 {
     public class KeyVault : IKeyVault
     {
-        public KeyVaultClient m_kvClient;
-
         #region private members
-
+        private KeyVaultClient m_kvClient;
         private readonly string m_url;
         private readonly string m_applicationId;
         private readonly string m_applicationSecret;
