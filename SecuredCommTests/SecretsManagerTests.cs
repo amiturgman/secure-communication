@@ -11,12 +11,12 @@ namespace UnitTests
         private const string c_signKeyName = "sign_private";
         private const string c_verifyKeyName = "verify_public";
 
-     /*   [Fact]
+        [Fact]
         public void Sanity_VerifyCanBeCreated()
         {
             var kvInfo = new KeyVaultMock("http://dummyKvUri");
-            var secretsMgmnt = new SecretsManagement(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
-        }*/
+            var secretsMgmnt = new KeyVaultSecretManager(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
+        }
 
         [Fact]
         public async void Sanity_Encryption()
@@ -49,6 +49,7 @@ namespace UnitTests
             // Verify the process ended succesfully and the data is plain text
             Assert.IsType<byte[]>(encryptedData);
             Assert.Equal(256, encryptedData.Length);
+            Assert.Equal(decryptedData, Utils.ToByteArray(rawData));
         }
 
         [Fact]
@@ -63,7 +64,7 @@ namespace UnitTests
             var signature = await secretsMgmnt.SignAsync(Utils.ToByteArray(rawData));
 
             // todo: check what the actual expected signature length
-            //Assert.Equal(signature.Length, 256);
+            Assert.Equal(signature.Length, 256);
         }
 
         [Fact]
@@ -77,7 +78,7 @@ namespace UnitTests
             // Sign the data
             var signature = await secretsMgmnt.SignAsync(Utils.ToByteArray(rawData));
 
-            Assert.True(await secretsMgmnt.VerifyAsync(signature, Utils.ToByteArray(rawData)));
+            Assert.True(await secretsMgmnt.VerifyAsync(Utils.ToByteArray(rawData), signature));
         }
     }
 }

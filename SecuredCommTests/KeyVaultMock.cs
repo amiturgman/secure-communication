@@ -4,6 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Contracts;
 using Microsoft.Azure.KeyVault.Models;
+using Org.BouncyCastle.Utilities.Encoders;
 
 namespace UnitTests
 {
@@ -41,14 +42,50 @@ namespace UnitTests
             return Task.FromResult(TestConstants.publicKey);
         }
 
-        public Task<SecretBundle> GetSecretAsync(string secretName)
+        public async Task<SecretBundle> GetSecretAsync(string secretName)
         {
-            throw new Exception();
+            var x = new X509Certificate2("../../../testCert.pfx", "abc123ABC", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
+            //var key = await GetKeyAsync(secretName);
+            byte[] certBytes = x.Export(X509ContentType.Pkcs12);
+            var secBundle = new SecretBundle(Convert.ToBase64String(certBytes));
+            return secBundle;
         }
 
         public string GetUrl()
         {
-            throw new NotImplementedException();
+            return kvUri;
+        }
+
+        public Task<KeyBundle> GetKeyAsync(string keyName)
+        {
+
+            var x = new X509Certificate2("../../../testCert.pfx", "abc123ABC", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
+
+            var key = keyName.Contains("private") ? x.GetRSAPrivateKey() : x.GetRSAPublicKey();
+            using (RSA rsa = key)
+            {
+                var shouldGetPrivate = keyName.Contains("private");
+                var parameters = rsa.ExportParameters(shouldGetPrivate);
+                KeyBundle bundle = new KeyBundle
+                { 
+                    Key = new Microsoft.Azure.KeyVault.WebKey.JsonWebKey
+                    {
+                        Kty = Microsoft.Azure.KeyVault.WebKey.JsonWebKeyType.Rsa,
+                        // Private stuff
+                        D = parameters.D,
+                        DP = parameters.DP,
+                        DQ = parameters.DQ,
+                        P = parameters.P,
+                        Q = parameters.Q,
+                        QI = parameters.InverseQ,
+                        // Public stuff
+                        N = parameters.Modulus,
+                        E = parameters.Exponent, 
+                        Kid = "https://mykv.vault.azure.net:443/keys/" + keyName + "/"
+                    },
+                };
+                return Task.FromResult(bundle);
+            }
         }
 
         public Task<SecretBundle> SetSecretAsync(string secretName, string value)

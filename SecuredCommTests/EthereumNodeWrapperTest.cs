@@ -5,7 +5,7 @@ namespace UnitTests
 {
     public class EthereumNodeWrapperTest
     {
-        [Fact]
+       /* [Fact]
         public async void Sanity_Sign_Transaction()
         {
             var kvInfo = new KeyVaultMock("http://dummyKvUri");
@@ -51,6 +51,6 @@ namespace UnitTests
             Assert.Equal(66, transactionResult.Length);
         }
 
-
+*/
     }
 }
