@@ -25,12 +25,12 @@ namespace SecuredCommunication
         public static async Task DecryptAndVerifyQueueMessage(byte[] body, IEncryptionManager encryptionManager, Action<Message> cb)
         {
             var msg = Utils.FromByteArray<Message>(body);
-            if (msg.IsEncrypted)
+            if (msg.m_isEncrypted)
             {
-                msg.Data = await encryptionManager.Decrypt(msg.Data);
+                msg.m_data = await encryptionManager.Decrypt(msg.m_data);
             }
 
-            var verifyResult = await encryptionManager.VerifyAsync(msg.Data, msg.Signature);
+            var verifyResult = await encryptionManager.VerifyAsync(msg.m_data, msg.m_signature);
 
             if (verifyResult == false)
             {
