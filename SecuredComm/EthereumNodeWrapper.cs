@@ -18,10 +18,10 @@ namespace SecuredCommunication
         private const string privateKeySuffix = "-private";
 
         #region Public Methods
-        public EthereumNodeWrapper(IKeyVault keyVault, string nodeUrl)
+        public EthereumNodeWrapper(IKeyVault keyVault, string nodeUrl = "")
         {
             m_kv = keyVault;
-            web3 = new Web3(nodeUrl);
+            web3 = string.IsNullOrEmpty(nodeUrl) ? new Web3() : new Web3(nodeUrl);
         }
 
         /// <summary>

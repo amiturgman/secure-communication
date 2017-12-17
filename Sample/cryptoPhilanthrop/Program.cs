@@ -2,6 +2,8 @@
 using System.Configuration;
 using System.Threading;
 using SecuredCommunication;
+using Microsoft.Azure.KeyVault.Models;
+using Contracts;
 
 namespace CoinsSender
 {
@@ -23,11 +25,12 @@ namespace CoinsSender
             var kv = new KeyVault(ConfigurationManager.AppSettings["AzureKeyVaultUri"],
                 ConfigurationManager.AppSettings["applicationId"], ConfigurationManager.AppSettings["applicationSecret"]);
             var ethereumNodeWrapper = new EthereumNodeWrapper(kv, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
-
+            
             while (true)
             {
-                Console.WriteLine("To create new accounts press 1");
-                Console.WriteLine("If you already created sender and reciver accounts press 2");
+                Console.WriteLine("To run the demo with Ethereum Testnet press 1");
+                Console.WriteLine("To run the demo with Docker testrpc press 2");
+                
                 Console.WriteLine("Press any other key to exit");
                 Console.WriteLine();
 
@@ -36,9 +39,67 @@ namespace CoinsSender
                 switch (userInput)
                 {
                     case 1:
+                        EthereumTestnetDemo(kv, ethereumNodeWrapper);
+                        continue;
+                    case 2:
+                        EthereumTestRpcDemo(kv, ethereumNodeWrapper);
+                        continue;
+                    default:
+                        return;
+                }
+            }
+        }
+
+        private static void EthereumTestRpcDemo(KeyVault kv, EthereumNodeWrapper ethereumNodeWrapper)
+        {
+            var senderPublicKey = "0xe6128e8d408f53ea53e74be796d40db896fcaef0";
+            var senderPrivateKey = "0x4faec59e004fd62384813d760e55d6df65537b4ccf62f268253ad7d4243a7193";
+            var reciverPublicKey = "0x9108cf23b4f60f2bc355088a51539b576c7f9e6d";
+            var reciverPrivateKey = "0x03fd5782c37523be6598ca0e5d091756635d144e42d518bb5f8db11cf931b447";
+
+            Console.WriteLine($"Please run the docker image with the following command:{Environment.NewLine}"+
+                "docker run -d -p 8545:8545 trufflesuite/ganache-cli:latest " +
+                $"--account=\"{senderPrivateKey}, 300000000000000000000\"" +
+                $" --account=\"{reciverPrivateKey}, 0\"");
+            Console.WriteLine("Press enter once the docker is running");
+            Console.ReadLine();
+
+            // Check if Account already stored in KeyVault
+            try
+            {
+                var senderAccount = ethereumNodeWrapper.GetPublicKeyAsync(c_senderId).Result;
+                var reciverAccount = ethereumNodeWrapper.GetPublicKeyAsync(c_ReciverId).Result;
+
+            } catch (Exception ex)
+            {
+                if (ex.InnerException is KeyVaultErrorException && ex.InnerException.Message.Contains("Secret not found"))
+                {
+                    // Create accounts
+                    var senderAccount= new KeyPair(senderPublicKey, senderPrivateKey);
+                    var reciverAccount =  new KeyPair(reciverPublicKey, reciverPrivateKey);
+
+                    var result = ethereumNodeWrapper.StoreAccountAsync(c_senderId, senderAccount).Result;
+                    result = ethereumNodeWrapper.StoreAccountAsync(c_ReciverId, reciverAccount).Result;
+                }
+            } finally
+            {
+                SendCoins(kv, ethereumNodeWrapper);
+            }
+        }
+
+        private static void EthereumTestnetDemo(KeyVault kv, EthereumNodeWrapper ethereumNodeWrapper)
+        {
+            while (true)
+            {
+                Console.WriteLine("To create new accounts press 1");
+                Console.WriteLine("If you already created sender and reciver accounts press 2");
+                var input = double.Parse(Console.ReadLine());
+                switch (input)
+                {
+                    case 1:
+                        // Create accounts
                         var senderAccount = ethereumNodeWrapper.CreateAccount();
                         var result = ethereumNodeWrapper.StoreAccountAsync(c_senderId, senderAccount).Result;
-
                         var reciverAccount = ethereumNodeWrapper.CreateAccount();
                         result = ethereumNodeWrapper.StoreAccountAsync(c_ReciverId, reciverAccount).Result;
 
