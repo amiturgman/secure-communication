@@ -20,7 +20,8 @@ namespace TransactionEngine
             // Init
             var unitConverion = new Nethereum.Util.UnitConversion();
 
-            var kv = new KeyVault(ConfigurationManager.AppSettings["AzureKeyVaultUri"]);
+            var kv = new KeyVault(ConfigurationManager.AppSettings["AzureKeyVaultUri"],
+                ConfigurationManager.AppSettings["applicationId"], ConfigurationManager.AppSettings["applicationSecret"]);
 
             var encryptionKeyName = ConfigurationManager.AppSettings["EncryptionKeyName"];
             var decryptionKeyName = ConfigurationManager.AppSettings["DecryptionKeyName"];

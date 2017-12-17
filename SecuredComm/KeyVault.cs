@@ -12,11 +12,15 @@ namespace SecuredCommunication
     {
         public KeyVaultClient client;
         private readonly string _url;
+        private readonly string _applicationId;
+        private readonly string _applicationSecret;
 
-        public KeyVault(string kvUrl)
+        public KeyVault(string kvUrl, string applicationId, string applicationSecret)
         {
             _url = kvUrl;
             client = new KeyVaultClient(GetAccessTokenAsync, new HttpClient());
+            _applicationId = applicationId;
+            _applicationSecret = applicationSecret;
         }
 
         /// <summary>
@@ -64,17 +68,12 @@ namespace SecuredCommunication
         }
 
 #region Private Methods
-        private static async Task<string> GetAccessTokenAsync(
+        private async Task<string> GetAccessTokenAsync(
           string authority,
           string resource,
           string scope)
         {
-            //clientID and clientSecret are obtained by registering
-            //the application in Azure AD
-            var clientId = ConfigurationManager.AppSettings["applicationId"];
-            var clientSecret = ConfigurationManager.AppSettings["applicationSecret"];
-
-            var clientCredential = new ClientCredential(clientId, clientSecret);
+            var clientCredential = new ClientCredential(_applicationId, _applicationSecret);
             var context = new AuthenticationContext(authority, TokenCache.DefaultShared);
             var result = await context.AcquireTokenAsync(resource, clientCredential);
 

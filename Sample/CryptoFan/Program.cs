@@ -22,7 +22,8 @@ namespace CryptoFan
         static void Main(string[] args)
         {
             // Init
-            var kv = new KeyVault(ConfigurationManager.AppSettings["AzureKeyVaultUri"]);
+            var kv = new KeyVault(ConfigurationManager.AppSettings["AzureKeyVaultUri"], 
+                ConfigurationManager.AppSettings["applicationId"], ConfigurationManager.AppSettings["applicationSecret"]);
             var ethereumNodeWrapper = new EthereumNodeWrapper(kv, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
 
             Console.WriteLine("Reciever - I just love getting new crypto coins");

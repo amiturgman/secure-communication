@@ -20,7 +20,8 @@ namespace CoinsSender
 
         static void Main(string[] args)
         {
-            var kv = new KeyVault(ConfigurationManager.AppSettings["AzureKeyVaultUri"]);
+            var kv = new KeyVault(ConfigurationManager.AppSettings["AzureKeyVaultUri"],
+                ConfigurationManager.AppSettings["applicationId"], ConfigurationManager.AppSettings["applicationSecret"]);
             var ethereumNodeWrapper = new EthereumNodeWrapper(kv, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
 
             while (true)
