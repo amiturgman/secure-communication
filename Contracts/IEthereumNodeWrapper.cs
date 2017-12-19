@@ -26,7 +26,7 @@ namespace Contracts
         /// Signs a blockchain transaction
         /// </summary>
         /// <param name="senderIdentifier">The sender identifier (Id, name, etc...)</param>
-        /// <param name="recieverAddress">The reciver address</param>
+        /// <param name="recieverAddress">The receiver address</param>
         /// <param name="amountInWei">The amount to send</param>
         /// <returns>The signed transaction</returns>
         Task<string> SignTransactionAsync(string senderIdentifier, string recieverAddress, BigInteger amountInWei);

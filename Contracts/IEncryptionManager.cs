@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace Contracts
+﻿namespace Contracts
 {
     /// <summary>
     /// Provides the interface for all of the cryptographic operations which we

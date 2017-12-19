@@ -8,13 +8,14 @@ namespace Contracts
     [Serializable]
     public class Message
     {
-        public bool Encrypted { get; private set; }
-        public byte[] Data { get; private set; }
-        public byte[] Signature { get; private set; }
+        public bool Encrypted { get; }
+        public byte[] Data { get; }
+        public byte[] Signature { get; }
 
         public Message(bool isEncrypted, byte[] data, byte[] signature)
         {
-            if (data != null || signature != null) {
+            if (data == null || signature == null)
+            {
                 throw new ArgumentException("invalid input data");
             }
 
@@ -22,4 +23,5 @@ namespace Contracts
             Data = data;
             Signature = signature;
         }
-    }}
+    }
+}

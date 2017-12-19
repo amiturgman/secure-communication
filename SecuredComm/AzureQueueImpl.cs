@@ -32,7 +32,6 @@ namespace SecuredCommunication
         /// <summary>
         /// Enqueues a message, it will be automatically signed and if chosen (ctor) encrypted as well
         /// </summary>
-        /// <returns>The async.</returns>
         /// <param name="queueName">Queue name.</param>
         /// <param name="msg">Message.</param>
         public async Task EnqueueAsync(string queueName, string msg)
@@ -40,20 +39,27 @@ namespace SecuredCommunication
             var queue = m_queueClient.GetQueueReference(queueName);
             // todo: add init method that creates the queue...
             await queue.CreateIfNotExistsAsync();
-            var message = 
-                CloudQueueMessage.CreateCloudQueueMessageFromByteArray(
-                    MessageUtils.CreateMessageForQueue(msg, m_secretMgmt, m_isEncrypted));
-            await queue.AddMessageAsync(message);
-            // todo: error handling.
+            var messageInBytes = MessageUtils.CreateMessageForQueue(msg, m_secretMgmt, m_isEncrypted);
+            var message = CloudQueueMessage.CreateCloudQueueMessageFromByteArray(messageInBytes);
+
+            try
+            {
+                await queue.AddMessageAsync(message);
+            }
+            catch (StorageException ex)
+            {
+                Console.WriteLine($"Exception was thrown when trying to push message to queue, exception: {ex.Message}");
+                throw;
+            }
         }
 
         /// <summary>
         /// Dequeues a message. The signature will be verified, in case of a verification failure an exception will be thrown.
-        /// The callback recieves a single argument which is the decryted and verified message
+        /// The callback receives a single argument which is the decrypted and verified message
         /// </summary>
-        /// <returns>The async.</returns>
         /// <param name="queueName">Queue name.</param>
         /// <param name="cb">Callback</param>
+        /// <returns>TODO: change this The async.</returns>
         public async Task<string> DequeueAsync(string queueName, Action<byte[]> cb)
         {
             m_isCancelled = false;
@@ -77,7 +83,7 @@ namespace SecuredCommunication
                 }
                 catch(Exception exc) {
                     Console.WriteLine("Caught an exception: " + exc);
-                    // Don't rethrow as we want the dequeue loop to continue
+                    // Don't re-throw as we want the dequeue loop to continue
                 }
 
                 Thread.Sleep(3000);

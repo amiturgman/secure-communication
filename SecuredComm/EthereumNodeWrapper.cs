@@ -12,18 +12,17 @@ namespace SecuredCommunication
     /// </summary>
     public class EthereumNodeWrapper : IEthereumNodeWrapper
     {
-        // todo: add prefixes
-        private Web3 web3;
+        private readonly Web3 m_web3;
         private IKeyVault m_kv;
-        private const string publicKeySuffix = "-public";
-        private const string privateKeySuffix = "-private";
-        private const string publicAddressSuffix = "-publicAddress";
+        private const string m_publicKeySuffix = "-public";
+        private const string m_privateKeySuffix = "-private";
+        private const string m_publicAddressSuffix = "-publicAddress";
 
         #region Public Methods
         public EthereumNodeWrapper(IKeyVault keyVault, string nodeUrl = "")
         {
             m_kv = keyVault;
-            web3 = string.IsNullOrEmpty(nodeUrl) ? new Web3() : new Web3(nodeUrl);
+            m_web3 = string.IsNullOrEmpty(nodeUrl) ? new Web3() : new Web3(nodeUrl);
         }
 
         /// <summary>
@@ -42,16 +41,16 @@ namespace SecuredCommunication
         /// <summary>
         /// Stores the account async.
         /// </summary>
-        /// <returns>The account async.</returns>
+        /// <returns>If the account was created successfully</returns>
         /// <param name="identifier">Identifier.</param>
         /// <param name="key">Key.</param>
         public async Task<bool> StoreAccountAsync(string identifier, EthKey key)
         {
             try
             {
-                await m_kv.SetSecretAsync(identifier + publicKeySuffix, Utils.FromByteArray<string>(key.Pair.PublicKey));
-                await m_kv.SetSecretAsync(identifier + privateKeySuffix, key.Pair.PrivateKey);
-                await m_kv.SetSecretAsync(identifier + publicAddressSuffix, key.PublicAddress);
+                await m_kv.SetSecretAsync(identifier + m_publicKeySuffix, Utils.FromByteArray<string>(key.Pair.PublicKey));
+                await m_kv.SetSecretAsync(identifier + m_privateKeySuffix, key.Pair.PrivateKey);
+                await m_kv.SetSecretAsync(identifier + m_publicAddressSuffix, key.PublicAddress);
 
                 return true;
             }
@@ -69,7 +68,7 @@ namespace SecuredCommunication
         /// <returns>The user's public key</returns>
         public async Task<string> GetPrivateKeyAsync(string identifier)
         {
-            var secret = await m_kv.GetSecretAsync(identifier + privateKeySuffix);
+            var secret = await m_kv.GetSecretAsync(identifier + m_privateKeySuffix);
             return secret.Value;
         }
 
@@ -80,7 +79,7 @@ namespace SecuredCommunication
         /// <returns>The user's public key</returns>
         public async Task<string> GetPublicKeyAsync(string identifier)
         {
-            var secret = await m_kv.GetSecretAsync(identifier + publicKeySuffix);
+            var secret = await m_kv.GetSecretAsync(identifier + m_publicKeySuffix);
             return secret.Value;
         }
 
@@ -88,13 +87,13 @@ namespace SecuredCommunication
         /// Sign a blockchain transaction
         /// </summary>
         /// <param name="senderIdentifier">The sender identifier (Id, name etc.)</param>
-        /// <param name="recieverAddress">The reciver address</param>
-        /// <param name="amountInWei">The amount to send in wei (ethereum units)</param>
+        /// <param name="recieverAddress">The receiver address</param>
+        /// <param name="amountInWei">The amount to send in Wei (ethereum units)</param>
         /// <returns>The transaction hash</returns>
         public async Task<string> SignTransactionAsync(string senderIdentifier, string recieverAddress, BigInteger amountInWei)
         {
             var senderKeyPair = await LoadKeyFromKeyVault(senderIdentifier);
-            var txCount = await web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(Utils.FromByteArray<string>(senderKeyPair.Pair.PublicKey));
+            var txCount = await m_web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(senderKeyPair.PublicAddress);
             return Web3.OfflineTransactionSigner.SignTransaction(senderKeyPair.Pair.PrivateKey, recieverAddress, amountInWei, txCount.Value);
         }
 
@@ -105,18 +104,18 @@ namespace SecuredCommunication
         /// <returns>The transaction result</returns>
         public async Task<string> SendRawTransactionAsync(string hash)
         {
-            return await web3.Eth.Transactions.SendRawTransaction.SendRequestAsync(hash);
+            return await m_web3.Eth.Transactions.SendRawTransaction.SendRequestAsync(hash);
         }
 
         /// <summary>
         /// Gets the balance of the provided account
         /// </summary>
-        /// <param name="address">The public address of the acocount</param>
+        /// <param name="address">The public address of the account</param>
         /// <returns>Returns the balance in ether.</returns>
         public async Task<decimal> GetCurrentBalance(string address)
         {
             var unitConverion = new Nethereum.Util.UnitConversion();
-            return unitConverion.FromWei(await web3.Eth.GetBalance.SendRequestAsync(address));
+            return unitConverion.FromWei(await m_web3.Eth.GetBalance.SendRequestAsync(address));
         }
         #endregion
 
@@ -128,11 +127,11 @@ namespace SecuredCommunication
         /// <returns>The public private key pair</returns>
         private async Task<EthKey> LoadKeyFromKeyVault(string identifier)
         {
-            var publicKey = await m_kv.GetSecretAsync(string.Concat(identifier, publicKeySuffix));
-            var privateKey = await m_kv.GetSecretAsync(string.Concat(identifier, privateKeySuffix));
-            var publicAddress = await m_kv.GetSecretAsync(string.Concat(identifier, publicAddressSuffix));
+            var publicKey = await m_kv.GetSecretAsync(string.Concat(identifier, m_publicKeySuffix));
+            var privateKey = await m_kv.GetSecretAsync(string.Concat(identifier, m_privateKeySuffix));
+            var publicAddress = await m_kv.GetSecretAsync(string.Concat(identifier, m_publicAddressSuffix));
 
-            return new EthKey(privateKey.Value, Utils.ToByteArray(publicKey), publicAddress.Value);
+            return new EthKey(privateKey.Value, Utils.ToByteArray(publicKey.Value), publicAddress.Value);
         }
 
         #endregion

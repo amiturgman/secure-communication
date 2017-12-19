@@ -29,6 +29,7 @@ namespace TransactionEngine
             var verifyKeyName = ConfigurationManager.AppSettings["VerifyKeyName"];
 
             var secretsMgmnt = new KeyVaultSecretManager(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, kv, kv);
+            secretsMgmnt.Initialize().Wait();
 
             //var securedComm = new RabbitMQBusImpl(ConfigurationManager.AppSettings["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");
             var securedComm = new AzureQueueImpl(ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt, true);

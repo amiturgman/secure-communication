@@ -25,7 +25,7 @@ $storageName = '[Azure storage name]'
 #certificate configuration
 # The temporary pfx location
 $pfxFilePath = '[The pfx temporary file, example: c:\temp\certificate.pfx]'
-# Temporary password, for installong and exporting the certificate
+# Temporary password, for installing and exporting the certificate
 $plainpass = '123456' 
 # The certificate DNS name
 $dnsName = '[The certificate dns name, example: testcert.contoso.com]'

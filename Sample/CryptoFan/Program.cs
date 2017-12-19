@@ -7,7 +7,7 @@ using SecuredCommunication;
 namespace CoinsReceiver
 {
     /// <summary>
-    /// A sample app that registers on a queue, whenver it gets update
+    /// A sample app that registers on a queue, whenever it gets update
     /// it checks and prints the balance.
     /// </summary>
     class Program
@@ -26,7 +26,7 @@ namespace CoinsReceiver
                 ConfigurationManager.AppSettings["applicationId"], ConfigurationManager.AppSettings["applicationSecret"]);
             var ethereumNodeWrapper = new EthereumNodeWrapper(kv, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
 
-            Console.WriteLine("Reciever - I just love getting new crypto coins");
+            Console.WriteLine("Receiver - I just love getting new crypto coins");
 
             var reciverAddress = ethereumNodeWrapper.GetPublicKeyAsync(c_ReciverId).Result;            
             PrintCurrentBalance(reciverAddress, ethereumNodeWrapper.GetCurrentBalance(reciverAddress).Result);
@@ -37,6 +37,7 @@ namespace CoinsReceiver
             var verifyKeyName = ConfigurationManager.AppSettings["VerifyKeyName"];
 
             var secretsMgmnt = new KeyVaultSecretManager(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, kv, kv);
+            secretsMgmnt.Initialize().Wait();
             //var securedComm = new RabbitMQBusImpl(ConfigurationManager.AppSettings["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");
             var securedComm = new AzureQueueImpl(ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt, true);
 

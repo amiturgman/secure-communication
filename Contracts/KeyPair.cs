@@ -5,8 +5,8 @@
     /// </summary>
     public class KeyPair
     {
-        public string PrivateKey { get; private set; }
-        public byte[] PublicKey { get; private set; }
+        public string PrivateKey { get; }
+        public byte[] PublicKey { get; }
 
         public KeyPair(byte[] publicKey, string privateKey)
         {

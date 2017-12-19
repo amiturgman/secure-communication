@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 using Contracts;
 
 namespace SecuredCommunication
@@ -54,7 +53,7 @@ namespace SecuredCommunication
                 // handled via a using statement.
                 using (RSA rsa = m_encryptionCert.GetRSAPublicKey())
                 {
-                    // OAEP allows for multiple hashing algorithms, what was formermly just "OAEP" is
+                    // OAEP allows for multiple hashing algorithms, what was formerly just "OAEP" is
                     // now OAEP-SHA1.
                     return rsa.Encrypt(data, RSAEncryptionPadding.OaepSHA1);
                 }

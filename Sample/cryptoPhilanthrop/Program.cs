@@ -9,7 +9,7 @@ namespace CoinsSender
 {
     /// <summary>
     ///  A sample app that checks balance and while > some value
-    ///  keep asking the transferer to create more transactions (Sends money)
+    ///  keep asking the transferee to create more transactions (Sends money)
     /// </summary>
     class Program
     {
@@ -92,7 +92,7 @@ namespace CoinsSender
             while (true)
             {
                 Console.WriteLine("To create new accounts press 1");
-                Console.WriteLine("If you already created sender and reciver accounts press 2");
+                Console.WriteLine("If you already created sender and receiver accounts press 2");
                 var input = double.Parse(Console.ReadLine());
                 switch (input)
                 {
@@ -131,11 +131,10 @@ namespace CoinsSender
             var signKeyName = ConfigurationManager.AppSettings["SignKeyName"];
             var verifyKeyName = ConfigurationManager.AppSettings["VerifyKeyName"];
 
-            var secretsMgmnt =
-                new KeyVaultSecretManager(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, kv, kv);
+            var secretsMgmnt = new KeyVaultSecretManager(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, kv, kv);
+            secretsMgmnt.Initialize().Wait();
             //var securedComm = new RabbitMQBusImpl(ConfigurationManager.AppSettings["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");
-            var securedComm = new AzureQueueImpl(ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt,
-                true);
+            var securedComm = new AzureQueueImpl(ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt, true);
 
             // While there are sufficient funds, transfer some...
             while (balance > 0)

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using System.Threading.Tasks;
 using Contracts;
 using RabbitMQ.Client;
@@ -46,7 +45,7 @@ namespace SecuredCommunication
             m_consumer = new EventingBasicConsumer(m_channel);
             m_consumer.Received += (ch, ea) =>
             {
-                // ack to the queue that we got the msg
+                // Ack to the queue that we got the message
                 // TODO: handle messages that failed
                 m_channel.BasicAck(ea.DeliveryTag, false);
 
