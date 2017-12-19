@@ -52,9 +52,9 @@ namespace CoinsSender
 
         private static void EthereumTestRpcDemo(KeyVault kv, EthereumNodeWrapper ethereumNodeWrapper)
         {
-            var senderPublicKey = "0xe6128e8d408f53ea53e74be796d40db896fcaef0";
+            var senderPublicAddress = "0xe6128e8d408f53ea53e74be796d40db896fcaef0";
             var senderPrivateKey = "0x4faec59e004fd62384813d760e55d6df65537b4ccf62f268253ad7d4243a7193";
-            var reciverPublicKey = "0x9108cf23b4f60f2bc355088a51539b576c7f9e6d";
+            var reciverPublicAddress = "0x9108cf23b4f60f2bc355088a51539b576c7f9e6d";
             var reciverPrivateKey = "0x03fd5782c37523be6598ca0e5d091756635d144e42d518bb5f8db11cf931b447";
 
             Console.WriteLine($"Please run the docker image with the following command:{Environment.NewLine}"+
@@ -75,8 +75,8 @@ namespace CoinsSender
                 if (ex.InnerException is KeyVaultErrorException && ex.InnerException.Message.Contains("Secret not found"))
                 {
                     // Create accounts
-                    var senderAccount= new KeyPair(senderPublicKey, senderPrivateKey);
-                    var reciverAccount =  new KeyPair(reciverPublicKey, reciverPrivateKey);
+                    var senderAccount= new EthKey(senderPrivateKey, new byte[] {}, senderPublicAddress);
+                    var reciverAccount =  new EthKey(reciverPrivateKey, new byte[] { }, reciverPublicAddress);
 
                     var result = ethereumNodeWrapper.StoreAccountAsync(c_senderId, senderAccount).Result;
                     result = ethereumNodeWrapper.StoreAccountAsync(c_ReciverId, reciverAccount).Result;
@@ -104,7 +104,7 @@ namespace CoinsSender
                         result = ethereumNodeWrapper.StoreAccountAsync(c_ReciverId, reciverAccount).Result;
 
                         Console.WriteLine("Accounts were created. " +
-                                          $"To continue the demo please send ether to address {senderAccount.PublicKey}{Environment.NewLine}" +
+                                          $"To continue the demo please send ether to address {senderAccount.PublicAddress}{Environment.NewLine}" +
                                           "You can send ether for: https://www.rinkeby.io/#faucet");
                         continue;
                     case 2:

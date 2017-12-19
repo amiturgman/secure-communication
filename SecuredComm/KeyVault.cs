@@ -13,34 +13,28 @@ namespace SecuredCommunication
         #region private members
 
         private KeyVaultClient m_kvClient;
-        private readonly string m_url;
         private readonly string m_applicationId;
         private readonly string m_applicationSecret;
 
         #endregion
 
+        public string Url { get; private set; }
+
+        // todo: error + logs
         public KeyVault(string kvUrl, string applicationId, string applicationSecret)
         {
-            m_url = kvUrl;
-            m_kvClient = new KeyVaultClient(GetAccessTokenAsync, new HttpClient());
+            Url = kvUrl;
             m_applicationId = applicationId;
             m_applicationSecret = applicationSecret;
-        }
-
-        /// <summary>
-        /// Get the Azure Key Vault Url
-        /// </summary>
-        /// <returns>The KeyVault Url</returns>
-        public string GetUrl()
-        {
-            return m_url;
+           
+            m_kvClient = new KeyVaultClient(GetAccessTokenAsync, new HttpClient());
         }
 
         public async Task<SecretBundle> GetSecretAsync(string secretName)
         {
             try
             {
-                return await m_kvClient.GetSecretAsync(GetUrl(), secretName);
+                return await m_kvClient.GetSecretAsync(Url, secretName);
             }
             catch (KeyVaultErrorException ex)
             {
@@ -53,7 +47,7 @@ namespace SecuredCommunication
         {
             try
             {
-                return await m_kvClient.SetSecretAsync(GetUrl(), secretName, value);
+                return await m_kvClient.SetSecretAsync(Url, secretName, value);
             }
             catch (KeyVaultErrorException ex)
             {

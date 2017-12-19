@@ -26,6 +26,7 @@ namespace SecuredCommunication
             bool isEncrypted,
             string exchangeName)
         {
+            // todo: move to init method
             m_exchangeName = exchangeName;
             ConnectionFactory factory = new ConnectionFactory
             {
@@ -40,37 +41,42 @@ namespace SecuredCommunication
             m_isEncrypted = isEncrypted;
         }
 
-        public Task<string> DequeueAsync(string queueName, Action<Message> cb)
+        public Task<string> DequeueAsync(string queueName, Action<byte[]> cb)
         {
             m_consumer = new EventingBasicConsumer(m_channel);
-            m_consumer.Received += async (ch, ea) =>
+            m_consumer.Received += (ch, ea) =>
             {
                 // ack to the queue that we got the msg
                 // TODO: handle messages that failed
                 m_channel.BasicAck(ea.DeliveryTag, false);
 
-                await MessageUtils.DecryptAndVerifyQueueMessage(ea.Body, m_secretMgmt, cb);
+                MessageUtils.ProcessQueueMessage(ea.Body, m_secretMgmt, cb);
             };
 
             // return the consumer tag
             return Task.FromResult(m_channel.BasicConsume(queueName, false, m_consumer));
         }
 
-        public async Task EnqueueAsync(string queueName, string data)
+        public Task EnqueueAsync(string queueName, string data)
         {
+            //todo: move out
             CreateQueue(queueName);
 
             var properties = m_channel.CreateBasicProperties();
             properties.Persistent = true;
+            // todo: add doc here
             m_channel.BasicQos(0, 1, false);
+            // todo until here
 
-            var msgAsBytes = await MessageUtils.CreateMessageForQueue(data, m_secretMgmt, m_isEncrypted);
+            var msgAsBytes = MessageUtils.CreateMessageForQueue(data, m_secretMgmt, m_isEncrypted);
             m_channel.BasicPublish(
                 exchange: m_exchangeName,
                 routingKey: queueName,
                 mandatory: false,
                 basicProperties: properties,
                 body: msgAsBytes);
+
+            return Task.FromResult(0);
         }
 
         public void CancelListeningOnQueue(string consumerTag)

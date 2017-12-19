@@ -10,7 +10,7 @@ namespace UnitTests
         {
             var kvInfo = new KeyVaultMock("http://dummyKvUri");
             var ethereumWallet = new EthereumNodeWrapper(kvInfo, "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE");
-            var transactionHash = await ethereumWallet.SignTransaction("sender", TestConstants.publicKey, 10000);
+            var transactionHash = await ethereumWallet.SignTransactionAsync("sender", TestConstants.publicKey, 10000);
 
             Assert.Equal(208, transactionHash.Length);
         }
@@ -32,10 +32,10 @@ namespace UnitTests
             var ethereumWallet = new EthereumNodeWrapper(kvInfo, "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE");
             var accountKeyPair = ethereumWallet.CreateAccount();
 
-            Assert.Equal(42, accountKeyPair.PublicKey.Length);
-            Assert.True(accountKeyPair.PublicKey.StartsWith("0x"));
-            Assert.Equal(66, accountKeyPair.PrivateKey.Length);
-            Assert.True(accountKeyPair.PrivateKey.StartsWith("0x"));
+            Assert.Equal(42, accountKeyPair.PublicAddress.Length);
+            Assert.True(accountKeyPair.PublicAddress.StartsWith("0x"));
+            Assert.Equal(66, accountKeyPair.Pair.PrivateKey.Length);
+            Assert.True(accountKeyPair.Pair.PrivateKey.StartsWith("0x"));
         }
 
         [Fact]
@@ -44,8 +44,8 @@ namespace UnitTests
             var kvInfo = new KeyVaultMock("http://dummyKvUri");
             var ethereumWallet = new EthereumNodeWrapper(kvInfo, "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE");
             var transactionHash = await 
-                ethereumWallet.SignTransaction("sender", TestConstants.publicKey, 100);
-            var transactionResult = await ethereumWallet.SendRawTransaction(transactionHash);
+                ethereumWallet.SignTransactionAsync("sender", TestConstants.publicKey, 100);
+            var transactionResult = await ethereumWallet.SendRawTransactionAsync(transactionHash);
 
             Assert.True(transactionResult.StartsWith("0x"));
             Assert.Equal(66, transactionResult.Length);

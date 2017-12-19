@@ -4,15 +4,15 @@ using System.Threading.Tasks;
 namespace Contracts
 {
     /// <summary>
-    /// Blockchain node wrapper - allows for operations against the blockchain network (e.g. send transaction)
+    /// Ethereum node wrapper - allows for operations (e.g. send transaction) against the Ethereum networks (public / local / tests)
     /// </summary>
-    public interface IBlockchainNodeWrapper
+    public interface IEthereumNodeWrapper
     {
         /// <summary>
         /// Creates blockchain account and store the public and private keys in Azure KeyVault 
         /// </summary>
         /// <returns>The public private key pair</returns>
-        KeyPair CreateAccount();
+        EthKey CreateAccount();
 
         /// <summary>
         /// Stores a key pair into the Azure KeyVault.
@@ -20,23 +20,23 @@ namespace Contracts
         /// <returns>The created key pair.</returns>
         /// <param name="identifier">key pair identifier.</param>
         /// <param name="key">The actual key pair.</param>
-        Task<bool> StoreAccountAsync(string identifier, KeyPair key);
+        Task<bool> StoreAccountAsync(string identifier, EthKey key);
 
         /// <summary>
         /// Signs a blockchain transaction
         /// </summary>
         /// <param name="senderIdentifier">The sender identifier (Id, name, etc...)</param>
         /// <param name="recieverAddress">The reciver address</param>
-        /// <param name="amount">The amount to send</param>
-        /// <returns>The transaction hash</returns>
-        Task<string> SignTransaction(string senderIdentifier, string recieverAddress, BigInteger amount);
+        /// <param name="amountInWei">The amount to send</param>
+        /// <returns>The signed transaction</returns>
+        Task<string> SignTransactionAsync(string senderIdentifier, string recieverAddress, BigInteger amountInWei);
 
         /// <summary>
         /// Send the raw transaction to the public node. 
         /// </summary>
-        /// <param name="transactionHash">The transaction hash</param>
+        /// <param name="signedTransaction">The transaction signed transaction</param>
         /// <returns>The transaction result</returns>
-        Task<string> SendRawTransaction(string transactionHash);
+        Task<string> SendRawTransactionAsync(string signedTransaction);
 
         /// <summary>
         /// Returns the private key by the key vault identifier

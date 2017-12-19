@@ -9,12 +9,6 @@ namespace Contracts
     public interface IKeyVault
     {
         /// <summary>
-        /// Gets the uri of the key vault which this object is wrapping
-        /// </summary>
-        /// <returns>The underlying keyvault's uri</returns>
-        string GetUrl();
-
-        /// <summary>
         /// Gets the specified secret
         /// </summary>
         /// <returns>The secret</returns>

@@ -19,21 +19,21 @@ namespace UnitTests
         }
 
         [Fact]
-        public async void Sanity_Encryption()
+        public void Sanity_Encryption()
         {
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
             var kvInfo = new KeyVaultMock(kvUri);
             var secretsMgmnt = new KeyVaultSecretManager(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
 
-            var encryptedData = await secretsMgmnt.Encrypt(Utils.ToByteArray(rawData));
+            var encryptedData = secretsMgmnt.Encrypt(Utils.ToByteArray(rawData));
 
 
             Assert.IsType<byte[]>(encryptedData);
         }
 
         [Fact]
-        public async void Sanity_Decryption()
+        public void Sanity_Decryption()
         {
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
@@ -41,10 +41,10 @@ namespace UnitTests
             var secretsMgmnt = new KeyVaultSecretManager(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
 
             // Encrypt
-            var encryptedData = await secretsMgmnt.Encrypt(Utils.ToByteArray(rawData));
+            var encryptedData = secretsMgmnt.Encrypt(Utils.ToByteArray(rawData));
 
             // Decrypt
-            var decryptedData = await secretsMgmnt.Decrypt(encryptedData);
+            var decryptedData = secretsMgmnt.Decrypt(encryptedData);
 
             // Verify the process ended succesfully and the data is plain text
             Assert.IsType<byte[]>(encryptedData);
@@ -53,7 +53,7 @@ namespace UnitTests
         }
 
         [Fact]
-        public async void Sanity_Sign()
+        public void Sanity_Sign()
         {
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
@@ -61,14 +61,14 @@ namespace UnitTests
             var secretsMgmnt = new KeyVaultSecretManager(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
 
             // Sign the data
-            var signature = await secretsMgmnt.SignAsync(Utils.ToByteArray(rawData));
+            var signature = secretsMgmnt.Sign(Utils.ToByteArray(rawData));
 
             // todo: check what the actual expected signature length
             Assert.Equal(signature.Length, 256);
         }
 
         [Fact]
-        public async void Sanity_Verify()
+        public void Sanity_Verify()
         {
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
@@ -76,9 +76,9 @@ namespace UnitTests
             var secretsMgmnt = new KeyVaultSecretManager(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
 
             // Sign the data
-            var signature = await secretsMgmnt.SignAsync(Utils.ToByteArray(rawData));
+            var signature = secretsMgmnt.Sign(Utils.ToByteArray(rawData));
 
-            Assert.True(await secretsMgmnt.VerifyAsync(Utils.ToByteArray(rawData), signature));
+            Assert.True(secretsMgmnt.Verify(Utils.ToByteArray(rawData), signature));
         }
     }
 }

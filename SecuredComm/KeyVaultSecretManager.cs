@@ -22,6 +22,7 @@ namespace SecuredCommunication
         private string m_signKeyName;
         private string m_verifyKeyName;
 
+        // todo : get rid
         private X509Certificate2 m_encryptionCert;
         private X509Certificate2 m_decryptionCert;
         private X509Certificate2 m_signCert;
@@ -30,6 +31,29 @@ namespace SecuredCommunication
         private bool m_isInit;
 
         #endregion
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:SecuredCommunication.KeyVaultSecretManager"/> class.
+        /// </summary>
+        /// <param name="encryptionKeyName">Encryption key name.</param>
+        /// <param name="decryptionKeyName">Decryption key name.</param>
+        /// <param name="signKeyName">Sign key name.</param>
+        /// <param name="verifyKeyName">Verify key name.</param>
+        /// <param name="privateKv">A KV with private keys. Will be used for decryption and signing</param>
+        /// <param name="publicKv">A KV just with public keys. Will be used for encryption and verifying</param>
+        public KeyVaultSecretManager(string encryptionKeyName, string decryptionKeyName, string signKeyName, string verifyKeyName, IKeyVault privateKv, IKeyVault publicKv)
+        {
+            // marked as false as we still need to initialize the EncryptionHelper later
+            m_isInit = false;
+
+            m_decryptionKeyName = decryptionKeyName;
+            m_encryptionKeyName = encryptionKeyName;
+            m_signKeyName = signKeyName;
+            m_verifyKeyName = verifyKeyName;
+
+            m_privateKeyVault = privateKv;
+            m_publicKeyVault = publicKv;
+        }
 
         /// <summary>
         /// Initialize the <see cref="EncryptionHelper"/> object with all the certificates taken from the keyvaults
@@ -70,44 +94,22 @@ namespace SecuredCommunication
         }
 
         /// <summary>
-        /// If marked as not initialized, runs the initialize method
+        /// Throw exception if not initialized
         /// </summary>
-        private async Task VerifyInitialized(){
+        private void VerifyInitialized(){
             if (!m_isInit) {
-                await Initialize();
+                throw new Exception("Initialize first...");
             }
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:SecuredCommunication.KeyVaultSecretManager"/> class.
-        /// </summary>
-        /// <param name="encryptionKeyName">Encryption key name.</param>
-        /// <param name="decryptionKeyName">Decryption key name.</param>
-        /// <param name="signKeyName">Sign key name.</param>
-        /// <param name="verifyKeyName">Verify key name.</param>
-        /// <param name="privateKv">A KV with private keys. Will be used for decryption and signing</param>
-        /// <param name="publicKv">A KV just with public keys. Will be used for encryption and verifying</param>
-        public KeyVaultSecretManager(string encryptionKeyName, string decryptionKeyName, string signKeyName, string verifyKeyName, IKeyVault privateKv, IKeyVault publicKv)
+
+        public byte[] Decrypt(byte[] encryptedData)
         {
-            // marked as false as we still need to initialize the EncryptionHelper later
-            m_isInit = false;
-
-            m_decryptionKeyName = decryptionKeyName;
-            m_encryptionKeyName = encryptionKeyName;
-            m_signKeyName = signKeyName;
-            m_verifyKeyName = verifyKeyName;
-
-            m_privateKeyVault = privateKv;
-            m_publicKeyVault = publicKv;
-        }
-
-        public async Task<byte[]> Decrypt(byte[] encryptedData)
-        {
-            await VerifyInitialized();
+            VerifyInitialized();
 
             try
             {
-                return await m_encryptionHelper.Decrypt(encryptedData);
+                return m_encryptionHelper.Decrypt(encryptedData);
             }
             catch (Exception exc)
             {
@@ -116,13 +118,13 @@ namespace SecuredCommunication
             }
         }
 
-        public async Task<byte[]> Encrypt(byte[] data)
+        public byte[] Encrypt(byte[] data)
         {
-            await VerifyInitialized();
+            VerifyInitialized();
 
             try
             {
-                return await m_encryptionHelper.Encrypt(data);
+                return m_encryptionHelper.Encrypt(data);
             }
             catch (Exception ex)
             {
@@ -131,13 +133,13 @@ namespace SecuredCommunication
             }
         }
 
-        public async Task<byte[]> SignAsync(byte[] data)
+        public byte[] Sign(byte[] data)
         {
-            await VerifyInitialized();
+            VerifyInitialized();
 
             try
             {
-                return await m_encryptionHelper.SignAsync(data);
+                return m_encryptionHelper.Sign(data);
             }
             catch (Exception ex)
             {
@@ -146,13 +148,13 @@ namespace SecuredCommunication
             }
         }
 
-        public async Task<bool> VerifyAsync(byte[] data, byte[] signature)
+        public bool Verify(byte[] data, byte[] signature)
         {
-            await VerifyInitialized();
+            VerifyInitialized();
 
             try
             {
-                return await m_encryptionHelper.VerifyAsync(data, signature);
+                return m_encryptionHelper.Verify(data, signature);
             }
             catch (Exception ex)
             {

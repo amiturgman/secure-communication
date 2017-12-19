@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Contracts;
 
 namespace SecuredCommunication
@@ -9,35 +8,42 @@ namespace SecuredCommunication
     /// </summary>
     public static class MessageUtils
     {
-        public static async Task<byte[]> CreateMessageForQueue(string data, IEncryptionManager encryptionManager, bool isEncrypted)
+        public static byte[] CreateMessageForQueue(string data, IEncryptionManager encryptionManager, bool isEncrypted)
         {
             var dataInBytes = Utils.ToByteArray(data);
-            var signature = await encryptionManager.SignAsync(dataInBytes);
+            var signature = encryptionManager.Sign(dataInBytes);
 
             if (isEncrypted)
             {
-                dataInBytes = await encryptionManager.Encrypt(dataInBytes);
+                dataInBytes = encryptionManager.Encrypt(dataInBytes);
             }
 
             return Utils.ToByteArray(new Message(isEncrypted, dataInBytes, signature));
         }
 
-        public static async Task DecryptAndVerifyQueueMessage(byte[] body, IEncryptionManager encryptionManager, Action<Message> cb)
+        /// <summary>
+        /// Decrypts (if encrypted), Verifies and runs the callback on the recieved queue message
+        /// </summary>
+        /// <param name="body">Body.</param>
+        /// <param name="encryptionManager">Encryption manager.</param>
+        /// <param name="cb">Cb.</param>
+        public static void ProcessQueueMessage(byte[] body, IEncryptionManager encryptionManager, Action<byte[]> cb)
         {
             var msg = Utils.FromByteArray<Message>(body);
-            if (msg.m_isEncrypted)
+            var data = msg.Data;
+            if (msg.Encrypted)
             {
-                msg.m_data = await encryptionManager.Decrypt(msg.m_data);
+                data = encryptionManager.Decrypt(msg.Data);
             }
 
-            var verifyResult = await encryptionManager.VerifyAsync(msg.m_data, msg.m_signature);
+            var verifyResult = encryptionManager.Verify(data, msg.Signature);
 
             if (verifyResult == false)
             {
                 throw new Exception("Verify failed!!");
             }
 
-            cb(msg);
+            cb(data);
         }
     }
 }

@@ -6,6 +6,7 @@ namespace Contracts
     /// <summary>
     /// Interface for a queue based communication pipeline
     /// </summary>
+    /// todo:IQueueManager?
     public interface IQueueCommunication
     {
         /// <summary>
@@ -21,6 +22,6 @@ namespace Contracts
         /// <returns>The listener's identifier</returns>
         /// <param name="queueName">The queue to listen on</param>
         /// <param name="cb">a callback to execute once a message arrives</param>
-        Task<string> DequeueAsync(string queueName, Action<Message> cb);
+        Task<string> DequeueAsync(string queueName, Action<byte[]> cb);
     }
 }

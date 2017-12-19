@@ -8,6 +8,7 @@ namespace Contracts
     /// </summary>
     public static class Utils
     {
+        //todo: string.utils?
         public static byte[] ToByteArray<T>(T source)
         {
             var formatter = new BinaryFormatter();

@@ -28,7 +28,7 @@ namespace SecuredCommunication
             m_decryptionCert = decryptionCert;
         }
 
-        public Task<byte[]> Decrypt(byte[] encryptedData)
+        public byte[] Decrypt(byte[] encryptedData)
         {
             try
             {
@@ -36,7 +36,7 @@ namespace SecuredCommunication
                 // handled via a using statement.
                 using (RSA rsa = m_decryptionCert.GetRSAPrivateKey())
                 {
-                    return Task.FromResult(rsa.Decrypt(encryptedData, RSAEncryptionPadding.OaepSHA1));
+                    return rsa.Decrypt(encryptedData, RSAEncryptionPadding.OaepSHA1);
                 }
             }
             catch (Exception exc)
@@ -46,7 +46,7 @@ namespace SecuredCommunication
             }
         }
 
-        public Task<byte[]> Encrypt(byte[] data)
+        public byte[] Encrypt(byte[] data)
         {
             try
             {
@@ -56,7 +56,7 @@ namespace SecuredCommunication
                 {
                     // OAEP allows for multiple hashing algorithms, what was formermly just "OAEP" is
                     // now OAEP-SHA1.
-                    return Task.FromResult(rsa.Encrypt(data, RSAEncryptionPadding.OaepSHA1));
+                    return rsa.Encrypt(data, RSAEncryptionPadding.OaepSHA1);
                 }
             }
             catch (Exception ex)
@@ -66,19 +66,19 @@ namespace SecuredCommunication
             }
         }
        
-        public Task<byte[]> SignAsync(byte[] data)
+        public byte[] Sign(byte[] data)
         {
             using (RSA rsa = m_signCert.GetRSAPrivateKey())
             {
-                return Task.FromResult(rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1));
+                return rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
             }
         }
 
-        public Task<bool> VerifyAsync(byte[] data, byte[] signature)
+        public bool Verify(byte[] data, byte[] signature)
         {
             using (RSA rsa = m_verifyCert.GetRSAPublicKey())
             {
-                return Task.FromResult(rsa.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1));
+                return rsa.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
             }
         }
     }

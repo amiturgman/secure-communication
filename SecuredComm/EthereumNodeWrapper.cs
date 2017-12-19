@@ -10,12 +10,14 @@ namespace SecuredCommunication
     /// <summary>
     /// Class for accessing the Ethereum node.
     /// </summary>
-    public class EthereumNodeWrapper : IBlockchainNodeWrapper
+    public class EthereumNodeWrapper : IEthereumNodeWrapper
     {
+        // todo: add prefixes
         private Web3 web3;
         private IKeyVault m_kv;
         private const string publicKeySuffix = "-public";
         private const string privateKeySuffix = "-private";
+        private const string publicAddressSuffix = "-publicAddress";
 
         #region Public Methods
         public EthereumNodeWrapper(IKeyVault keyVault, string nodeUrl = "")
@@ -28,11 +30,13 @@ namespace SecuredCommunication
         /// Creates blockchain account and store the public and private keys in Azure KeyVault 
         /// </summary>
         /// <returns>The public private key vault</returns>
-        public KeyPair CreateAccount()
+        public EthKey CreateAccount()
         {
             var ecKey = EthECKey.GenerateKey();
 
-            return new KeyPair(ecKey.GetPublicAddress(), ecKey.GetPrivateKey());
+            return new EthKey(ecKey.GetPrivateKey(), 
+                              ecKey.GetPubKey(), 
+                              ecKey.GetPublicAddress());
         }
 
         /// <summary>
@@ -41,12 +45,14 @@ namespace SecuredCommunication
         /// <returns>The account async.</returns>
         /// <param name="identifier">Identifier.</param>
         /// <param name="key">Key.</param>
-        public async Task<bool> StoreAccountAsync(string identifier, KeyPair key)
+        public async Task<bool> StoreAccountAsync(string identifier, EthKey key)
         {
             try
             {
-                await m_kv.SetSecretAsync(identifier + publicKeySuffix, key.PublicKey);
-                await m_kv.SetSecretAsync(identifier + privateKeySuffix, key.PrivateKey);
+                await m_kv.SetSecretAsync(identifier + publicKeySuffix, Utils.FromByteArray<string>(key.Pair.PublicKey));
+                await m_kv.SetSecretAsync(identifier + privateKeySuffix, key.Pair.PrivateKey);
+                await m_kv.SetSecretAsync(identifier + publicAddressSuffix, key.PublicAddress);
+
                 return true;
             }
             catch (Exception exc)
@@ -85,11 +91,11 @@ namespace SecuredCommunication
         /// <param name="recieverAddress">The reciver address</param>
         /// <param name="amountInWei">The amount to send in wei (ethereum units)</param>
         /// <returns>The transaction hash</returns>
-        public async Task<string> SignTransaction(string senderIdentifier, string recieverAddress, BigInteger amountInWei)
+        public async Task<string> SignTransactionAsync(string senderIdentifier, string recieverAddress, BigInteger amountInWei)
         {
-            var senderKeyPair = await LoadKeyPairFromKeyVault(senderIdentifier);
-            var txCount = await web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(senderKeyPair.PublicKey);
-            return Web3.OfflineTransactionSigner.SignTransaction(senderKeyPair.PrivateKey, recieverAddress, amountInWei, txCount.Value);
+            var senderKeyPair = await LoadKeyFromKeyVault(senderIdentifier);
+            var txCount = await web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(Utils.FromByteArray<string>(senderKeyPair.Pair.PublicKey));
+            return Web3.OfflineTransactionSigner.SignTransaction(senderKeyPair.Pair.PrivateKey, recieverAddress, amountInWei, txCount.Value);
         }
 
         /// <summary>
@@ -97,7 +103,7 @@ namespace SecuredCommunication
         /// </summary>
         /// <param name="hash">The transaction hash</param>
         /// <returns>The transaction result</returns>
-        public async Task<string> SendRawTransaction(string hash)
+        public async Task<string> SendRawTransactionAsync(string hash)
         {
             return await web3.Eth.Transactions.SendRawTransaction.SendRequestAsync(hash);
         }
@@ -120,12 +126,13 @@ namespace SecuredCommunication
         /// </summary>
         /// <param name="identifier">The identifier name/id</param>
         /// <returns>The public private key pair</returns>
-        private async Task<KeyPair> LoadKeyPairFromKeyVault(string identifier)
+        private async Task<EthKey> LoadKeyFromKeyVault(string identifier)
         {
             var publicKey = await m_kv.GetSecretAsync(string.Concat(identifier, publicKeySuffix));
             var privateKey = await m_kv.GetSecretAsync(string.Concat(identifier, privateKeySuffix));
+            var publicAddress = await m_kv.GetSecretAsync(string.Concat(identifier, publicAddressSuffix));
 
-            return new KeyPair(publicKey.Value, privateKey.Value);
+            return new EthKey(privateKey.Value, Utils.ToByteArray(publicKey), publicAddress.Value);
         }
 
         #endregion

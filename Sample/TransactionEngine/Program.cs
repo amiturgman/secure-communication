@@ -40,7 +40,7 @@ namespace TransactionEngine
                 {
                     Console.WriteLine("Got work!");
 
-                    var data = Utils.FromByteArray<string>(msg.m_data);
+                    var data = Utils.FromByteArray<string>(msg);
                     var msgArray = data.Split(";");
                     var amount = unitConverion.ToWei(msgArray[0]);
                     var senderName = msgArray[1];
@@ -48,8 +48,8 @@ namespace TransactionEngine
 
                     try
                     {
-                        var transactionHash = ethereumNodeWrapper.SignTransaction(senderName, reciverAddress, amount).Result;
-                        var transactionResult = ethereumNodeWrapper.SendRawTransaction(transactionHash).Result;
+                        var transactionHash = ethereumNodeWrapper.SignTransactionAsync(senderName, reciverAddress, amount).Result;
+                        var transactionResult = ethereumNodeWrapper.SendRawTransactionAsync(transactionHash).Result;
                     }
                     catch (Exception ex)
                     {
