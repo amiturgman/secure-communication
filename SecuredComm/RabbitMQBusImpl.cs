@@ -13,14 +13,16 @@ namespace SecuredCommunication
         #region private members
 
         private readonly IEncryptionManager m_secretMgmt;
-        private IModel m_channel;
         private readonly bool m_isEncrypted;
         private readonly string m_exchangeName;
+
+        private IModel m_channel;
         private EventingBasicConsumer m_consumer;
         private bool m_isInitialized;
         private string m_rabitMqUri;
         private IBasicProperties m_queueProperties;
         private string m_queueName;
+
         #endregion
 
         public RabbitMQBusImpl(
@@ -30,6 +32,14 @@ namespace SecuredCommunication
             string exchangeName,
             string queueName)
         {
+            // Sanity
+            if (string.IsNullOrEmpty(rabitMqUri) || string.IsNullOrEmpty(exchangeName) | string.IsNullOrEmpty(queueName)) {
+                throw new ArgumentException("RabbitMQ uri, exchange name and queue name must be supplied");
+            }
+            if (secretMgmnt == null) {
+                throw new ArgumentException("secretMgmnt must be provided");
+            }
+
             m_exchangeName = exchangeName;
             m_rabitMqUri = rabitMqUri;
             m_secretMgmt = secretMgmnt;
@@ -60,6 +70,10 @@ namespace SecuredCommunication
         public Task<string> DequeueAsync(Action<byte[]> cb)
         {
             ThrowIfNotInitialized();
+
+            if (cb == null) {
+                throw new ArgumentException("callback cannot be null");
+            }
 
             m_consumer = new EventingBasicConsumer(m_channel);
             m_consumer.Received += (ch, ea) =>
@@ -99,12 +113,22 @@ namespace SecuredCommunication
         {
             ThrowIfNotInitialized();
 
+            if (string.IsNullOrEmpty(consumerTag))
+            {
+                throw new ArgumentException("consumer tag must be supplied");
+            }
+
             m_channel.BasicCancel(consumerTag);
         }
 
         private void CreateQueue(string queueName)
         {
             ThrowIfNotInitialized();
+
+            if (string.IsNullOrEmpty(queueName))
+            {
+                throw new ArgumentException("queue name must be supplied");
+            }
 
             m_channel.QueueDeclare(queue: queueName,
                 durable: true,
