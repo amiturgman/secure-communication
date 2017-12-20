@@ -35,4 +35,10 @@ namespace SecuredComm
         {
         }
     }
+
+    public class EncryptionException : SecureCommunicationException
+    {
+        public EncryptionException(string message)
+            : base(message) { }
+    }
 }

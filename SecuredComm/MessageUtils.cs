@@ -11,6 +11,13 @@ namespace SecuredCommunication
     /// </summary>
     public static class MessageUtils
     {
+        /// <summary>
+        /// Encrypts (if needed), signs and converts the message to byte array
+        /// </summary>
+        /// <param name="data">The data to send on the queue</param>
+        /// <param name="encryptionManager">The encryption manager</param>
+        /// <param name="isEncrypted">A flag that indicates whether the message needs to be encrypted</param>
+        /// <returns>A byte array representing the message</returns>
         public static byte[] CreateMessageForQueue(string data, IEncryptionManager encryptionManager, bool isEncrypted)
         {
             if (encryptionManager == null)
@@ -33,6 +40,7 @@ namespace SecuredCommunication
                 }
                 catch (CryptographicException ex)
                 {
+                    throw new EncryptionException($"Encryption failed: {ex.Message}");
                 }
             }
 
