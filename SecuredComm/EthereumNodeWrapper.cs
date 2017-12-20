@@ -84,6 +84,17 @@ namespace SecuredCommunication
         }
 
         /// <summary>
+        /// Returns the public key by the key vault identifier
+        /// </summary>
+        /// <param name="identifier">The user id</param>
+        /// <returns>The user's public key</returns>
+        public async Task<string> GetPublicAddressAsync(string identifier)
+        {
+            var secret = await m_kv.GetSecretAsync(identifier + m_publicAddressSuffix);
+            return secret.Value;
+        }
+
+        /// <summary>
         /// Sign a blockchain transaction
         /// </summary>
         /// <param name="senderIdentifier">The sender identifier (Id, name etc.)</param>
@@ -127,11 +138,11 @@ namespace SecuredCommunication
         /// <returns>The public private key pair</returns>
         private async Task<EthKey> LoadKeyFromKeyVault(string identifier)
         {
-            var publicKey = await m_kv.GetSecretAsync(string.Concat(identifier, m_publicKeySuffix));
-            var privateKey = await m_kv.GetSecretAsync(string.Concat(identifier, m_privateKeySuffix));
-            var publicAddress = await m_kv.GetSecretAsync(string.Concat(identifier, m_publicAddressSuffix));
+            var publicKey = await GetPublicKeyAsync(identifier);
+            var privateKey = await GetPrivateKeyAsync(identifier);
+            var publicAddress = await GetPublicAddressAsync(identifier);
 
-            return new EthKey(privateKey.Value, Utils.ToByteArray(publicKey.Value), publicAddress.Value);
+            return new EthKey(privateKey, Utils.ToByteArray(publicKey), publicAddress);
         }
 
         #endregion

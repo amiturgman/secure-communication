@@ -22,6 +22,11 @@ namespace UnitTests
 
         public Task<SecretBundle> GetSecretAsync(string secretName)
         {
+            if (secretName.Equals("sender-publicAddress"))
+            {
+                return Task.FromResult(new SecretBundle(TestConstants.publicKey));
+            }
+
             if (secretName.Equals("sender-public"))
             {
                 return Task.FromResult(new SecretBundle(TestConstants.publicKey));

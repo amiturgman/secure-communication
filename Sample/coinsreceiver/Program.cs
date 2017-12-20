@@ -28,7 +28,7 @@ namespace CoinsReceiver
 
             Console.WriteLine("Receiver - I just love getting new crypto coins");
 
-            var reciverAddress = ethereumNodeWrapper.GetPublicKeyAsync(c_ReciverId).Result;            
+            var reciverAddress = ethereumNodeWrapper.GetPublicAddressAsync(c_ReciverId).Result;            
             PrintCurrentBalance(reciverAddress, ethereumNodeWrapper.GetCurrentBalance(reciverAddress).Result);
 
             var encryptionKeyName = ConfigurationManager.AppSettings["EncryptionKeyName"];

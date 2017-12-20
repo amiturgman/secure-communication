@@ -51,5 +51,12 @@ namespace Contracts
         /// <param name="identifier">The user id</param>
         /// <returns>The user's public key</returns>
         Task<string> GetPublicKeyAsync(string identifier);
+
+        /// <summary>
+        /// Returns the public address by the key vault identifier
+        /// </summary>
+        /// <param name="identifier">The user id</param>
+        /// <returns>The user's public key</returns>
+        Task<string> GetPublicAddressAsync(string identifier);
     }
 }

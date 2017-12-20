@@ -37,7 +37,7 @@ namespace TransactionEngine
             var securedCommForNotifications = new AzureQueueImpl("notifications", ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt, true);
             var taskInitTransactions = securedCommForTransactions.Initialize();
             var taskInitNotifications = securedCommForNotifications.Initialize();
-            Task.WhenAll(new Task[] { taskInitTransactions, taskInitNotifications }).Wait();
+            Task.WhenAll(taskInitTransactions, taskInitNotifications).Wait();
 
             var ethereumNodeWrapper = new EthereumNodeWrapper(kv, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
 
