@@ -6,11 +6,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecuredComm", "SecuredComm\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{90D4D08A-DAD5-40ED-959E-4B560C75ADA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoinsSender", "Sample\cryptoPhilanthrop\CoinsSender.csproj", "{CA596C80-84A9-4CC4-835E-62EDD10C9021}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoinsSender", "Sample\coinssender\CoinsSender.csproj", "{CA596C80-84A9-4CC4-835E-62EDD10C9021}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoinsReceiver", "Sample\CryptoFan\CoinsReceiver.csproj", "{49206470-5E90-4BA4-999F-BF7663EC3E93}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoinsReceiver", "Sample\coinsreceiver\CoinsReceiver.csproj", "{49206470-5E90-4BA4-999F-BF7663EC3E93}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionEngine", "Sample\TransactionEngine\TransactionEngine.csproj", "{F359DD2F-F6BE-4302-A3FB-57F92394F524}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionEngine", "Sample\transactionEngine\TransactionEngine.csproj", "{F359DD2F-F6BE-4302-A3FB-57F92394F524}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "SecuredCommTests\Tests.csproj", "{089B2DF9-C31B-4D7B-A710-03E623B91D06}"
 EndProject
