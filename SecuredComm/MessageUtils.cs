@@ -26,7 +26,7 @@ namespace SecuredCommunication
             }
 
             // Convert the data to byte array
-            var dataInBytes = data != null ? Utils.ToByteArray(data) : throw new ArgumentNullException("data");
+            var dataInBytes = data != null ? Utils.ToByteArray(data) : throw new ArgumentNullException(nameof(data));
 
             // Sign the message
             var signature = encryptionManager.Sign(dataInBytes);
@@ -40,8 +40,10 @@ namespace SecuredCommunication
                 }
                 catch (CryptographicException ex)
                 {
-                    throw new EncryptionException($"Encryption failed: {ex.Message}");
+                    throw new EncryptionException($"Encryption failed: {ex}");
                 }
+            } else {
+                Console.WriteLine("NOTICE: The enqueued message was NOT encrypted!");
             }
 
             // Convert the message to byte array
@@ -60,7 +62,7 @@ namespace SecuredCommunication
             // Deserialize the  byte array to Message object
             var msg = messageInBytes != null
                 ? Utils.FromByteArray<Message>(messageInBytes)
-                : throw new ArgumentNullException("messageInBytes");
+                : throw new ArgumentNullException(nameof(messageInBytes));
 
             var data = msg.Data;
              

@@ -59,6 +59,7 @@ namespace SecuredCommunication
         /// </summary>
         public async Task Initialize() {
 
+            // todo: handle partiall assignment of values
             var encryptSecretTask = m_publicKeyVault.GetSecretAsync(m_encryptionKeyName);
             var decryptSecretTask = m_privateKeyVault.GetSecretAsync(m_decryptionKeyName);
             var signSecretTask = m_publicKeyVault.GetSecretAsync(m_signKeyName);
@@ -84,8 +85,12 @@ namespace SecuredCommunication
 
         public byte[] Decrypt(byte[] encryptedData)
         {
-            // Verify input
             VerifyInitialized();
+
+            if (encryptedData == null)
+            {
+                throw new ArgumentNullException(nameof(encryptedData));
+            }
 
             // Call Decrypt
             try
@@ -103,6 +108,11 @@ namespace SecuredCommunication
         {
             VerifyInitialized();
 
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
             try
             {
                 return m_encryptionHelper.Encrypt(data);
@@ -118,12 +128,26 @@ namespace SecuredCommunication
         {
             VerifyInitialized();
 
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
             return m_encryptionHelper.Sign(data);
         }
 
         public bool Verify(byte[] data, byte[] signature)
         {
             VerifyInitialized();
+
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+            if (signature == null)
+            {
+                throw new ArgumentNullException(nameof(signature));
+            }
 
             return m_encryptionHelper.Verify(data, signature);
         }
@@ -140,6 +164,11 @@ namespace SecuredCommunication
         /// <param name="secret">Base64 string representation of a certificate</param>
         private static X509Certificate2 SecretToCertificate(string secret)
         {
+            if (string.IsNullOrEmpty(secret))
+            {
+                throw new ArgumentException("secret must be supplied");
+            }
+
             return new X509Certificate2(Base64.Decode(secret));
         }
 
@@ -153,6 +182,7 @@ namespace SecuredCommunication
                 throw new SecureCommunicationException("Initialize method needs to be called before accessing class methods");
             }
         }
+
         #endregion
     }
 }
