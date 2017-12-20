@@ -85,7 +85,7 @@ namespace SecuredCommunication
         public byte[] Sign(byte[] data)
         {
             // Verify input
-            if (data == null) throw new ArgumentNullException("data");
+            if (data == null) throw new ArgumentNullException(nameof(data));
 
             using (RSA rsa = m_signCert.GetRSAPrivateKey())
             {
@@ -102,8 +102,8 @@ namespace SecuredCommunication
         public bool Verify(byte[] data, byte[] signature)
         {
             // Verify inputs
-            if (data == null) throw new ArgumentNullException("data");
-            if (signature == null) throw new ArgumentNullException("signature");
+            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (signature == null) throw new ArgumentNullException(nameof(signature));
 
             // Verify data
             using (RSA rsa = m_verifyCert.GetRSAPublicKey())

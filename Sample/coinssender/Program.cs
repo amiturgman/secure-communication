@@ -29,7 +29,7 @@ namespace CoinsSender
             while (true)
             {
                 Console.WriteLine("To run the demo with Ethereum Testnet press 1");
-                Console.WriteLine("To run the demo with Docker testrpc press 2");
+                Console.WriteLine("To run the demo with Docker TestRpc press 2");
                 
                 Console.WriteLine("Press any other key to exit");
                 Console.WriteLine();

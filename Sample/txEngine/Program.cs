@@ -2,7 +2,6 @@
 using System.Configuration;
 using SecuredCommunication;
 using System.Threading;
-using Contracts;
 using System.Threading.Tasks;
 
 namespace TransactionEngine
@@ -60,7 +59,7 @@ namespace TransactionEngine
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine(ex.Message);
+                        Console.WriteLine(ex);
                         throw;
                     }
 

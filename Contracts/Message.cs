@@ -21,8 +21,8 @@ namespace Contracts
         public Message(bool isEncrypted, byte[] data, byte[] signature)
         {
             Encrypted = isEncrypted;
-            Data = data ?? throw new ArgumentNullException("data");
-            Signature = signature ?? throw new ArgumentNullException("signature"); ;
+            Data = data ?? throw new ArgumentNullException(nameof(data));
+            Signature = signature ?? throw new ArgumentNullException(nameof(signature));
         }
     }
 }

@@ -19,12 +19,13 @@ namespace SecuredCommunication
 
         private CloudQueue m_queue;
         private CloudQueueClient m_queueClient;
+        private bool m_isActive;
+        private bool m_isInitialized;
+
         private readonly IEncryptionManager m_secretMgmt;
         private readonly bool m_isEncrypted;
-        private bool m_isActive;
-        private string m_queueName;
-        private string m_connectionString;
-        private bool m_isInitialized;
+        private readonly string m_queueName;
+        private readonly string m_connectionString;
 
         #endregion
 
@@ -66,7 +67,7 @@ namespace SecuredCommunication
             }
             catch (StorageException ex)
             {
-                Console.WriteLine($"Exception was thrown when trying to push message to queue, exception: {ex.Message}");
+                Console.WriteLine($"Exception was thrown when trying to push message to queue, exception: {ex}");
                 throw;
             }
         }

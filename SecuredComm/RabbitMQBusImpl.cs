@@ -36,13 +36,10 @@ namespace SecuredCommunication
             if (string.IsNullOrEmpty(rabitMqUri) || string.IsNullOrEmpty(exchangeName) | string.IsNullOrEmpty(queueName)) {
                 throw new ArgumentException("RabbitMQ uri, exchange name and queue name must be supplied");
             }
-            if (secretMgmnt == null) {
-                throw new ArgumentException("secretMgmnt must be provided");
-            }
 
             m_exchangeName = exchangeName;
             m_rabitMqUri = rabitMqUri;
-            m_secretMgmt = secretMgmnt;
+            m_secretMgmt = secretMgmnt ?? throw new ArgumentNullException(nameof(secretMgmnt));
             m_isEncrypted = isEncrypted;
             m_queueName = queueName;
         }

@@ -20,7 +20,7 @@ namespace SecuredCommunication
 
         public static T FromByteArray<T>(byte[] data)
         {
-            if ((data == null) || (data.Length == 0))
+            if (data == null || data.Length == 0)
             {
                 return default(T);
             }

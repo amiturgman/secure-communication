@@ -59,7 +59,7 @@ namespace SecuredCommunication
         /// </summary>
         public async Task Initialize() {
 
-            // todo: handle partiall assignment of values
+            // TODO: handle partial assignment of values
             var encryptSecretTask = m_publicKeyVault.GetSecretAsync(m_encryptionKeyName);
             var decryptSecretTask = m_privateKeyVault.GetSecretAsync(m_decryptionKeyName);
             var signSecretTask = m_publicKeyVault.GetSecretAsync(m_signKeyName);
@@ -119,7 +119,7 @@ namespace SecuredCommunication
             }
             catch (CryptographicException ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex);
                 throw;
             }
         }

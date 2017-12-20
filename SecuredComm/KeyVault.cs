@@ -48,7 +48,7 @@ namespace SecuredCommunication
             }
             catch (KeyVaultErrorException ex)
             {
-                Console.WriteLine($"Exception while trying to get secret {secretName}, {ex.Message}");
+                Console.WriteLine($"Exception while trying to get secret {secretName}, {ex}");
                 throw;
             }
         }
@@ -67,7 +67,7 @@ namespace SecuredCommunication
             }
             catch (KeyVaultErrorException ex)
             {
-                Console.WriteLine($"Exception while trying to set secret {secretName}, {ex.Message}");
+                Console.WriteLine($"Exception while trying to set secret {secretName}, {ex}");
                 throw;
             }
         }
