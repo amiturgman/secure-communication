@@ -39,11 +39,12 @@ namespace CoinsReceiver
             var secretsMgmnt = new KeyVaultSecretManager(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, kv, kv);
             secretsMgmnt.Initialize().Wait();
             //var securedComm = new RabbitMQBusImpl(ConfigurationManager.AppSettings["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");
-            var securedComm = new AzureQueueImpl(ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt, true);
+            var securedComm = new AzureQueueImpl("notifications", ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt, true);
+            securedComm.Initialize().Wait();
 
             // Listen on the notifications queue, check balance when a notification arrives
             var consumerTag =
-                securedComm.DequeueAsync("notifications",
+                securedComm.DequeueAsync(
                     msg =>
                     {
                         var data = Utils.FromByteArray<string>(msg);
@@ -57,7 +58,7 @@ namespace CoinsReceiver
                             Console.WriteLine("Not my balance!");
                             Console.WriteLine(msg);
                         }
-                    });
+            }, TimeSpan.FromSeconds(3));
 
             // wait 30 minutes
             Thread.Sleep(30 * 1000 * 60);

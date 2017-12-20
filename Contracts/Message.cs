@@ -21,9 +21,6 @@ namespace Contracts
         /// <param name="signature">The siganture on the data</param>
         public Message(bool isEncrypted, byte[] data, byte[] signature)
         {
-            Contract.Requires<ArgumentNullException>(data != null, "Parameter cannot be null.");
-            Contract.Requires<ArgumentNullException>(signature != null, "Parameter cannot be null.");
-
             Encrypted = isEncrypted;
             Data = data;
             Signature = signature;

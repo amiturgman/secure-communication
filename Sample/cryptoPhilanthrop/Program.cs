@@ -75,8 +75,8 @@ namespace CoinsSender
                 if (ex.InnerException is KeyVaultErrorException && ex.InnerException.Message.Contains("Secret not found"))
                 {
                     // Create accounts
-                    var senderAccount= new EthKey(senderPrivateKey, new byte[] {}, senderPublicAddress);
-                    var reciverAccount =  new EthKey(reciverPrivateKey, new byte[] { }, reciverPublicAddress);
+                    var senderAccount= new EthKey(senderPrivateKey, Utils.ToByteArray(senderPublicAddress), senderPublicAddress);
+                    var reciverAccount =  new EthKey(reciverPrivateKey, Utils.ToByteArray(senderPublicAddress), reciverPublicAddress);
 
                     var result = ethereumNodeWrapper.StoreAccountAsync(c_senderId, senderAccount).Result;
                     result = ethereumNodeWrapper.StoreAccountAsync(c_ReciverId, reciverAccount).Result;
@@ -134,7 +134,8 @@ namespace CoinsSender
             var secretsMgmnt = new KeyVaultSecretManager(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, kv, kv);
             secretsMgmnt.Initialize().Wait();
             //var securedComm = new RabbitMQBusImpl(ConfigurationManager.AppSettings["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");
-            var securedComm = new AzureQueueImpl(ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt, true);
+            var securedComm = new AzureQueueImpl("transactions", ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt, true);
+            securedComm.Initialize().Wait();
 
             // While there are sufficient funds, transfer some...
             while (balance > 0)
@@ -142,7 +143,6 @@ namespace CoinsSender
                 var amountToSend = 0.001;
                 // Message structure: {amountToSend};{senderName};{reciverAddress}
                 securedComm.EnqueueAsync(
-                    "transactions",
                     $"{amountToSend};{c_senderId};{reciverAddress}").Wait();
 
                 // Sleep 1 minute

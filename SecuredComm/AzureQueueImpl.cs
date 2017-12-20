@@ -7,44 +7,55 @@ using Microsoft.WindowsAzure.Storage.Queue;
 
 namespace SecuredCommunication
 {
-    public class AzureQueueImpl : IQueueCommunication
+    public class AzureQueueImpl : IQueueManager
     {
         #region private members
 
-        private readonly CloudQueueClient m_queueClient;
+        private CloudQueue m_queue;
         private readonly IEncryptionManager m_secretMgmt;
         private readonly bool m_isEncrypted;
-        private bool m_isCancelled;
+        private bool m_isActive;
+        private string m_queueName;
+        private string m_connectionString;
+        private bool m_isInitialized;
 
         #endregion
 
-        // todo: input sanity
-        // iscanceled=> isactive
-        public AzureQueueImpl(string connectionString, IEncryptionManager secretMgmnt, bool isEncrypted)
+        public AzureQueueImpl(string queueName, string connectionString, IEncryptionManager secretMgmnt, bool isEncrypted)
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
-            m_queueClient = storageAccount.CreateCloudQueueClient();
+            m_connectionString = connectionString;
             m_secretMgmt = secretMgmnt;
             m_isEncrypted = isEncrypted;
-            m_isCancelled = false;
+            m_isActive = false;
+            m_queueName = queueName;
+            m_isInitialized = false;
+        }
+
+        public async Task Initialize()
+        {
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(m_connectionString);
+            var queueClient = storageAccount.CreateCloudQueueClient();
+
+            m_queue = queueClient.GetQueueReference(m_queueName);
+            await m_queue.CreateIfNotExistsAsync();
+
+            m_isInitialized = true;
         }
 
         /// <summary>
         /// Enqueues a message, it will be automatically signed and if chosen (ctor) encrypted as well
         /// </summary>
-        /// <param name="queueName">Queue name.</param>
         /// <param name="msg">Message.</param>
-        public async Task EnqueueAsync(string queueName, string msg)
+        public async Task EnqueueAsync(string msg)
         {
-            var queue = m_queueClient.GetQueueReference(queueName);
-            // todo: add init method that creates the queue...
-            await queue.CreateIfNotExistsAsync();
+            ThrowIfNotInitialized();
+
             var messageInBytes = MessageUtils.CreateMessageForQueue(msg, m_secretMgmt, m_isEncrypted);
             var message = CloudQueueMessage.CreateCloudQueueMessageFromByteArray(messageInBytes);
 
             try
             {
-                await queue.AddMessageAsync(message);
+                await m_queue.AddMessageAsync(message);
             }
             catch (StorageException ex)
             {
@@ -53,29 +64,31 @@ namespace SecuredCommunication
             }
         }
 
+        public Task<string> DequeueAsync(Action<byte[]> cb)
+        {
+            throw new Exception("Not supported for Azure Queue");
+        }
+
         /// <summary>
         /// Dequeues a message. The signature will be verified, in case of a verification failure an exception will be thrown.
         /// The callback receives a single argument which is the decrypted and verified message
         /// </summary>
-        /// <param name="queueName">Queue name.</param>
         /// <param name="cb">Callback</param>
-        /// <returns>TODO: change this The async.</returns>
-        public async Task<string> DequeueAsync(string queueName, Action<byte[]> cb)
+        public async Task DequeueAsync(Action<byte[]> cb, TimeSpan waitTime)
         {
-            m_isCancelled = false;
+            ThrowIfNotInitialized();
 
-            var queue = m_queueClient.GetQueueReference(queueName);
-            await queue.CreateIfNotExistsAsync();
+            m_isActive = true;
            
-            while (!m_isCancelled)
+            while (m_isActive)
             {
                 try
                 {
-                    var retrievedMessage = await queue.GetMessageAsync();
+                    var retrievedMessage = await m_queue.GetMessageAsync();
                     if (retrievedMessage != null)
                     {
                         MessageUtils.ProcessQueueMessage(retrievedMessage.AsBytes, m_secretMgmt, cb);
-                        await queue.DeleteMessageAsync(retrievedMessage);
+                        await m_queue.DeleteMessageAsync(retrievedMessage);
 
                         // no need to sleep, try again
                         continue;
@@ -86,11 +99,8 @@ namespace SecuredCommunication
                     // Don't re-throw as we want the dequeue loop to continue
                 }
 
-                Thread.Sleep(3000);
+                Thread.Sleep((int)waitTime.TotalMilliseconds);
             }
-
-            // TODO: check if needed?
-            return "success";
         }
 
         /// <summary>
@@ -98,7 +108,16 @@ namespace SecuredCommunication
         /// </summary>
         public void CancelListeningOnQueue()
         {
-            m_isCancelled = true;
+            ThrowIfNotInitialized();
+
+            m_isActive = false;
+        }
+
+        private void ThrowIfNotInitialized(){
+            if (!m_isInitialized) {
+                // todo: add correct exception
+                throw new Exception("Not initialized");
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Xml.Xsl;
 using Contracts;
 using Xunit;
@@ -12,7 +13,13 @@ namespace UnitTests
         {
             //var isEncrypted = true;
             //var 
-            //var msg = new Message()
+            try
+            {
+                var msg = new Message(true, null, null);
+            }
+            catch(Exception exc) {
+                Console.WriteLine(exc);
+            }
         }
     }
 }

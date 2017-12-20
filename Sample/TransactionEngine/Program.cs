@@ -3,6 +3,7 @@ using System.Configuration;
 using SecuredCommunication;
 using System.Threading;
 using Contracts;
+using System.Threading.Tasks;
 
 namespace TransactionEngine
 {
@@ -32,11 +33,16 @@ namespace TransactionEngine
             secretsMgmnt.Initialize().Wait();
 
             //var securedComm = new RabbitMQBusImpl(ConfigurationManager.AppSettings["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");
-            var securedComm = new AzureQueueImpl(ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt, true);
+            var securedCommForTransactions = new AzureQueueImpl("transactions", ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt, true);
+            var securedCommForNotifications = new AzureQueueImpl("notifications", ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt, true);
+            var taskInitTransactions = securedCommForTransactions.Initialize();
+            var taskInitNotifications = securedCommForNotifications.Initialize();
+            Task.WhenAll(new Task[] { taskInitTransactions, taskInitNotifications }).Wait();
+
             var ethereumNodeWrapper = new EthereumNodeWrapper(kv, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
 
             // Listen on transactions requests, process them and notify the users when done
-            securedComm.DequeueAsync("transactions",
+            securedCommForTransactions.DequeueAsync(
                 msg =>
                 {
                     Console.WriteLine("Got work!");
@@ -62,8 +68,9 @@ namespace TransactionEngine
                     Thread.Sleep(3000);
 
                     // notify a user about his balance change
-                    securedComm.EnqueueAsync("notifications", reciverAddress).Wait();
-                }).Wait();
+                    securedCommForNotifications.EnqueueAsync(reciverAddress).Wait();
+                },
+                TimeSpan.FromSeconds(3)).Wait();
         }
     }
 }
