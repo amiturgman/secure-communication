@@ -10,6 +10,8 @@ namespace SecuredCommunication
 {
     public class KeyVault : IKeyVault
     {
+        public string Url { get; }
+
         #region private members
 
         private KeyVaultClient m_kvClient;
@@ -18,9 +20,12 @@ namespace SecuredCommunication
 
         #endregion
 
-        public string Url { get; private set; }
-
-        // todo: error + logs
+        /// <summary>
+        /// Ctor for Key vault class
+        /// </summary>
+        /// <param name="kvUrl">The Azure keyvault url</param>
+        /// <param name="applicationId">The azure service principal application id</param>
+        /// <param name="applicationSecret">The azure service principal application secret</param>
         public KeyVault(string kvUrl, string applicationId, string applicationSecret)
         {
             Url = kvUrl;
@@ -30,6 +35,11 @@ namespace SecuredCommunication
             m_kvClient = new KeyVaultClient(GetAccessTokenAsync, new HttpClient());
         }
 
+        /// <summary>
+        /// Gets the specified secret
+        /// </summary>
+        /// <returns>The secret</returns>
+        /// <param name="secretName">Secret identifier</param>
         public async Task<SecretBundle> GetSecretAsync(string secretName)
         {
             try
@@ -43,6 +53,12 @@ namespace SecuredCommunication
             }
         }
 
+        /// <summary>
+        /// Sets a secret in Azure keyvault
+        /// </summary>
+        /// <returns>The secret.</returns>
+        /// <param name="secretName">Secret identifier.</param>
+        /// <param name="value">The value to be stored.</param>
         public async Task<SecretBundle> SetSecretAsync(string secretName, string value)
         {
             try

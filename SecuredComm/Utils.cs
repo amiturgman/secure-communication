@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace Contracts
+namespace SecuredCommunication
 {
     /// <summary>
     /// Provides utility helper methods

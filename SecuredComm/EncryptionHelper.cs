@@ -27,8 +27,15 @@ namespace SecuredCommunication
             m_decryptionCert = decryptionCert;
         }
 
+        /// <summary>
+        /// Decrypt the specified encryptedData.
+        /// </summary>
+        /// <param name="encryptedData">Encrypted data.</param>
+        /// <returns>The decrypted data</returns>
         public byte[] Decrypt(byte[] encryptedData)
         {
+            if (encryptedData == null) throw new ArgumentNullException(nameof(encryptedData));
+
             try
             {
                 // GetRSAPrivateKey returns an object with an independent lifetime, so it should be
@@ -38,13 +45,18 @@ namespace SecuredCommunication
                     return rsa.Decrypt(encryptedData, RSAEncryptionPadding.OaepSHA1);
                 }
             }
-            catch (Exception exc)
+            catch (CryptographicException exc)
             {
-                Console.WriteLine("Exception was thrown: " + exc);
+                Console.WriteLine($"Exception was thrown while decrypting the data: {exc}");
                 throw;
             }
         }
 
+        /// <summary>
+        /// Encrypt the specified data.
+        /// </summary>
+        /// <param name="data">Data to be encrypted.</param>
+        /// <returns>Encrypted data</returns>
         public byte[] Encrypt(byte[] data)
         {
             try
@@ -58,23 +70,42 @@ namespace SecuredCommunication
                     return rsa.Encrypt(data, RSAEncryptionPadding.OaepSHA1);
                 }
             }
-            catch (Exception ex)
+            catch (CryptographicException ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine($"Exception was thrown while encrypting the data: {ex}");
                 throw;
             }
         }
-       
+
+        /// <summary>
+        /// Sign the specified data.
+        /// </summary>
+        /// <param name="data">The data to be signed</param>
+        /// <returns>The signature</returns>
         public byte[] Sign(byte[] data)
         {
+            // Verify input
+            if (data == null) throw new ArgumentNullException("data");
+
             using (RSA rsa = m_signCert.GetRSAPrivateKey())
             {
                 return rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
             }
         }
 
+        /// <summary>
+        /// Verify the specified signature and data.
+        /// </summary>
+        /// <param name="signature">The signature for verify</param>
+        /// <param name="data">The data which match the signature</param>
+        /// <returns>Boolean indicates whether the verification succeeded</returns>
         public bool Verify(byte[] data, byte[] signature)
         {
+            // Verify inputs
+            if (data == null) throw new ArgumentNullException("data");
+            if (signature == null) throw new ArgumentNullException("signature");
+
+            // Verify data
             using (RSA rsa = m_verifyCert.GetRSAPublicKey())
             {
                 return rsa.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);

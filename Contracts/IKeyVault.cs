@@ -16,7 +16,7 @@ namespace Contracts
         Task<SecretBundle> GetSecretAsync(string secretName);
 
         /// <summary>
-        /// Sets a secret in keyvault
+        /// Sets a secret in Azure keyvault
         /// </summary>
         /// <returns>The secret.</returns>
         /// <param name="secretName">Secret identifier.</param>

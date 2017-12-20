@@ -1,16 +1,15 @@
 ﻿namespace Contracts
 {
     /// <summary>
-    /// Holds the Ethereum keys + address
+    /// Holds the Ethereum public and private keys and public address
     /// </summary>
-    public class EthKey
+    public class EthKey : KeyPair
     {
-        public KeyPair Pair { get; private set; }
-        public string PublicAddress { get; private set; }
+        public string PublicAddress { get; }
 
-        public EthKey(string privateKey, byte[] publicKey, string publicAddress)
+        public EthKey(string privateKey, byte[] publicKey, string publicAddress) 
+            : base(publicKey, privateKey)
         {
-            Pair = new KeyPair(publicKey, privateKey);
             PublicAddress = publicAddress;
         }
     }

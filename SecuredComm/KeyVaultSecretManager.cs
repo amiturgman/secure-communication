@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Contracts;
 using Org.BouncyCastle.Utilities.Encoders;
+using SecuredComm;
 
 namespace SecuredCommunication
 {
@@ -82,15 +84,17 @@ namespace SecuredCommunication
 
         public byte[] Decrypt(byte[] encryptedData)
         {
+            // Verify input
             VerifyInitialized();
 
+            // Call Decrypt
             try
             {
                 return m_encryptionHelper.Decrypt(encryptedData);
             }
-            catch (Exception exc)
+            catch (CryptographicException e)
             {
-                Console.WriteLine("Exception was thrown: " + exc);
+                Console.WriteLine(e);
                 throw;
             }
         }
@@ -103,7 +107,7 @@ namespace SecuredCommunication
             {
                 return m_encryptionHelper.Encrypt(data);
             }
-            catch (Exception ex)
+            catch (CryptographicException ex)
             {
                 Console.WriteLine(ex.Message);
                 throw;
@@ -114,31 +118,16 @@ namespace SecuredCommunication
         {
             VerifyInitialized();
 
-            try
-            {
-                return m_encryptionHelper.Sign(data);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                throw;
-            }
+            return m_encryptionHelper.Sign(data);
         }
 
         public bool Verify(byte[] data, byte[] signature)
         {
             VerifyInitialized();
 
-            try
-            {
-                return m_encryptionHelper.Verify(data, signature);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                throw;
-            }
+            return m_encryptionHelper.Verify(data, signature);
         }
+
         #endregion
 
         #region Private Methods
@@ -149,7 +138,7 @@ namespace SecuredCommunication
         /// </summary>
         /// <returns>The certificate object</returns>
         /// <param name="secret">Base64 string representation of a certificate</param>
-        private X509Certificate2 SecretToCertificate(string secret)
+        private static X509Certificate2 SecretToCertificate(string secret)
         {
             return new X509Certificate2(Base64.Decode(secret));
         }
@@ -161,7 +150,7 @@ namespace SecuredCommunication
         {
             if (!m_isInit)
             {
-                throw new Exception("Initialize first...");
+                throw new SecureCommunicationException("Initialize method needs to be called before accessing class methods");
             }
         }
         #endregion

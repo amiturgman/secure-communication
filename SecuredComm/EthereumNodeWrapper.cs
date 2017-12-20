@@ -48,8 +48,8 @@ namespace SecuredCommunication
         {
             try
             {
-                await m_kv.SetSecretAsync(identifier + m_publicKeySuffix, Utils.FromByteArray<string>(key.Pair.PublicKey));
-                await m_kv.SetSecretAsync(identifier + m_privateKeySuffix, key.Pair.PrivateKey);
+                await m_kv.SetSecretAsync(identifier + m_publicKeySuffix, Utils.FromByteArray<string>(key.PublicKey));
+                await m_kv.SetSecretAsync(identifier + m_privateKeySuffix, key.PrivateKey);
                 await m_kv.SetSecretAsync(identifier + m_publicAddressSuffix, key.PublicAddress);
 
                 return true;
@@ -94,7 +94,7 @@ namespace SecuredCommunication
         {
             var senderKeyPair = await LoadKeyFromKeyVault(senderIdentifier);
             var txCount = await m_web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(senderKeyPair.PublicAddress);
-            return Web3.OfflineTransactionSigner.SignTransaction(senderKeyPair.Pair.PrivateKey, recieverAddress, amountInWei, txCount.Value);
+            return Web3.OfflineTransactionSigner.SignTransaction(senderKeyPair.PrivateKey, recieverAddress, amountInWei, txCount.Value);
         }
 
         /// <summary>

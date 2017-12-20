@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 
 namespace Contracts
 {
@@ -18,12 +17,12 @@ namespace Contracts
         /// </summary>
         /// <param name="isEncrypted">A flag indicates whether the message is Encrypted</param>
         /// <param name="data">A byte array of the data to send</param>
-        /// <param name="signature">The siganture on the data</param>
+        /// <param name="signature">The signature on the data</param>
         public Message(bool isEncrypted, byte[] data, byte[] signature)
         {
             Encrypted = isEncrypted;
-            Data = data;
-            Signature = signature;
+            Data = data ?? throw new ArgumentNullException("data");
+            Signature = signature ?? throw new ArgumentNullException("signature"); ;
         }
     }
 }

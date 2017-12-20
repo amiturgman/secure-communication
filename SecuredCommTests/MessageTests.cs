@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Xml.Xsl;
 using Contracts;
 using Xunit;
 
@@ -9,17 +7,39 @@ namespace UnitTests
     public class MessageTests
     {
         [Fact]
-        public void Test_Message_Created_As_Expected()
+        public void Sanity_VerifyMessageIsCreate()
         {
-            //var isEncrypted = true;
-            //var 
+            var isEncrypted = true;
+            var data = new Byte[] {0, 1, 2};
+            var signature = new Byte[] {3, 4, 5};
+            var msg = new Message(isEncrypted, data, signature);
+        }
+
+        [Fact]
+        public void Sanity_ExceptionIsThrownWhenInputIsNull()
+        {
+            var isEncrypted = true;
+            var data = new Byte[] {0, 1, 2};
+            var signature = new Byte[] {3, 4, 5};
+
             try
             {
-                var msg = new Message(true, null, null);
+                var message = new Message(isEncrypted, null, signature);
             }
-            catch(Exception exc) {
-                Console.WriteLine(exc);
+            catch (ArgumentNullException e)
+            {
+                Assert.Equal(e.Message, "Value cannot be null.\r\nParameter name: data");
             }
+
+            try
+            {
+                var msg = new Message(isEncrypted, data, null);
+            }
+            catch (ArgumentNullException e)
+            {
+                Assert.Equal(e.Message, "Value cannot be null.\r\nParameter name: signature");
+            }
+
         }
     }
 }

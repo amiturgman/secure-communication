@@ -34,8 +34,8 @@ namespace UnitTests
 
             Assert.Equal(42, accountKeyPair.PublicAddress.Length);
             Assert.True(accountKeyPair.PublicAddress.StartsWith("0x"));
-            Assert.Equal(66, accountKeyPair.Pair.PrivateKey.Length);
-            Assert.True(accountKeyPair.Pair.PrivateKey.StartsWith("0x"));
+            Assert.Equal(66, accountKeyPair.PrivateKey.Length);
+            Assert.True(accountKeyPair.PrivateKey.StartsWith("0x"));
         }
 
         [Fact]

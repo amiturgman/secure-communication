@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Security.Cryptography;
 using Contracts;
+using SecuredComm;
+using DecryptionException = SecuredComm.DecryptionException;
 
 namespace SecuredCommunication
 {
@@ -10,40 +13,75 @@ namespace SecuredCommunication
     {
         public static byte[] CreateMessageForQueue(string data, IEncryptionManager encryptionManager, bool isEncrypted)
         {
-            var dataInBytes = Utils.ToByteArray(data);
+            if (encryptionManager == null)
+            {
+                throw new ArgumentNullException(nameof(encryptionManager));
+            }
+
+            // Convert the data to byte array
+            var dataInBytes = data != null ? Utils.ToByteArray(data) : throw new ArgumentNullException("data");
+
+            // Sign the message
             var signature = encryptionManager.Sign(dataInBytes);
 
             if (isEncrypted)
             {
-                dataInBytes = encryptionManager.Encrypt(dataInBytes);
+                try
+                {
+                    // Encrypt the message
+                    dataInBytes = encryptionManager.Encrypt(dataInBytes);
+                }
+                catch (CryptographicException ex)
+                {
+
+                }
             }
 
+            // Convert the message to byte array
             return Utils.ToByteArray(new Message(isEncrypted, dataInBytes, signature));
         }
 
         /// <summary>
-        /// Decrypts (if encrypted), Verifies and runs the callback on the recieved queue message
+        /// Decrypts (if encrypted), Verifies and runs the callback on the received queue message
         /// </summary>
-        /// <param name="body">Body.</param>
+        /// <param name="messageInBytes">The message in bytes.</param>
         /// <param name="encryptionManager">Encryption manager.</param>
-        /// <param name="cb">Cb.</param>
-        public static void ProcessQueueMessage(byte[] body, IEncryptionManager encryptionManager, Action<byte[]> cb)
+        /// <param name="callback">The callback to preform once the message is decrypted (if needed) and verified</param>
+        public static void ProcessQueueMessage(byte[] messageInBytes, IEncryptionManager encryptionManager,
+            Action<byte[]> callback)
         {
-            var msg = Utils.FromByteArray<Message>(body);
+            // Deserialize the  byte array to Message object
+            var msg = messageInBytes != null
+                ? Utils.FromByteArray<Message>(messageInBytes)
+                : throw new ArgumentNullException("messageInBytes");
+
             var data = msg.Data;
+             
             if (msg.Encrypted)
             {
-                data = encryptionManager.Decrypt(msg.Data);
+                try
+                {
+                    // Decrypt the message
+                    data = encryptionManager.Decrypt(msg.Data);
+                }
+                catch (CryptographicException ex)
+                {
+                    throw new DecryptionException("Decryption failed", ex);
+                }
+
             }
 
+            // Verify the signature
             var verifyResult = encryptionManager.Verify(data, msg.Signature);
 
             if (verifyResult == false)
             {
-                throw new Exception("Verify failed!!");
+                throw new SignatureVerificationException("Verify queue message failed. Check if the verification is" +
+                                                         "done with the correct key");
             }
 
-            cb(data);
+            // Call callback
+            callback(data);
         }
     }
 }
