@@ -41,7 +41,7 @@ namespace UnitTests
 
         public Task<SecretBundle> SetSecretAsync(string secretName, string value)
         {
-            throw new Exception();
+            throw new NotImplementedException();
         }
 
         public Task<bool> StoreKeyPairAsync(string identifier, KeyPair key)

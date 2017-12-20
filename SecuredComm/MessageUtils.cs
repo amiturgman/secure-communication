@@ -33,7 +33,6 @@ namespace SecuredCommunication
                 }
                 catch (CryptographicException ex)
                 {
-
                 }
             }
 

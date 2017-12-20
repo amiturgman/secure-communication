@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Contracts;
 using Microsoft.WindowsAzure.Storage; 
 using Microsoft.WindowsAzure.Storage.Queue;
+using SecuredComm;
 
 namespace SecuredCommunication
 {
@@ -66,7 +67,7 @@ namespace SecuredCommunication
 
         public Task<string> DequeueAsync(Action<byte[]> cb)
         {
-            throw new Exception("Not supported for Azure Queue");
+            throw new SecureCommunicationException("This method signature is not supported for the Azure Queue implementation");
         }
 
         /// <summary>
@@ -115,8 +116,7 @@ namespace SecuredCommunication
 
         private void ThrowIfNotInitialized(){
             if (!m_isInitialized) {
-                // todo: add correct exception
-                throw new Exception("Not initialized");
+                throw new SecureCommunicationException("Object was not initialized");
             }
         }
     }

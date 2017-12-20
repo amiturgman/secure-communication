@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Contracts;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using SecuredComm;
 
 namespace SecuredCommunication
 {
@@ -76,7 +77,7 @@ namespace SecuredCommunication
 
         public Task DequeueAsync(Action<byte[]> cb, TimeSpan waitTime)
         {
-            throw new Exception("Not supported for rabbitMQ");
+            throw new SecureCommunicationException("This method signature is not supported for the rabbitMQ implementation");
         }
 
         public Task EnqueueAsync(string data)
@@ -118,8 +119,7 @@ namespace SecuredCommunication
         {
             if (!m_isInitialized)
             {
-                // todo: add correct exc
-                throw new Exception("Not initialized");
+                throw new SecureCommunicationException("Object was not initialized");
             }
         }
     }
