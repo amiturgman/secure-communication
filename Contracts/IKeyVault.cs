@@ -9,12 +9,6 @@ namespace Contracts
     public interface IKeyVault
     {
         /// <summary>
-        /// Gets the uri of the key vault which this object is wrapping
-        /// </summary>
-        /// <returns>The underlying keyvault's uri</returns>
-        string GetUrl();
-
-        /// <summary>
         /// Gets the specified secret
         /// </summary>
         /// <returns>The secret</returns>
@@ -22,7 +16,7 @@ namespace Contracts
         Task<SecretBundle> GetSecretAsync(string secretName);
 
         /// <summary>
-        /// Sets a secret in keyvault
+        /// Sets a secret in Azure keyvault
         /// </summary>
         /// <returns>The secret.</returns>
         /// <param name="secretName">Secret identifier.</param>

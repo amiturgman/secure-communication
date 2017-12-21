@@ -1,22 +1,27 @@
 ﻿using System;
-using System.Configuration;
 using System.Threading.Tasks;
 using Contracts;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using SecuredComm;
 
 namespace SecuredCommunication
 {
     // An implementation using the RabbitMQ service
-    public class RabbitMQBusImpl : IQueueCommunication
+    public class RabbitMQBusImpl : IQueueManager
     {
         #region private members
 
         private readonly IEncryptionManager m_secretMgmt;
-        private readonly IModel m_channel;
         private readonly bool m_isEncrypted;
         private readonly string m_exchangeName;
+
+        private IModel m_channel;
         private EventingBasicConsumer m_consumer;
+        private bool m_isInitialized;
+        private string m_rabitMqUri;
+        private IBasicProperties m_queueProperties;
+        private string m_queueName;
 
         #endregion
 
@@ -24,62 +29,104 @@ namespace SecuredCommunication
             string rabitMqUri,
             IEncryptionManager secretMgmnt,
             bool isEncrypted,
-            string exchangeName)
+            string exchangeName,
+            string queueName)
         {
+            // Sanity
+            if (string.IsNullOrEmpty(rabitMqUri) || string.IsNullOrEmpty(exchangeName) | string.IsNullOrEmpty(queueName)) {
+                throw new ArgumentException("RabbitMQ uri, exchange name and queue name must be supplied");
+            }
+
             m_exchangeName = exchangeName;
+            m_rabitMqUri = rabitMqUri;
+            m_secretMgmt = secretMgmnt ?? throw new ArgumentNullException(nameof(secretMgmnt));
+            m_isEncrypted = isEncrypted;
+            m_queueName = queueName;
+        }
+
+        public void Initialize()
+        {
             ConnectionFactory factory = new ConnectionFactory
             {
-                Uri = new Uri(rabitMqUri)
+                Uri = new Uri(m_rabitMqUri)
             };
-            IConnection conn = factory.CreateConnection();
 
+            IConnection conn = factory.CreateConnection();
             m_channel = conn.CreateModel();
             m_channel.ExchangeDeclare(m_exchangeName, ExchangeType.Direct);
 
-            m_secretMgmt = secretMgmnt;
-            m_isEncrypted = isEncrypted;
+            CreateQueue(m_queueName);
+
+            m_queueProperties = m_channel.CreateBasicProperties();
+            m_queueProperties.Persistent = true;
+            m_channel.BasicQos(0, 1, false);
+
+            m_isInitialized = true;
         }
 
-        public Task<string> DequeueAsync(string queueName, Action<Message> cb)
+        public Task<string> DequeueAsync(Action<byte[]> cb)
         {
+            ThrowIfNotInitialized();
+
+            if (cb == null) {
+                throw new ArgumentException("callback cannot be null");
+            }
+
             m_consumer = new EventingBasicConsumer(m_channel);
-            m_consumer.Received += async (ch, ea) =>
+            m_consumer.Received += (ch, ea) =>
             {
-                // ack to the queue that we got the msg
+                // Ack to the queue that we got the message
                 // TODO: handle messages that failed
                 m_channel.BasicAck(ea.DeliveryTag, false);
 
-                await MessageUtils.DecryptAndVerifyQueueMessage(ea.Body, m_secretMgmt, cb);
+                MessageUtils.ProcessQueueMessage(ea.Body, m_secretMgmt, cb);
             };
 
             // return the consumer tag
-            return Task.FromResult(m_channel.BasicConsume(queueName, false, m_consumer));
+            return Task.FromResult(m_channel.BasicConsume(m_queueName, false, m_consumer));
         }
 
-        public async Task EnqueueAsync(string queueName, string data)
+        public Task DequeueAsync(Action<byte[]> cb, TimeSpan waitTime)
         {
-            CreateQueue(queueName);
+            throw new SecureCommunicationException("This method signature is not supported for the rabbitMQ implementation");
+        }
 
-            var properties = m_channel.CreateBasicProperties();
-            properties.Persistent = true;
-            m_channel.BasicQos(0, 1, false);
-
-            var msgAsBytes = await MessageUtils.CreateMessageForQueue(data, m_secretMgmt, m_isEncrypted);
+        public Task EnqueueAsync(string data)
+        {
+            ThrowIfNotInitialized();
+           
+            var msgAsBytes = MessageUtils.CreateMessageForQueue(data, m_secretMgmt, m_isEncrypted);
             m_channel.BasicPublish(
                 exchange: m_exchangeName,
-                routingKey: queueName,
+                routingKey: m_queueName,
                 mandatory: false,
-                basicProperties: properties,
+                basicProperties: m_queueProperties,
                 body: msgAsBytes);
+
+            return Task.FromResult(0);
         }
 
         public void CancelListeningOnQueue(string consumerTag)
         {
+            ThrowIfNotInitialized();
+
+            if (string.IsNullOrEmpty(consumerTag))
+            {
+                throw new ArgumentException("consumer tag must be supplied");
+            }
+
             m_channel.BasicCancel(consumerTag);
         }
 
         private void CreateQueue(string queueName)
         {
+            ThrowIfNotInitialized();
+
+            if (string.IsNullOrEmpty(queueName))
+            {
+                throw new ArgumentException("queue name must be supplied");
+            }
+
             m_channel.QueueDeclare(queue: queueName,
                 durable: true,
                 exclusive: false,
@@ -87,6 +134,14 @@ namespace SecuredCommunication
                 arguments: null);
 
             m_channel.QueueBind(queueName, m_exchangeName, queueName);
+        }
+
+        private void ThrowIfNotInitialized()
+        {
+            if (!m_isInitialized)
+            {
+                throw new SecureCommunicationException("Object was not initialized");
+            }
         }
     }
 }

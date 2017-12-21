@@ -6,21 +6,26 @@ namespace Contracts
     /// <summary>
     /// Interface for a queue based communication pipeline
     /// </summary>
-    public interface IQueueCommunication
+    public interface IQueueManager
     {
         /// <summary>
         /// Enqueue a message to the queue
         /// </summary>
-        /// <param name="queueName">Queue name.</param>
         /// <param name="msg">Message.</param>
-        Task EnqueueAsync(string queueName, string msg);
+        Task EnqueueAsync(string msg);
 
         /// <summary>
         /// Creates a listener on a queue.
         /// </summary>
         /// <returns>The listener's identifier</returns>
-        /// <param name="queueName">The queue to listen on</param>
         /// <param name="cb">a callback to execute once a message arrives</param>
-        Task<string> DequeueAsync(string queueName, Action<Message> cb);
+        Task<string> DequeueAsync(Action<byte[]> cb);
+
+        /// <summary>
+        /// Creates a listener on a queue.
+        /// </summary>
+        /// <returns>The listener's identifier</returns>
+        /// <param name="cb">a callback to execute once a message arrives</param>
+        Task DequeueAsync(Action<byte[]> cb, TimeSpan waitTime);
     }
 }

@@ -9,7 +9,7 @@ namespace CoinsSender
 {
     /// <summary>
     ///  A sample app that checks balance and while > some value
-    ///  keep asking the transferer to create more transactions (Sends money)
+    ///  keep asking the transferee to create more transactions (Sends money)
     /// </summary>
     class Program
     {
@@ -29,7 +29,7 @@ namespace CoinsSender
             while (true)
             {
                 Console.WriteLine("To run the demo with Ethereum Testnet press 1");
-                Console.WriteLine("To run the demo with Docker testrpc press 2");
+                Console.WriteLine("To run the demo with Docker TestRpc press 2");
                 
                 Console.WriteLine("Press any other key to exit");
                 Console.WriteLine();
@@ -52,11 +52,9 @@ namespace CoinsSender
 
         private static void EthereumTestRpcDemo(KeyVault kv, EthereumNodeWrapper ethereumNodeWrapper)
         {
-            var senderPublicKey = "0xe6128e8d408f53ea53e74be796d40db896fcaef0";
             var senderPrivateKey = "0x4faec59e004fd62384813d760e55d6df65537b4ccf62f268253ad7d4243a7193";
-            var reciverPublicKey = "0x9108cf23b4f60f2bc355088a51539b576c7f9e6d";
             var reciverPrivateKey = "0x03fd5782c37523be6598ca0e5d091756635d144e42d518bb5f8db11cf931b447";
-
+          
             Console.WriteLine($"Please run the docker image with the following command:{Environment.NewLine}"+
                 "docker run -d -p 8545:8545 trufflesuite/ganache-cli:latest " +
                 $"--account=\"{senderPrivateKey}, 300000000000000000000\"" +
@@ -67,19 +65,15 @@ namespace CoinsSender
             // Check if Account already stored in KeyVault
             try
             {
-                var senderAccount = ethereumNodeWrapper.GetPublicKeyAsync(c_senderId).Result;
-                var reciverAccount = ethereumNodeWrapper.GetPublicKeyAsync(c_ReciverId).Result;
+                var senderAccount = ethereumNodeWrapper.GetPublicAddressAsync(c_senderId).Result;
+                var reciverAccount = ethereumNodeWrapper.GetPublicAddressAsync(c_ReciverId).Result;
 
             } catch (Exception ex)
             {
                 if (ex.InnerException is KeyVaultErrorException && ex.InnerException.Message.Contains("Secret not found"))
                 {
-                    // Create accounts
-                    var senderAccount= new KeyPair(senderPublicKey, senderPrivateKey);
-                    var reciverAccount =  new KeyPair(reciverPublicKey, reciverPrivateKey);
-
-                    var result = ethereumNodeWrapper.StoreAccountAsync(c_senderId, senderAccount).Result;
-                    result = ethereumNodeWrapper.StoreAccountAsync(c_ReciverId, reciverAccount).Result;
+                    var result = ethereumNodeWrapper.StoreAccountAsync(c_senderId, senderPrivateKey).Result;
+                    result = ethereumNodeWrapper.StoreAccountAsync(c_ReciverId, reciverPrivateKey).Result;
                 }
             } finally
             {
@@ -92,19 +86,19 @@ namespace CoinsSender
             while (true)
             {
                 Console.WriteLine("To create new accounts press 1");
-                Console.WriteLine("If you already created sender and reciver accounts press 2");
+                Console.WriteLine("If you already created sender and receiver accounts press 2");
                 var input = double.Parse(Console.ReadLine());
                 switch (input)
                 {
                     case 1:
                         // Create accounts
                         var senderAccount = ethereumNodeWrapper.CreateAccount();
-                        var result = ethereumNodeWrapper.StoreAccountAsync(c_senderId, senderAccount).Result;
+                        var result = ethereumNodeWrapper.StoreAccountAsync(c_senderId, senderAccount.GetPrivateKey()).Result;
                         var reciverAccount = ethereumNodeWrapper.CreateAccount();
-                        result = ethereumNodeWrapper.StoreAccountAsync(c_ReciverId, reciverAccount).Result;
+                        result = ethereumNodeWrapper.StoreAccountAsync(c_ReciverId, reciverAccount.GetPrivateKey()).Result;
 
                         Console.WriteLine("Accounts were created. " +
-                                          $"To continue the demo please send ether to address {senderAccount.PublicKey}{Environment.NewLine}" +
+                                          $"To continue the demo please send ether to address {senderAccount.GetPublicAddress()}{Environment.NewLine}" +
                                           "You can send ether for: https://www.rinkeby.io/#faucet");
                         continue;
                     case 2:
@@ -121,8 +115,8 @@ namespace CoinsSender
             Console.WriteLine("Sender - Happy to transfer my crypto coins!");
 
             // Init
-            var senderAddress = ethereumNodeWrapper.GetPublicKeyAsync(c_senderId).Result;
-            var reciverAddress = ethereumNodeWrapper.GetPublicKeyAsync(c_ReciverId).Result;
+            var senderAddress = ethereumNodeWrapper.GetPublicAddressAsync(c_senderId).Result;
+            var reciverAddress = ethereumNodeWrapper.GetPublicAddressAsync(c_ReciverId).Result;
             var balance = ethereumNodeWrapper.GetCurrentBalance(senderAddress).Result;
             PrintCurrentBalance(senderAddress, balance);
 
@@ -131,11 +125,11 @@ namespace CoinsSender
             var signKeyName = ConfigurationManager.AppSettings["SignKeyName"];
             var verifyKeyName = ConfigurationManager.AppSettings["VerifyKeyName"];
 
-            var secretsMgmnt =
-                new KeyVaultSecretManager(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, kv, kv);
+            var secretsMgmnt = new KeyVaultSecretManager(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, kv, kv);
+            secretsMgmnt.Initialize().Wait();
             //var securedComm = new RabbitMQBusImpl(ConfigurationManager.AppSettings["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");
-            var securedComm = new AzureQueueImpl(ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt,
-                true);
+            var securedComm = new AzureQueueImpl("transactions", ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt, true);
+            securedComm.Initialize().Wait();
 
             // While there are sufficient funds, transfer some...
             while (balance > 0)
@@ -143,7 +137,6 @@ namespace CoinsSender
                 var amountToSend = 0.001;
                 // Message structure: {amountToSend};{senderName};{reciverAddress}
                 securedComm.EnqueueAsync(
-                    "transactions",
                     $"{amountToSend};{c_senderId};{reciverAddress}").Wait();
 
                 // Sleep 1 minute

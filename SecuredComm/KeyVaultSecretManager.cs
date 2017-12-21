@@ -1,82 +1,35 @@
 ﻿using System;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Contracts;
 using Org.BouncyCastle.Utilities.Encoders;
+using SecuredComm;
 
 namespace SecuredCommunication
 {
     /// <summary>
-    /// An implementation of <see cref="IEncryptionManager"/>, in this implemetation the certificates
+    /// An implementation of <see cref="IEncryptionManager"/>, in this implementation the certificates
     /// are loaded from two given key vaults
     /// </summary>
     public class KeyVaultSecretManager : IEncryptionManager
     {
-        #region private memebers
+        #region private members
 
-        private IKeyVault m_privateKeyVault;
-        private IKeyVault m_publicKeyVault;
+        private readonly IKeyVault m_privateKeyVault;
+        private readonly IKeyVault m_publicKeyVault;
 
-        private string m_decryptionKeyName;
-        private string m_encryptionKeyName;
-        private string m_signKeyName;
-        private string m_verifyKeyName;
+        private readonly string m_decryptionKeyName;
+        private readonly string m_encryptionKeyName;
+        private readonly string m_signKeyName;
+        private readonly string m_verifyKeyName;
 
-        private X509Certificate2 m_encryptionCert;
-        private X509Certificate2 m_decryptionCert;
-        private X509Certificate2 m_signCert;
-        private X509Certificate2 m_verifyCert;
         private EncryptionHelper m_encryptionHelper;
         private bool m_isInit;
 
         #endregion
 
-        /// <summary>
-        /// Initialize the <see cref="EncryptionHelper"/> object with all the certificates taken from the keyvaults
-        /// </summary>
-        private async Task Initialize() {
-
-            var encryptSecretTask = m_publicKeyVault.GetSecretAsync(m_encryptionKeyName);
-            var decryptSecretTask = m_privateKeyVault.GetSecretAsync(m_decryptionKeyName);
-            var signSecretTask = m_publicKeyVault.GetSecretAsync(m_signKeyName);
-            var verifySecretTask = m_publicKeyVault.GetSecretAsync(m_verifyKeyName);
-
-            // wait on all of the tasks concurrently
-            var tasks = new Task[] { encryptSecretTask, decryptSecretTask, signSecretTask, verifySecretTask };
-            await Task.WhenAll(tasks);
-
-            // when using 'Result' we know that the task is actually done already
-            m_encryptionCert = SecretToCertificate(encryptSecretTask.Result.Value);
-            m_decryptionCert = SecretToCertificate(decryptSecretTask.Result.Value);
-            m_signCert = SecretToCertificate(signSecretTask.Result.Value);
-            m_verifyCert = SecretToCertificate(verifySecretTask.Result.Value);
-
-            // Now, we have an 'EncryptionHelper', which can help us encrypt, decrypt, sign and verify using
-            // the prefetched certificates
-            m_encryptionHelper = 
-                new EncryptionHelper(m_encryptionCert, m_decryptionCert, m_signCert, m_verifyCert);
-
-            m_isInit = true;
-        }
-
-        /// <summary>
-        /// Takes a Base64 representation of a certificate and creates a new certificate
-        /// object
-        /// </summary>
-        /// <returns>The certificate object</returns>
-        /// <param name="secret">Base64 string representation of a certificate</param>
-        private X509Certificate2 SecretToCertificate(string secret) {
-            return new X509Certificate2(Base64.Decode(secret));
-        }
-
-        /// <summary>
-        /// If marked as not initialized, runs the initialize method
-        /// </summary>
-        private async Task VerifyInitialized(){
-            if (!m_isInit) {
-                await Initialize();
-            }
-        }
+        #region Private Methods
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:SecuredCommunication.KeyVaultSecretManager"/> class.
@@ -101,64 +54,135 @@ namespace SecuredCommunication
             m_publicKeyVault = publicKv;
         }
 
-        public async Task<byte[]> Decrypt(byte[] encryptedData)
-        {
-            await VerifyInitialized();
+        /// <summary>
+        /// Initialize the <see cref="EncryptionHelper"/> object with all the certificates taken from the keyvaults
+        /// </summary>
+        public async Task Initialize() {
 
+            // TODO: handle partial assignment of values
+            var encryptSecretTask = m_publicKeyVault.GetSecretAsync(m_encryptionKeyName);
+            var decryptSecretTask = m_privateKeyVault.GetSecretAsync(m_decryptionKeyName);
+            var signSecretTask = m_publicKeyVault.GetSecretAsync(m_signKeyName);
+            var verifySecretTask = m_publicKeyVault.GetSecretAsync(m_verifyKeyName);
+
+            // wait on all of the tasks concurrently
+            var tasks = new Task[] { encryptSecretTask, decryptSecretTask, signSecretTask, verifySecretTask };
+            await Task.WhenAll(tasks);
+
+            // when using 'Result' we know that the task is actually done already
+            var encryptionCert = SecretToCertificate(encryptSecretTask.Result.Value);
+            var decryptionCert = SecretToCertificate(decryptSecretTask.Result.Value);
+            var signCert = SecretToCertificate(signSecretTask.Result.Value);
+            var verifyCert = SecretToCertificate(verifySecretTask.Result.Value);
+
+            // Now, we have an 'EncryptionHelper', which can help us encrypt, decrypt, sign and verify using
+            // the pre-fetched certificates
+            m_encryptionHelper = new EncryptionHelper(encryptionCert, decryptionCert, signCert, verifyCert);
+
+            m_isInit = true;
+        }
+
+
+        public byte[] Decrypt(byte[] encryptedData)
+        {
+            VerifyInitialized();
+
+            if (encryptedData == null)
+            {
+                throw new ArgumentNullException(nameof(encryptedData));
+            }
+
+            // Call Decrypt
             try
             {
-                return await m_encryptionHelper.Decrypt(encryptedData);
+                return m_encryptionHelper.Decrypt(encryptedData);
             }
-            catch (Exception exc)
+            catch (CryptographicException e)
             {
-                Console.WriteLine("Exception was thrown: " + exc);
+                Console.WriteLine(e);
                 throw;
             }
         }
 
-        public async Task<byte[]> Encrypt(byte[] data)
+        public byte[] Encrypt(byte[] data)
         {
-            await VerifyInitialized();
+            VerifyInitialized();
+
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
 
             try
             {
-                return await m_encryptionHelper.Encrypt(data);
+                return m_encryptionHelper.Encrypt(data);
             }
-            catch (Exception ex)
+            catch (CryptographicException ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex);
                 throw;
             }
         }
 
-        public async Task<byte[]> SignAsync(byte[] data)
+        public byte[] Sign(byte[] data)
         {
-            await VerifyInitialized();
+            VerifyInitialized();
 
-            try
+            if (data == null)
             {
-                return await m_encryptionHelper.SignAsync(data);
+                throw new ArgumentNullException(nameof(data));
             }
-            catch (Exception ex)
+
+            return m_encryptionHelper.Sign(data);
+        }
+
+        public bool Verify(byte[] data, byte[] signature)
+        {
+            VerifyInitialized();
+
+            if (data == null)
             {
-                Console.WriteLine(ex.Message);
-                throw;
+                throw new ArgumentNullException(nameof(data));
+            }
+            if (signature == null)
+            {
+                throw new ArgumentNullException(nameof(signature));
+            }
+
+            return m_encryptionHelper.Verify(data, signature);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// Takes a Base64 representation of a certificate and creates a new certificate
+        /// object
+        /// </summary>
+        /// <returns>The certificate object</returns>
+        /// <param name="secret">Base64 string representation of a certificate</param>
+        private static X509Certificate2 SecretToCertificate(string secret)
+        {
+            if (string.IsNullOrEmpty(secret))
+            {
+                throw new ArgumentException("secret must be supplied");
+            }
+
+            return new X509Certificate2(Base64.Decode(secret));
+        }
+
+        /// <summary>
+        /// Throw exception if not initialized
+        /// </summary>
+        private void VerifyInitialized()
+        {
+            if (!m_isInit)
+            {
+                throw new SecureCommunicationException("Initialize method needs to be called before accessing class methods");
             }
         }
 
-        public async Task<bool> VerifyAsync(byte[] data, byte[] signature)
-        {
-            await VerifyInitialized();
-
-            try
-            {
-                return await m_encryptionHelper.VerifyAsync(data, signature);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                throw;
-            }
-        }
+        #endregion
     }
 }

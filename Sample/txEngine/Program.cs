@@ -2,7 +2,7 @@
 using System.Configuration;
 using SecuredCommunication;
 using System.Threading;
-using Contracts;
+using System.Threading.Tasks;
 
 namespace TransactionEngine
 {
@@ -29,18 +29,24 @@ namespace TransactionEngine
             var verifyKeyName = ConfigurationManager.AppSettings["VerifyKeyName"];
 
             var secretsMgmnt = new KeyVaultSecretManager(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, kv, kv);
+            secretsMgmnt.Initialize().Wait();
 
             //var securedComm = new RabbitMQBusImpl(ConfigurationManager.AppSettings["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");
-            var securedComm = new AzureQueueImpl(ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt, true);
+            var securedCommForTransactions = new AzureQueueImpl("transactions", ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt, true);
+            var securedCommForNotifications = new AzureQueueImpl("notifications", ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt, true);
+            var taskInitTransactions = securedCommForTransactions.Initialize();
+            var taskInitNotifications = securedCommForNotifications.Initialize();
+            Task.WhenAll(taskInitTransactions, taskInitNotifications).Wait();
+
             var ethereumNodeWrapper = new EthereumNodeWrapper(kv, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
 
             // Listen on transactions requests, process them and notify the users when done
-            securedComm.DequeueAsync("transactions",
+            securedCommForTransactions.DequeueAsync(
                 msg =>
                 {
                     Console.WriteLine("Got work!");
 
-                    var data = Utils.FromByteArray<string>(msg.m_data);
+                    var data = Utils.FromByteArray<string>(msg);
                     var msgArray = data.Split(";");
                     var amount = unitConverion.ToWei(msgArray[0]);
                     var senderName = msgArray[1];
@@ -48,12 +54,12 @@ namespace TransactionEngine
 
                     try
                     {
-                        var transactionHash = ethereumNodeWrapper.SignTransaction(senderName, reciverAddress, amount).Result;
-                        var transactionResult = ethereumNodeWrapper.SendRawTransaction(transactionHash).Result;
+                        var transactionHash = ethereumNodeWrapper.SignTransactionAsync(senderName, reciverAddress, amount).Result;
+                        var transactionResult = ethereumNodeWrapper.SendRawTransactionAsync(transactionHash).Result;
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine(ex.Message);
+                        Console.WriteLine(ex);
                         throw;
                     }
 
@@ -61,8 +67,9 @@ namespace TransactionEngine
                     Thread.Sleep(3000);
 
                     // notify a user about his balance change
-                    securedComm.EnqueueAsync("notifications", reciverAddress).Wait();
-                }).Wait();
+                    securedCommForNotifications.EnqueueAsync(reciverAddress).Wait();
+                },
+                TimeSpan.FromSeconds(3)).Wait();
         }
     }
 }

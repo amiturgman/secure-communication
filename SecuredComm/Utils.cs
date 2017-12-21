@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace Contracts
+namespace SecuredCommunication
 {
     /// <summary>
     /// Provides utility helper methods
@@ -20,8 +20,11 @@ namespace Contracts
 
         public static T FromByteArray<T>(byte[] data)
         {
-            if (data == null)
+            if (data == null || data.Length == 0)
+            {
                 return default(T);
+            }
+             
             BinaryFormatter bf = new BinaryFormatter();
             using (MemoryStream ms = new MemoryStream(data))
             {

@@ -20,31 +20,26 @@ namespace UnitTests
             return kvUri;
         }
 
-        public async Task<SecretBundle> GetSecretAsync(string secretName)
+        public Task<SecretBundle> GetSecretAsync(string secretName)
         {
-            if (secretName.Equals("sender-public"))
+            if (secretName.Equals("sender"))
             {
-                return new SecretBundle(TestConstants.publicKey);
-            }
-
-            if (secretName.Equals("sender-private"))
-            {
-                return new SecretBundle(TestConstants.privateKey);
+                return Task.FromResult(new SecretBundle(TestConstants.privateKey));
             }
 
             var x = new X509Certificate2("../../../testCert.pfx", "abc123ABC", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
             //var key = await GetKeyAsync(secretName);
             byte[] certBytes = x.Export(X509ContentType.Pkcs12);
             var secBundle = new SecretBundle(Convert.ToBase64String(certBytes));
-            return secBundle;
+            return Task.FromResult(secBundle);
         }
 
         public Task<SecretBundle> SetSecretAsync(string secretName, string value)
         {
-            throw new Exception();
+            throw new NotImplementedException();
         }
 
-        public Task<bool> StoreKeyPairAsync(string identifier, KeyPair key)
+        public Task<bool> StoreKeyPairAsync(string identifier, string key)
         {
             throw new NotImplementedException();
         }

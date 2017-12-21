@@ -10,54 +10,64 @@ namespace SecuredCommunication
 {
     public class KeyVault : IKeyVault
     {
+        public string Url { get; }
+
         #region private members
 
         private KeyVaultClient m_kvClient;
-        private readonly string m_url;
         private readonly string m_applicationId;
         private readonly string m_applicationSecret;
 
         #endregion
 
+        /// <summary>
+        /// Ctor for Key vault class
+        /// </summary>
+        /// <param name="kvUrl">The Azure keyvault url</param>
+        /// <param name="applicationId">The azure service principal application id</param>
+        /// <param name="applicationSecret">The azure service principal application secret</param>
         public KeyVault(string kvUrl, string applicationId, string applicationSecret)
         {
-            m_url = kvUrl;
-            m_kvClient = new KeyVaultClient(GetAccessTokenAsync, new HttpClient());
+            Url = kvUrl;
             m_applicationId = applicationId;
             m_applicationSecret = applicationSecret;
+           
+            m_kvClient = new KeyVaultClient(GetAccessTokenAsync, new HttpClient());
         }
 
         /// <summary>
-        /// Get the Azure Key Vault Url
+        /// Gets the specified secret
         /// </summary>
-        /// <returns>The KeyVault Url</returns>
-        public string GetUrl()
-        {
-            return m_url;
-        }
-
+        /// <returns>The secret</returns>
+        /// <param name="secretName">Secret identifier</param>
         public async Task<SecretBundle> GetSecretAsync(string secretName)
         {
             try
             {
-                return await m_kvClient.GetSecretAsync(GetUrl(), secretName);
+                return await m_kvClient.GetSecretAsync(Url, secretName);
             }
             catch (KeyVaultErrorException ex)
             {
-                Console.WriteLine($"Exception while trying to get secret {secretName}, {ex.Message}");
+                Console.WriteLine($"Exception while trying to get secret {secretName}, {ex}");
                 throw;
             }
         }
 
+        /// <summary>
+        /// Sets a secret in Azure keyvault
+        /// </summary>
+        /// <returns>The secret.</returns>
+        /// <param name="secretName">Secret identifier.</param>
+        /// <param name="value">The value to be stored.</param>
         public async Task<SecretBundle> SetSecretAsync(string secretName, string value)
         {
             try
             {
-                return await m_kvClient.SetSecretAsync(GetUrl(), secretName, value);
+                return await m_kvClient.SetSecretAsync(Url, secretName, value);
             }
             catch (KeyVaultErrorException ex)
             {
-                Console.WriteLine($"Exception while trying to set secret {secretName}, {ex.Message}");
+                Console.WriteLine($"Exception while trying to set secret {secretName}, {ex}");
                 throw;
             }
         }
