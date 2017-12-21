@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using System.Threading.Tasks;
+using Nethereum.Signer;
 
 namespace Contracts
 {
@@ -12,15 +13,15 @@ namespace Contracts
         /// Creates blockchain account and store the public and private keys in Azure KeyVault 
         /// </summary>
         /// <returns>The public private key pair</returns>
-        EthKey CreateAccount();
+        EthECKey CreateAccount();
 
         /// <summary>
         /// Stores a key pair into the Azure KeyVault.
         /// </summary>
         /// <returns>The created key pair.</returns>
         /// <param name="identifier">key pair identifier.</param>
-        /// <param name="key">The actual key pair.</param>
-        Task<bool> StoreAccountAsync(string identifier, EthKey key);
+        /// <param name="privateKey">The actual private key.</param>
+        Task<bool> StoreAccountAsync(string identifier, string privateKey);
 
         /// <summary>
         /// Signs a blockchain transaction
@@ -50,7 +51,7 @@ namespace Contracts
         /// </summary>
         /// <param name="identifier">The user id</param>
         /// <returns>The user's public key</returns>
-        Task<string> GetPublicKeyAsync(string identifier);
+        Task<byte[]> GetPublicKeyAsync(string identifier);
 
         /// <summary>
         /// Returns the public address by the key vault identifier

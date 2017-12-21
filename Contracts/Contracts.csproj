@@ -11,4 +11,9 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.KeyVault" Version="2.3.2" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Nethereum.Signer">
+      <HintPath>..\..\..\Users\ilanak\.nuget\packages\nethereum.signer\2.2.0\lib\netstandard1.1\Nethereum.Signer.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>

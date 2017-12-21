@@ -32,10 +32,10 @@ namespace UnitTests
             var ethereumWallet = new EthereumNodeWrapper(kvInfo, "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE");
             var accountKeyPair = ethereumWallet.CreateAccount();
 
-            Assert.Equal(42, accountKeyPair.PublicAddress.Length);
-            Assert.True(accountKeyPair.PublicAddress.StartsWith("0x"));
-            Assert.Equal(66, accountKeyPair.PrivateKey.Length);
-            Assert.True(accountKeyPair.PrivateKey.StartsWith("0x"));
+            Assert.Equal(42, accountKeyPair.GetPublicAddress().Length);
+            Assert.True(accountKeyPair.GetPublicAddress().StartsWith("0x"));
+            Assert.Equal(66, accountKeyPair.GetPrivateKey().Length);
+            Assert.True(accountKeyPair.GetPrivateKey().StartsWith("0x"));
         }
 
         [Fact]

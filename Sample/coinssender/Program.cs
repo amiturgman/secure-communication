@@ -52,9 +52,7 @@ namespace CoinsSender
 
         private static void EthereumTestRpcDemo(KeyVault kv, EthereumNodeWrapper ethereumNodeWrapper)
         {
-            var senderPublicAddress = "0xe6128e8d408f53ea53e74be796d40db896fcaef0";
             var senderPrivateKey = "0x4faec59e004fd62384813d760e55d6df65537b4ccf62f268253ad7d4243a7193";
-            var reciverPublicAddress = "0x9108cf23b4f60f2bc355088a51539b576c7f9e6d";
             var reciverPrivateKey = "0x03fd5782c37523be6598ca0e5d091756635d144e42d518bb5f8db11cf931b447";
           
             Console.WriteLine($"Please run the docker image with the following command:{Environment.NewLine}"+
@@ -74,12 +72,8 @@ namespace CoinsSender
             {
                 if (ex.InnerException is KeyVaultErrorException && ex.InnerException.Message.Contains("Secret not found"))
                 {
-                    // Create accounts
-                    var senderAccount= new EthKey(senderPrivateKey, Utils.ToByteArray(senderPublicAddress), senderPublicAddress);
-                    var reciverAccount =  new EthKey(reciverPrivateKey, Utils.ToByteArray(senderPublicAddress), reciverPublicAddress);
-
-                    var result = ethereumNodeWrapper.StoreAccountAsync(c_senderId, senderAccount).Result;
-                    result = ethereumNodeWrapper.StoreAccountAsync(c_ReciverId, reciverAccount).Result;
+                    var result = ethereumNodeWrapper.StoreAccountAsync(c_senderId, senderPrivateKey).Result;
+                    result = ethereumNodeWrapper.StoreAccountAsync(c_ReciverId, reciverPrivateKey).Result;
                 }
             } finally
             {
@@ -99,12 +93,12 @@ namespace CoinsSender
                     case 1:
                         // Create accounts
                         var senderAccount = ethereumNodeWrapper.CreateAccount();
-                        var result = ethereumNodeWrapper.StoreAccountAsync(c_senderId, senderAccount).Result;
+                        var result = ethereumNodeWrapper.StoreAccountAsync(c_senderId, senderAccount.GetPrivateKey()).Result;
                         var reciverAccount = ethereumNodeWrapper.CreateAccount();
-                        result = ethereumNodeWrapper.StoreAccountAsync(c_ReciverId, reciverAccount).Result;
+                        result = ethereumNodeWrapper.StoreAccountAsync(c_ReciverId, reciverAccount.GetPrivateKey()).Result;
 
                         Console.WriteLine("Accounts were created. " +
-                                          $"To continue the demo please send ether to address {senderAccount.PublicAddress}{Environment.NewLine}" +
+                                          $"To continue the demo please send ether to address {senderAccount.GetPublicAddress()}{Environment.NewLine}" +
                                           "You can send ether for: https://www.rinkeby.io/#faucet");
                         continue;
                     case 2:
