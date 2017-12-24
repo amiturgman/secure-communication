@@ -8,7 +8,7 @@ Secure Communication Library Over a Queue
 2. Create a new Azure Active Directory application. This application will be used for authenticating against Azure: https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-integrating-applications
 3. Get the service principal id and secret for the application from step 2
 
-### The setup script
+### Deploy resources via The setup script - This step is optional, you can create the resources manually as well
 The setup script will create a new Azure Resource Group and a new Azure Storage and Azure KeyVault in the new resource group, finally it will upload a new certificate as a secret to the Key Vault.
 Run the script:
 1. Edit the parameters in the file Sample/Deployment/oneclick.ps1, choose a region, a name for the resource groups, azure storage and keyvault
