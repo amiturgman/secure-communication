@@ -1,5 +1,4 @@
-﻿using System;
-using SecuredCommunication;
+﻿using SecuredCommunication;
 
 namespace UnitTests.Mocks
 {
@@ -9,12 +8,7 @@ namespace UnitTests.Mocks
 
         public ICloudQueueWrapper GetQueueReference(string queueName)
         {
-            if (cloudQueueWrapperMock == null)
-            {
-                cloudQueueWrapperMock = new CloudQueueWrapperMock();
-            }
-
-            return cloudQueueWrapperMock;
+            return cloudQueueWrapperMock ?? (cloudQueueWrapperMock = new CloudQueueWrapperMock());
         }
     }
 }

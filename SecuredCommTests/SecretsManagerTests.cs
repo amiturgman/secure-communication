@@ -1,4 +1,3 @@
-using Contracts;
 using SecuredCommunication;
 using Xunit;
 

@@ -40,8 +40,6 @@ namespace SecuredCommunication
             var cloudQueue = _cloudQueueClient.Value.GetQueueReference(queueName);
             return new CloudQueueWrapper(cloudQueue);
         }
-
-        // Add more methods here which are a one-to-one match against the underlying CQC.
     }
 
 }

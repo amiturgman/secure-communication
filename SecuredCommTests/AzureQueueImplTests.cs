@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Contracts;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
 using SecuredCommunication;
@@ -23,7 +24,7 @@ namespace UnitTests
             }
             catch (SecureCommunicationException ex)
             {
-                Assert.Equal(ex.Message, "Object was not initialized");
+                Assert.Equal("Object was not initialized", ex.Message);
             }
         }
 
@@ -46,8 +47,9 @@ namespace UnitTests
             var result = await queueRefernce.GetMessageAsync(TimeSpan.FromSeconds(10),
                         new QueueRequestOptions(), new OperationContext());
 
+            var encryptedMessage = Utils.FromByteArray<Message>(result.AsBytes);
             // String is encrypted, check it value
-            Assert.Equal(256, result.AsBytes.Length);
+            Assert.Equal(256, encryptedMessage.Data.Length);
         }
 
         [Fact]
@@ -62,14 +64,7 @@ namespace UnitTests
             await azureQueue.Initialize();
 
             var msg = "new message";
-            try
-            {
-                await azureQueue.EnqueueAsync(msg);
-            }
-            catch(Exception exc) 
-            {
-                Console.WriteLine(exc);
-            }
+            await azureQueue.EnqueueAsync(msg);
 
             var task = azureQueue.DequeueAsync((decrypted) =>
             {

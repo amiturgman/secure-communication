@@ -10,8 +10,8 @@ namespace UnitTests
         public void Sanity_VerifyMessageIsCreate()
         {
             var isEncrypted = true;
-            var data = new Byte[] {0, 1, 2};
-            var signature = new Byte[] {3, 4, 5};
+            var data = new byte[] {0, 1, 2};
+            var signature = new byte[] {3, 4, 5};
             var msg = new Message(isEncrypted, data, signature);
         }
 
@@ -19,8 +19,8 @@ namespace UnitTests
         public void Sanity_ExceptionIsThrownWhenInputIsNull()
         {
             var isEncrypted = true;
-            var data = new Byte[] {0, 1, 2};
-            var signature = new Byte[] {3, 4, 5};
+            var data = new byte[] {0, 1, 2};
+            var signature = new byte[] {3, 4, 5};
 
             try
             {

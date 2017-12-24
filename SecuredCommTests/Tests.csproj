@@ -18,8 +18,4 @@
     <ProjectReference Include="..\SecuredComm\SecuredComm.csproj" />
     <ProjectReference Include="..\Contracts\Contracts.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Mocks\" />
-  </ItemGroup>
 </Project>
