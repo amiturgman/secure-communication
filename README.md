@@ -6,6 +6,49 @@ C. Secrets manager for the communication pipeline - for abstracting the needed s
 
 This project also contains a "Sample" directory, to get you started.  
 
+# Installation
+1. 'Contracts' contains all of the interfaces
+2. 'SecuredComm' contains the library implementation. consume it: clone the repository and add the dependency to the library.
+(later we might release this as a nuget / package).
+3. Usage examples:
+
+## Ethererum node wrapper
+```
+            // Create the instance
+            var ethereumNodeWrapper = new EthereumNodeWrapper(kv, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
+
+            // Call methods
+            var result = await ethereumNodeWrapper.GetPublicAddressAsync("0x012345...");   
+```
+
+## Secrets Manager
+```
+            // Create
+            var secretsMgmnt = new KeyVaultSecretManager(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, publicKv, privateKv);
+            // Initialize
+            await secretsMgmnt.Initialize();
+
+            // Call methods
+            secretsMgmnt.Encrypt(msgAsBytes);  
+```
+## Communication pipeline
+```
+            // The following code enqueues a message to a queue named 'MyQueue'
+            // Create
+            var comm = new AzureQueueImpl("MyQueue", queueClient, secretsMgmnt, true);
+            // Init
+            await comm.Initialize();
+
+            // Enqueue messages
+            comm.EnqueueAsync("Some message meant for someone");
+
+            comm.DequeueAsync(msg =>
+              {
+                Console.WriteLine("Decrypted and Verified message is" : + msg);
+              });
+  
+```
+
 # Sample
 ## Installation instructions
 ### Prerequisites
