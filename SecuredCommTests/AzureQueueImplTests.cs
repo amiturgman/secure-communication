@@ -62,17 +62,17 @@ namespace UnitTests
             await azureQueue.Initialize();
 
             var msg = "new message";
-            await azureQueue.EnqueueAsync(msg);
-
-            var queueRefernce = queueMock.GetQueueReference("some name");
-
-            var result = await queueRefernce.GetMessageAsync(TimeSpan.FromSeconds(10),
-                        new QueueRequestOptions(), new OperationContext());
-
+            try
+            {
+                await azureQueue.EnqueueAsync(msg);
+            }
+                catch(Exception exc) {
+                    Console.WriteLine(exc);
+                }
 
             var task = azureQueue.DequeueAsync((decrypted) =>
             {
-                Assert.NotEqual(msg, Utils.FromByteArray<string>(decrypted));
+                Assert.Equal(msg, Utils.FromByteArray<string>(decrypted));
                 
             }, TimeSpan.FromMilliseconds(1));
 
@@ -80,6 +80,10 @@ namespace UnitTests
             azureQueue.CancelListeningOnQueue();
 
             await task;
+
+            // todo add check?
+            // var poisonQueue = m_queueClient.GetQueueReference($"{m_queueName}-{PositionQueueName}");
+            // poisonQueue.items == 0;
         }
 
     }
