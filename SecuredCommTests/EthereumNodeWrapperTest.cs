@@ -33,9 +33,9 @@ namespace UnitTests
             var accountKeyPair = ethereumWallet.CreateAccount();
 
             Assert.Equal(42, accountKeyPair.GetPublicAddress().Length);
-            Assert.True(accountKeyPair.GetPublicAddress().StartsWith("0x"));
+            Assert.StartsWith("0x", accountKeyPair.GetPublicAddress());
             Assert.Equal(66, accountKeyPair.GetPrivateKey().Length);
-            Assert.True(accountKeyPair.GetPrivateKey().StartsWith("0x"));
+            Assert.StartsWith("0x", accountKeyPair.GetPrivateKey());
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace UnitTests
                 ethereumWallet.SignTransactionAsync("sender", TestConstants.publicKey, 100);
             var transactionResult = await ethereumWallet.SendRawTransactionAsync(transactionHash);
 
-            Assert.True(transactionResult.StartsWith("0x"));
+            Assert.StartsWith("0x", transactionResult);
             Assert.Equal(66, transactionResult.Length);
         }
     }
