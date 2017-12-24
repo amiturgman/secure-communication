@@ -66,9 +66,10 @@ namespace UnitTests
             {
                 await azureQueue.EnqueueAsync(msg);
             }
-                catch(Exception exc) {
-                    Console.WriteLine(exc);
-                }
+            catch(Exception exc) 
+            {
+                Console.WriteLine(exc);
+            }
 
             var task = azureQueue.DequeueAsync((decrypted) =>
             {

@@ -25,7 +25,6 @@ namespace SecuredCommunication
         private readonly IEncryptionManager m_secretMgmt;
         private readonly bool m_isEncrypted;
         private readonly string m_queueName;
-        private readonly string m_connectionString;
 
         #endregion
 
@@ -86,7 +85,7 @@ namespace SecuredCommunication
 
             m_isActive = true;
             CloudQueueMessage retrievedMessage = null;
-            var t =  Task.Factory.StartNew(async() => {
+            var dequeueTask =  Task.Factory.StartNew(async() => {
                 while (m_isActive)
                 {
                     try
@@ -122,7 +121,7 @@ namespace SecuredCommunication
                 }
             });
 
-            return t;
+            return dequeueTask;
         }
 
         /// <summary>
