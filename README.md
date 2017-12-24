@@ -1,5 +1,10 @@
-# secure-communication
-Secure Communication Library Over a Queue
+# Core modules for crypto-currency virtual wallet
+The project consists of the infrastructure Core modules needed for implementing a SaaS cryptocurrency virtual wallet. This project consists of the following modules:
+A. A secure communication library over a queue - for inter micro-services communication
+B. An Ethereum node client - for querying, signing and sending transactions and data over the public (and test) Ethereum network
+C. Secrets manager for the communication pipeline - for abstracting the needed secrets for the encryption/signing operations over the sent messages
+
+This project also contains a "Sample" directory, to get you started.  
 
 # Sample
 ## Installation instructions
@@ -31,5 +36,5 @@ The fastest way to run it is with Docker container, you should run it with the f
 docker run -d -p 8545:8545 trufflesuite/ganache-cli:latest --account="0x4faec59e004fd62384813d760e55d6df65537b4ccf62f268253ad7d4243a7193, 300000000000000000000" --account="0x03fd5782c37523be6598ca0e5d091756635d144e42d518bb5f8db11cf931b447, 0"
 ```
 #### Running the sample apps
-1. Edit App.Config for all 3 of the sample applications. Fill in the missing values.
+1. Edit App.Config for all 3 of the sample applications. Fill in the missing values. You should have all resources deployed at this stage, if you choose to skip the setup script, make sure you have all the needed resources
 2. Compile and run all 3 projects in the following order: coins sender, transaction engine, coins receiver.
