@@ -3,7 +3,6 @@ using System.Configuration;
 using System.Threading;
 using SecuredCommunication;
 using Microsoft.Azure.KeyVault.Models;
-using Contracts;
 
 namespace CoinsSender
 {
@@ -128,7 +127,9 @@ namespace CoinsSender
             var secretsMgmnt = new KeyVaultSecretManager(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, kv, kv);
             secretsMgmnt.Initialize().Wait();
             //var securedComm = new RabbitMQBusImpl(ConfigurationManager.AppSettings["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");
-            var securedComm = new AzureQueueImpl("transactions", ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt, true);
+
+            var queueClient = new CloudQueueClientWrapper(ConfigurationManager.AppSettings["AzureStorageConnectionString"]);
+            var securedComm = new AzureQueueImpl("transactions", queueClient, secretsMgmnt, true);
             securedComm.Initialize().Wait();
 
             // While there are sufficient funds, transfer some...

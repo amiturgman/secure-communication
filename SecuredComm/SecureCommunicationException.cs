@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SecuredComm
+namespace SecuredCommunication
 {
     /// <summary>
     /// This class will wrap all secure communication handled exceptions

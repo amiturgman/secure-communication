@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Contracts;
 using Microsoft.WindowsAzure.Storage; 
 using Microsoft.WindowsAzure.Storage.Queue;
-using SecuredComm;
+
 
 namespace SecuredCommunication
 {
@@ -17,8 +17,8 @@ namespace SecuredCommunication
         private const int MessagePeekTimeInSeconds = 60;
         private const int MaxDequeueCount = 5;
 
-        private CloudQueue m_queue;
-        private CloudQueueClient m_queueClient;
+        private ICloudQueueWrapper m_queue;
+        private ICloudQueueClientWrapper m_queueClient;
         private bool m_isActive;
         private bool m_isInitialized;
 
@@ -29,9 +29,9 @@ namespace SecuredCommunication
 
         #endregion
 
-        public AzureQueueImpl(string queueName, string connectionString, IEncryptionManager secretMgmnt, bool isEncrypted)
+        public AzureQueueImpl(string queueName, ICloudQueueClientWrapper queueClient, IEncryptionManager secretMgmnt, bool isEncrypted)
         {
-            m_connectionString = connectionString;
+            m_queueClient = queueClient;
             m_secretMgmt = secretMgmnt;
             m_isEncrypted = isEncrypted;
             m_isActive = false;
@@ -41,9 +41,6 @@ namespace SecuredCommunication
 
         public async Task Initialize()
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(m_connectionString);
-            m_queueClient = storageAccount.CreateCloudQueueClient();
-
             m_queue = m_queueClient.GetQueueReference(m_queueName);
             await m_queue.CreateIfNotExistsAsync();
 
@@ -83,45 +80,49 @@ namespace SecuredCommunication
         /// </summary>
         /// <param name="cb">Callback</param>
         /// <param name="waitTime">Time to wait between dequeues</param>
-        public async Task DequeueAsync(Action<byte[]> cb, TimeSpan waitTime)
+        public Task DequeueAsync(Action<byte[]> cb, TimeSpan waitTime)
         {
             ThrowIfNotInitialized();
 
             m_isActive = true;
             CloudQueueMessage retrievedMessage = null;
-            while (m_isActive)
-            {
-                try
+            var t =  Task.Factory.StartNew(async() => {
+                while (m_isActive)
                 {
-                    retrievedMessage = await m_queue.GetMessageAsync(TimeSpan.FromSeconds(MessagePeekTimeInSeconds),
-                        new QueueRequestOptions(), new OperationContext());
-                    if (retrievedMessage != null)
+                    try
                     {
-                        MessageUtils.ProcessQueueMessage(retrievedMessage.AsBytes, m_secretMgmt, cb);
-                        await m_queue.DeleteMessageAsync(retrievedMessage);
+                        retrievedMessage = await m_queue.GetMessageAsync(TimeSpan.FromSeconds(MessagePeekTimeInSeconds),
+                        new QueueRequestOptions(), new OperationContext());
+                        if (retrievedMessage != null)
+                        {
+                            MessageUtils.ProcessQueueMessage(retrievedMessage.AsBytes, m_secretMgmt, cb);
+                            await m_queue.DeleteMessageAsync(retrievedMessage);
 
-                        // no need to sleep, try again
-                        continue;
+                            // no need to sleep, try again
+                            continue;
+                        }
                     }
-                }
-                catch (Exception ex) when (ex is DecryptionException || ex is SignatureVerificationException)
-                {
-                    await MoveMessageToPoisonQueueAsync(retrievedMessage);
-                }
-                catch (Exception ex)
-                {
-                    // Don't re-throw as we want the dequeue loop to continue
-                    Console.WriteLine($"Caught an unhandled exception: {ex}");
-
-                    // Failed to process message MaxDequeueCount times - move to poison queue
-                    if (retrievedMessage != null && retrievedMessage.DequeueCount > MaxDequeueCount)
+                    catch (Exception ex) when (ex is DecryptionException || ex is SignatureVerificationException)
                     {
                         await MoveMessageToPoisonQueueAsync(retrievedMessage);
                     }
-                }
+                    catch (Exception ex)
+                    {
+                        // Don't re-throw as we want the dequeue loop to continue
+                        Console.WriteLine($"Caught an unhandled exception: {ex}");
 
-                Thread.Sleep((int)waitTime.TotalMilliseconds);
-            }
+                        // Failed to process message MaxDequeueCount times - move to poison queue
+                        if (retrievedMessage != null && retrievedMessage.DequeueCount > MaxDequeueCount)
+                        {
+                            await MoveMessageToPoisonQueueAsync(retrievedMessage);
+                        }
+                    }
+
+                    Thread.Sleep((int)waitTime.TotalMilliseconds);
+                }
+            });
+
+            return t;
         }
 
         /// <summary>

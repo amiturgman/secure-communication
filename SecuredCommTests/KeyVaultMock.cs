@@ -22,6 +22,7 @@ namespace UnitTests
 
         public Task<SecretBundle> GetSecretAsync(string secretName)
         {
+            Console.WriteLine("Starting get secret");
             if (secretName.Equals("sender"))
             {
                 return Task.FromResult(new SecretBundle(TestConstants.privateKey));
@@ -31,6 +32,7 @@ namespace UnitTests
             //var key = await GetKeyAsync(secretName);
             byte[] certBytes = x.Export(X509ContentType.Pkcs12);
             var secBundle = new SecretBundle(Convert.ToBase64String(certBytes));
+            Console.WriteLine("finished get secret");
             return Task.FromResult(secBundle);
         }
 

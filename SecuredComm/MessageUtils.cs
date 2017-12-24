@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Security.Cryptography;
 using Contracts;
-using SecuredComm;
-using DecryptionException = SecuredComm.DecryptionException;
 
 namespace SecuredCommunication
 {

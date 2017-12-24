@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Contracts;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using SecuredComm;
 
 namespace SecuredCommunication
 {
