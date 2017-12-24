@@ -1,5 +1,5 @@
 # Core modules for crypto-currency virtual wallet
-The project consists of the infrastructure Core modules needed for implementing a SaaS cryptocurrency virtual wallet. This project consists of the following modules:
+The project consists of the infrastructure Core modules needed for implementing a SaaS cryptocurrency virtual wallet. This project has the following modules:
 A. A secure communication library over a queue - for inter micro-services communication
 B. An Ethereum node client - for querying, signing and sending transactions and data over the public (and test) Ethereum network
 C. Secrets manager for the communication pipeline - for abstracting the needed secrets for the encryption/signing operations over the sent messages
