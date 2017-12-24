@@ -28,7 +28,7 @@ namespace UnitTests
             }
             catch (ArgumentNullException e)
             {
-                Assert.Equal(e.Message, "Value cannot be null.\r\nParameter name: data");
+                Assert.Equal("Value cannot be null.\r\nParameter name: data", e.Message);
             }
 
             try
@@ -37,7 +37,7 @@ namespace UnitTests
             }
             catch (ArgumentNullException e)
             {
-                Assert.Equal(e.Message, "Value cannot be null.\r\nParameter name: signature");
+                Assert.Equal("Value cannot be null.\r\nParameter name: signature", e.Message);
             }
 
         }
