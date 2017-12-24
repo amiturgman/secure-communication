@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Configuration;
-using SecuredCommunication;
 using System.Threading;
 using System.Threading.Tasks;
+using SecuredCommunication;
 
 namespace TransactionEngine
 {
@@ -32,8 +32,10 @@ namespace TransactionEngine
             secretsMgmnt.Initialize().Wait();
 
             //var securedComm = new RabbitMQBusImpl(ConfigurationManager.AppSettings["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");
-            var securedCommForTransactions = new AzureQueueImpl("transactions", ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt, true);
-            var securedCommForNotifications = new AzureQueueImpl("notifications", ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt, true);
+            var queueClient = new CloudQueueClientWrapper(ConfigurationManager.AppSettings["AzureStorageConnectionString"]);
+
+            var securedCommForTransactions = new AzureQueueImpl("transactions", queueClient, secretsMgmnt, true);
+            var securedCommForNotifications = new AzureQueueImpl("notifications", queueClient, secretsMgmnt, true);
             var taskInitTransactions = securedCommForTransactions.Initialize();
             var taskInitNotifications = securedCommForNotifications.Initialize();
             Task.WhenAll(taskInitTransactions, taskInitNotifications).Wait();

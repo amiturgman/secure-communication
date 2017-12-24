@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Configuration;
 using System.Threading;
-using Contracts;
 using SecuredCommunication;
 
 namespace CoinsReceiver
@@ -39,7 +38,8 @@ namespace CoinsReceiver
             var secretsMgmnt = new KeyVaultSecretManager(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, kv, kv);
             secretsMgmnt.Initialize().Wait();
             //var securedComm = new RabbitMQBusImpl(ConfigurationManager.AppSettings["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");
-            var securedComm = new AzureQueueImpl("notifications", ConfigurationManager.AppSettings["AzureStorageConnectionString"], secretsMgmnt, true);
+            var queueClient = new CloudQueueClientWrapper(ConfigurationManager.AppSettings["AzureStorageConnectionString"]);
+            var securedComm = new AzureQueueImpl("notifications", queueClient, secretsMgmnt, true);
             securedComm.Initialize().Wait();
 
             // Listen on the notifications queue, check balance when a notification arrives

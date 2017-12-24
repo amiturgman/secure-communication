@@ -4,7 +4,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Contracts;
 using Org.BouncyCastle.Utilities.Encoders;
-using SecuredComm;
 
 namespace SecuredCommunication
 {
