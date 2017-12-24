@@ -67,7 +67,7 @@ namespace UnitTests
             // Sign the data
             var signature = secretsMgmnt.Sign(Utils.ToByteArray(rawData));
 
-            Assert.Equal(signature.Length, 256);
+            Assert.Equal(256, signature.Length);
         }
 
         [Fact]

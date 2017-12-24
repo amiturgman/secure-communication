@@ -18,8 +18,8 @@ Run the script:
 ### The sample apps
 The sample contains 3 different processes. 
 1. **Coins sender**: a user that sends Ethereum coins to the receiver account, this process writes a signed and encrypted message on the transaction queue with the transaction details (sender, receiver and amount).
-2. **Transaction Engine**: Reads from the transaction queue, verifies the signature and decrypts the message.
-Then it signs the transaction and send it the Ethereum node. Finally it writes a message to the notification queue, to notify that the transaction completed and the receiver's balance had changed.
+2. **Transaction Engine**: Dequeues a pending transaction from the transactions queue, verifies the signature and decrypts the message.
+Then it signs the transaction and send the signed transaction to the Ethereum node. Finally it writes a message to the notification queue, to notify that the transaction completed and the receiver's balance had changed.
 3. **Coins receiver**: Listens on the notification queue and checks if there was a change in the receiver balance.
 
 #### How to run Ethereum in the sample apps
