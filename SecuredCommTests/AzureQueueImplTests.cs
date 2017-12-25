@@ -36,16 +36,17 @@ namespace UnitTests
             var encryptionManager = new KeyVaultSecretManager("emc", "emc", "emc", "emc", keyVaultMock, keyVaultMock);
             await encryptionManager.Initialize();
 
-            var azureQueue = new AzureQueueImpl("queueName", queueMock, encryptionManager, true);
+            var queueName = "queueName";
+            var azureQueue = new AzureQueueImpl(queueName, queueMock, encryptionManager, true);
             await azureQueue.Initialize();
 
             var msg = "new message";
             await azureQueue.EnqueueAsync(msg);
 
-            var queueRefernce = queueMock.GetQueueReference("some name");
+            var queueRefernce = queueMock.GetQueueReference(queueName);
 
             var result = await queueRefernce.GetMessageAsync(TimeSpan.FromSeconds(10),
-                        new QueueRequestOptions(), new OperationContext());
+                new QueueRequestOptions(), new OperationContext());
 
             var encryptedMessage = Utils.FromByteArray<Message>(result.AsBytes);
             // String is encrypted, check it value
@@ -55,21 +56,24 @@ namespace UnitTests
         [Fact]
         public async Task Test_AzureImpl_Enqueue_Dequeue()
         {
+            // Init
             var queueMock = new CloudQueueClientWrapperMock();
             var keyVaultMock = new KeyVaultMock("url");
             var encryptionManager = new KeyVaultSecretManager("emc", "emc", "emc", "emc", keyVaultMock, keyVaultMock);
             await encryptionManager.Initialize();
 
-            var azureQueue = new AzureQueueImpl("queueName", queueMock, encryptionManager, true);
+            var queueName = "queueName";
+            var azureQueue = new AzureQueueImpl(queueName, queueMock, encryptionManager, true);
             await azureQueue.Initialize();
 
+            // Enqueue Message
             var msg = "new message";
             await azureQueue.EnqueueAsync(msg);
 
             var task = azureQueue.DequeueAsync((decrypted) =>
             {
                 Assert.Equal(msg, Utils.FromByteArray<string>(decrypted));
-                
+
             }, TimeSpan.FromMilliseconds(1));
 
             Thread.Sleep(10000);
@@ -77,10 +81,12 @@ namespace UnitTests
 
             await task;
 
-            // todo add check?
-            // var poisonQueue = m_queueClient.GetQueueReference($"{m_queueName}-{PositionQueueName}");
-            // poisonQueue.items == 0;
-        }
+            // Verify there are no messages in the poison queue
+            var poisonQueue = queueMock.GetQueueReference($"{queueName}-poison");
+            await poisonQueue.CreateIfNotExistsAsync();
+            var poisonMessage = await poisonQueue.GetMessageAsync(TimeSpan.MaxValue, new QueueRequestOptions(), new OperationContext());
 
+            Assert.Null(poisonMessage);
+        }
     }
 }

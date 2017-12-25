@@ -1,14 +1,20 @@
-﻿using SecuredCommunication;
+﻿using System.Collections.Generic;
+using SecuredCommunication;
 
 namespace UnitTests.Mocks
 {
     public class CloudQueueClientWrapperMock : ICloudQueueClientWrapper
     {
-        public CloudQueueWrapperMock cloudQueueWrapperMock;
+        private readonly Dictionary<string, ICloudQueueWrapper> _queuesDictionary = new Dictionary<string, ICloudQueueWrapper>();
 
         public ICloudQueueWrapper GetQueueReference(string queueName)
         {
-            return cloudQueueWrapperMock ?? (cloudQueueWrapperMock = new CloudQueueWrapperMock());
+            if (!_queuesDictionary.ContainsKey(queueName))
+            {
+                _queuesDictionary[queueName] = new CloudQueueWrapperMock(queueName);
+            }
+
+            return _queuesDictionary[queueName];
         }
     }
 }

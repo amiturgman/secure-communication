@@ -10,6 +10,12 @@ namespace UnitTests.Mocks
     public class CloudQueueWrapperMock : ICloudQueueWrapper
     {
         public List<CloudQueueMessage> QueueList;
+        public string QueueName;
+
+        public CloudQueueWrapperMock(string queueName)
+        {
+            QueueName = queueName;
+        }
 
         public Task AddMessageAsync(CloudQueueMessage message)
         {
@@ -19,7 +25,11 @@ namespace UnitTests.Mocks
 
         public Task CreateIfNotExistsAsync()
         {
-            QueueList = new List<CloudQueueMessage>();
+            if (QueueList == null)
+            {
+                QueueList = new List<CloudQueueMessage>();
+            }
+
             return Task.FromResult("result");
         }
 

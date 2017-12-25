@@ -13,7 +13,7 @@ namespace SecuredCommunication
 
         #region private members
 
-        private const string PositionQueueName = "poison";
+        private const string PoisonQueueName = "poison";
         private const int MessagePeekTimeInSeconds = 60;
         private const int MaxDequeueCount = 5;
 
@@ -140,7 +140,7 @@ namespace SecuredCommunication
             try
             {
                 // get poison queue reference
-                var poisonQueue = m_queueClient.GetQueueReference($"{m_queueName}-{PositionQueueName}");
+                var poisonQueue = m_queueClient.GetQueueReference($"{m_queueName}-{PoisonQueueName}");
                 await poisonQueue.CreateIfNotExistsAsync();
 
                 // Delete message from the original queue
