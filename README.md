@@ -4,7 +4,7 @@ The project consists of the infrastructure Core modules needed for implementing 
 2. An Ethereum node client - for querying, signing and sending transactions and data over the public (and test) Ethereum network
 3. Secrets manager for the communication pipeline - for abstracting the needed secrets for the encryption/signing operations over the sent messages
 
-This project also contains a `Sample` directory, to get you started.  
+This project also contains a [Sample](Samples) directory, to get you started.  
 
 # Installation
 1. `Contracts` contains all of the interfaces
@@ -14,38 +14,38 @@ This project also contains a `Sample` directory, to get you started.
 
 ## Ethereum node wrapper
 ```c#
-            // Create the instance
-            var ethereumNodeWrapper = new EthereumNodeWrapper(kv, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
+// Create the instance
+var ethereumNodeWrapper = new EthereumNodeWrapper(kv, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
 
-            // Call methods
-            var result = await ethereumNodeWrapper.GetPublicAddressAsync("0x012345...");   
+// Call methods
+var result = await ethereumNodeWrapper.GetPublicAddressAsync("0x012345...");   
 ```
 
 ## Secrets Manager
 ```c#
-            // Create
-            var secretsMgmnt = new KeyVaultSecretManager(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, publicKv, privateKv);
-            // Initialize
-            await secretsMgmnt.Initialize();
+// Create
+var secretsMgmnt = new KeyVaultSecretManager(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, publicKv, privateKv);
+// Initialize
+await secretsMgmnt.Initialize();
 
-            // Call methods
-            secretsMgmnt.Encrypt(msgAsBytes);  
+// Call methods
+secretsMgmnt.Encrypt(msgAsBytes);  
 ```
 ## Communication pipeline
 ```c#
-            // The following code enqueues a message to a queue named 'MyQueue'
-            // Create
-            var comm = new AzureQueueImpl("MyQueue", queueClient, secretsMgmnt, true);
-            // Init
-            await comm.Initialize();
+// The following code enqueues a message to a queue named 'MyQueue'
+// Create
+var comm = new AzureQueueImpl("MyQueue", queueClient, secretsMgmnt, true);
+// Init
+await comm.Initialize();
 
-            // Enqueue messages
-            comm.EnqueueAsync("Some message meant for someone");
+// Enqueue messages
+comm.EnqueueAsync("Some message meant for someone");
 
-            comm.DequeueAsync(msg =>
-              {
-                Console.WriteLine("Decrypted and Verified message is" : + msg);
-              });
+comm.DequeueAsync(msg =>
+  {
+    Console.WriteLine("Decrypted and Verified message is" : + msg);
+  });
   
 ```
 
