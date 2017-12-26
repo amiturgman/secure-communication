@@ -1,8 +1,11 @@
 # Core modules for crypto-currency virtual wallet
 The project consists of the infrastructure Core modules needed for implementing a SaaS cryptocurrency virtual wallet. This project has the following modules:
-1. A secure communication library over a queue - for inter micro-services communication
-2. An Ethereum node client - for querying, signing and sending transactions and data over the public (and test) Ethereum network
-3. Secrets manager for the communication pipeline - for abstracting the needed secrets for the encryption/signing operations over the sent messages
+### A secure communication library over a queue
+For inter micro-services communication
+### An Ethereum node client
+For querying, signing and sending transactions and data over the public (and test) Ethereum network
+### Secrets manager for the communication pipeline
+For abstracting the needed secrets for the encryption/signing operations over the sent messages
 
 This project also contains a [Sample](Sample) directory, to get you started.  
 
@@ -59,8 +62,8 @@ comm.DequeueAsync(msg =>
 ### Deploy resources via The setup script - This step is optional, you can create the resources manually as well
 The setup script will create a new Azure Resource Group and a new Azure Storage and Azure KeyVault in the new resource group, finally it will upload a new certificate as a secret to the Key Vault.
 Run the script:
-1. Edit the parameters in the file Sample/Deployment/oneclick.ps1, choose a region, a name for the resource groups, azure storage and keyvault
-2. In a powershell console, go to Sample/Deployment
+1. Edit the parameters in the file (Sample/Deployment/oneclick.ps1)[Sample/Deployment/oneclick.ps1], choose a region, a name for the resource groups, azure storage and keyvault
+2. In a powershell console, go to (Sample/Deployment)[Sample/Deployment]
 3. run oneclick.ps1
 
 ### The sample apps
