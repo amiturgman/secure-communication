@@ -4,11 +4,11 @@ The project consists of the infrastructure Core modules needed for implementing 
 2. An Ethereum node client - for querying, signing and sending transactions and data over the public (and test) Ethereum network
 3. Secrets manager for the communication pipeline - for abstracting the needed secrets for the encryption/signing operations over the sent messages
 
-This project also contains a "Sample" directory, to get you started.  
+This project also contains a `Sample` directory, to get you started.  
 
 # Installation
-1. '**Contracts**' contains all of the interfaces
-2. '**SecuredComm**' contains the library implementation. consume it: clone the repository and add the dependency to the library.
+1. `Contracts` contains all of the interfaces
+2. `SecuredComm` contains the library implementation. consume it: clone the repository and add the dependency to the library.
 (later we might release this as a nuget / package).
 3. Usage examples:
 
