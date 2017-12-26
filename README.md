@@ -62,8 +62,8 @@ comm.DequeueAsync(msg =>
 ### Deploy resources via The setup script - This step is optional, you can create the resources manually as well
 The setup script will create a new Azure Resource Group and a new Azure Storage and Azure KeyVault in the new resource group, finally it will upload a new certificate as a secret to the Key Vault.
 Run the script:
-1. Edit the parameters in the file (Sample/Deployment/oneclick.ps1)[Sample/Deployment/oneclick.ps1], choose a region, a name for the resource groups, azure storage and keyvault
-2. In a powershell console, go to (Sample/Deployment)[Sample/Deployment]
+1. Edit the parameters in the file [Sample/Deployment/oneclick.ps1](Sample/Deployment/oneclick.ps1), choose a region, a name for the resource groups, azure storage and keyvault
+2. In a powershell console, go to [Sample/Deployment](Sample/Deployment)
 3. run oneclick.ps1
 
 ### The sample apps
