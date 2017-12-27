@@ -31,6 +31,7 @@ namespace UnitTests
         [Fact]
         public async Task Test_Enqueue_Message_Happy_flow()
         {
+            // Init
             var queueMock = new CloudQueueClientWrapperMock();
             var keyVaultMock = new KeyVaultMock("url");
             var encryptionManager = new KeyVaultSecretManager("emc", "emc", "emc", "emc", keyVaultMock, keyVaultMock);
@@ -40,6 +41,7 @@ namespace UnitTests
             var azureQueue = new AzureQueueImpl(queueName, queueMock, encryptionManager, true);
             await azureQueue.Initialize();
 
+            // Enqueue message
             var msg = "new message";
             await azureQueue.EnqueueAsync(msg);
 
@@ -72,6 +74,7 @@ namespace UnitTests
 
             var task = azureQueue.DequeueAsync((decrypted) =>
             {
+                // Verify that the decrypted message equals to the original
                 Assert.Equal(msg, Utils.FromByteArray<string>(decrypted));
 
             }, TimeSpan.FromMilliseconds(1));
