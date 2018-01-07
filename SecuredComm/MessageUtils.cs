@@ -38,7 +38,7 @@ namespace SecuredCommunication
                 }
                 catch (CryptographicException ex)
                 {
-                    throw new EncryptionException($"Encryption failed: {ex}");
+                    throw new EncryptionException("Encryption failed", ex);
                 }
             } else {
                 Console.WriteLine("NOTICE: The enqueued message was NOT encrypted!");

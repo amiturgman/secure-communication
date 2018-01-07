@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace SecuredCommunication
 {
@@ -18,27 +19,71 @@ namespace SecuredCommunication
         public SecureCommunicationException(string message, Exception innerException) : base(message, innerException)
         {
         }
+
+        public SecureCommunicationException(SerializationInfo serializationInfo, StreamingContext streamingContext) :
+            base(serializationInfo, streamingContext)
+        {
+
+        }
     }
 
     public class SignatureVerificationException : SecureCommunicationException
     {
-        public SignatureVerificationException(string message)
-            : base(message) { }
+        public SignatureVerificationException()
+        {
+        }
+
+        public SignatureVerificationException(string message) : base(message)
+        {
+        }
+
+        public SignatureVerificationException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+
+        public SignatureVerificationException(SerializationInfo serializationInfo, StreamingContext streamingContext) :
+            base(serializationInfo, streamingContext)
+        {
+        }
     }
 
     public class DecryptionException : SecureCommunicationException
     {
-        public DecryptionException(string message)
-            : base(message) { }
+        public DecryptionException()
+        {
+        }
+
+        public DecryptionException(string message) : base(message)
+        {
+        }
 
         public DecryptionException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+
+        public DecryptionException(SerializationInfo serializationInfo, StreamingContext streamingContext) :
+            base(serializationInfo, streamingContext)
         {
         }
     }
 
     public class EncryptionException : SecureCommunicationException
     {
-        public EncryptionException(string message)
-            : base(message) { }
+        public EncryptionException()
+        {
+        }
+
+        public EncryptionException(string message) : base(message)
+        {
+        }
+
+        public EncryptionException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+
+        public EncryptionException(SerializationInfo serializationInfo, StreamingContext streamingContext) :
+            base(serializationInfo, streamingContext)
+        {
+        }
     }
 }

@@ -6,6 +6,8 @@
 
 # The Azure tenant id (under active directory properties -> directory Id)
 $tenantId  = '[Azure tenant id]' 
+# The Azure service principal's object id (under )
+$objectId = '[Azure Service principal object id]'
 # The Azure Service principal application id
 $applicationId= '[Azure application id]'
 # The  Azure Service principal secret
@@ -41,7 +43,7 @@ Add-AzureRmAccount -Credential $cred -Tenant $tenantId -ServicePrincipal
 New-AzureRmResourceGroup -Name $resourceGroupName -Location $resourcesLocation
 
 # Deploys the ARM template
-New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile template.json -kv_name $keyvaultName -storage_name $storageName -location $resourcesLocation -TemplateParameterFile parameters.json -tenant $tenantId
+New-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile template.json -kv_name $keyvaultName -storage_name $storageName -location $resourcesLocation -TemplateParameterFile parameters.json -tenant $tenantId -objectId $objectId
 
 # Creates the certificate
 $cert = New-SelfSignedCertificate -certstorelocation cert:\localmachine\my -dnsname $dnsName
@@ -58,7 +60,7 @@ $clearBytes = $collection.Export($pkcs12ContentType)
 $fileContentEncoded = [System.Convert]::ToBase64String($clearBytes)
 $secret = ConvertTo-SecureString -String $fileContentEncoded -Force -AsPlainText
 $secretContentType = 'application/x-pkcs12'
-Set-AzureRmKeyVaultAccessPolicy -VaultName $keyvaultName -ServicePrincipalName $applicationId -PermissionsToSecrets set,delete,get,list
+
 Set-AzureKeyVaultSecret -VaultName $keyvaultName -Name $secretName -SecretValue $Secret -ContentType $secretContentType
 
 # Delete local Certificate 

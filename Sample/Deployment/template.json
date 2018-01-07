@@ -63,8 +63,35 @@
         "enabledForDeployment": "[parameters('enabledForDeployment')]",
         "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]",
         "enabledForDiskEncryption": "[parameters('enabledForDiskEncryption')]",
-        "accessPolicies": "[parameters('accessPolicies')]",
         "tenantId": "[parameters('tenant')]",
+        "accessPolicies": [
+          {
+            "tenantId": "[parameters('tenant')]",
+            "objectId": "[parameters('objectId')]",
+            "permissions": {
+              "keys": [
+                "Get",
+                "List",
+                "Update",
+                "Create",
+                "Import",
+                "Delete",
+                "Recover",
+                "Backup",
+                "Restore"
+              ],
+              "secrets": [
+                "Get",
+                "List",
+                "Set",
+                "Delete",
+                "Recover",
+                "Backup",
+                "Restore"
+              ]
+            }
+          }
+        ],
         "sku": {
           "name": "[parameters('sku')]",
           "family": "A"
