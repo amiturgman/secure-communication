@@ -85,7 +85,7 @@ namespace SecuredCommunication
 
             m_isActive = true;
             CloudQueueMessage retrievedMessage = null;
-            var dequeueTask =  Task.Factory.StartNew(async() => {
+            var dequeueTask =  Task.Run(async() => {
                 while (m_isActive)
                 {
                     try
