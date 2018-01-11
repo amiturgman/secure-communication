@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Contracts;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using Encryption;
 
-namespace SecuredCommunication
+namespace Communication
 {
     // An implementation using the RabbitMQ service
-    public class RabbitMQBusImpl : IQueueManager
+    public class RabbitMQBusImpl : IQueue
     {
         #region private members
 
-        private readonly IEncryptionManager m_secretMgmt;
+        private readonly IEncryption m_secretMgmt;
         private readonly bool m_isEncrypted;
         private readonly string m_exchangeName;
 
@@ -26,7 +26,7 @@ namespace SecuredCommunication
 
         public RabbitMQBusImpl(
             string rabitMqUri,
-            IEncryptionManager secretMgmnt,
+            IEncryption secretMgmnt,
             bool isEncrypted,
             string exchangeName,
             string queueName)

@@ -16,6 +16,5 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SecuredComm\SecuredComm.csproj" />
-    <ProjectReference Include="..\Contracts\Contracts.csproj" />
   </ItemGroup>
 </Project>

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Nethereum.Signer;
 
-namespace Contracts
+namespace Blockchain
 {
     /// <summary>
     /// Ethereum node wrapper - allows for operations (e.g. send transaction) against the Ethereum networks (public / local / tests)

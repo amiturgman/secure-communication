@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Contracts
+namespace Communication
 {
     /// <summary>
     /// Interface for a queue based communication pipeline
     /// </summary>
-    public interface IQueueManager
+    public interface IQueue
     {
         /// <summary>
         /// Enqueue a message to the queue

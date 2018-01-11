@@ -1,5 +1,5 @@
-﻿using System;
-using Contracts;
+﻿using Communication;
+using System;
 using Xunit;
 
 namespace UnitTests

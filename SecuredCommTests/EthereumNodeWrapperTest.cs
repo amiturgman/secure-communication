@@ -1,4 +1,4 @@
-﻿using SecuredCommunication;
+﻿using Blockchain;
 using Xunit;
 
 namespace UnitTests

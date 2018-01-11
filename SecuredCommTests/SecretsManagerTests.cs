@@ -1,4 +1,5 @@
-using SecuredCommunication;
+using Communication;
+using Encryption;
 using Xunit;
 
 namespace UnitTests
@@ -14,7 +15,7 @@ namespace UnitTests
         public void Sanity_VerifyCanBeCreated()
         {
             var kvInfo = new KeyVaultMock("http://dummyKvUri");
-            var secretsMgmnt = new KeyVaultSecretManager(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
+            var secretsMgmnt = new KeyVaultEncryption(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
             secretsMgmnt.Initialize().Wait();
         }
 
@@ -24,7 +25,7 @@ namespace UnitTests
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
             var kvInfo = new KeyVaultMock(kvUri);
-            var secretsMgmnt = new KeyVaultSecretManager(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
+            var secretsMgmnt = new KeyVaultEncryption(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
             await secretsMgmnt.Initialize();
 
             var encryptedData = secretsMgmnt.Encrypt(Utils.ToByteArray(rawData));
@@ -39,7 +40,7 @@ namespace UnitTests
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
             var kvInfo = new KeyVaultMock(kvUri);
-            var secretsMgmnt = new KeyVaultSecretManager(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
+            var secretsMgmnt = new KeyVaultEncryption(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
             await secretsMgmnt.Initialize();
 
             // Encrypt
@@ -60,7 +61,7 @@ namespace UnitTests
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
             var kvInfo = new KeyVaultMock(kvUri);
-            var secretsMgmnt = new KeyVaultSecretManager(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
+            var secretsMgmnt = new KeyVaultEncryption(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
             await secretsMgmnt.Initialize();
 
             // Sign the data
@@ -75,7 +76,7 @@ namespace UnitTests
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
             var kvInfo = new KeyVaultMock(kvUri);
-            var secretsMgmnt = new KeyVaultSecretManager(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
+            var secretsMgmnt = new KeyVaultEncryption(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
             await secretsMgmnt.Initialize();
 
             // Sign the data

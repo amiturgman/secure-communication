@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Contracts
+namespace Communication
 {
     /// <summary>
     /// A message object which is passed on the communication pipeline.

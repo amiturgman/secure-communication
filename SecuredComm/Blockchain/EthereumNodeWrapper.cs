@@ -2,10 +2,10 @@
 using Nethereum.Web3;
 using System.Numerics;
 using System.Threading.Tasks;
-using Contracts;
+using Encryption;
 using EthECKey = Nethereum.Signer.EthECKey;
 
-namespace SecuredCommunication
+namespace Blockchain
 {
     /// <summary>
     /// Class for accessing the Ethereum node.

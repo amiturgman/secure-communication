@@ -2,7 +2,7 @@
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
 
-namespace SecuredCommunication
+namespace Communication
 {
     public interface ICloudQueueClientWrapper
     {
