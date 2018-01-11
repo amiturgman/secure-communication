@@ -1,4 +1,4 @@
-using Encryption;
+using Cryptography;
 using Xunit;
 using System.Configuration;
 

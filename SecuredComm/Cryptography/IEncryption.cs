@@ -1,4 +1,4 @@
-﻿namespace Encryption
+﻿namespace Cryptography
 {
     /// <summary>
     /// Provides the interface for all of the cryptographic operations which we

@@ -2,7 +2,7 @@
 using Nethereum.Web3;
 using System.Numerics;
 using System.Threading.Tasks;
-using Encryption;
+using Cryptography;
 using EthECKey = Nethereum.Signer.EthECKey;
 
 namespace Blockchain

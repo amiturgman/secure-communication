@@ -2,7 +2,7 @@
 using System.Configuration;
 using System.Threading;
 using Microsoft.Azure.KeyVault.Models;
-using Encryption;
+using Cryptography;
 using Communication;
 using Blockchain;
 

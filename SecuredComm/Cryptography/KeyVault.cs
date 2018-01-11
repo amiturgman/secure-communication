@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure.KeyVault.Models;
 
-namespace Encryption
+namespace Cryptography
 {
     public class KeyVault : IKeyVault
     {

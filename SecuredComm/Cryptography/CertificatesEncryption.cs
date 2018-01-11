@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Encryption
+namespace Cryptography
 {
     /// <summary>
     /// Manages the crypto operations which can be applied on a message using the loaded certificates.

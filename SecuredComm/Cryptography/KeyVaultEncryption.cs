@@ -4,7 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Org.BouncyCastle.Utilities.Encoders;
 
-namespace Encryption
+namespace Cryptography
 {
     /// <summary>
     /// An implementation of <see cref="IEncryption"/>, in this implementation the certificates

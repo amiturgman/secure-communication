@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Security.Cryptography;
-using Encryption;
+using Cryptography;
 
 namespace Communication
 {

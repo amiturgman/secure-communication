@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using Encryption;
+using Cryptography;
 
 namespace Communication
 {

@@ -2,7 +2,7 @@
 using System.Configuration;
 using System.Threading;
 using System.Threading.Tasks;
-using Encryption;
+using Cryptography;
 using Communication;
 using Blockchain;
 

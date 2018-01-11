@@ -16,6 +16,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Blockchain\" />
-    <Folder Include="Encryption\" />
+    <Folder Include="Cryptography\" />
   </ItemGroup>
 </Project>

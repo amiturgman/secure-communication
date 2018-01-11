@@ -5,7 +5,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
 using UnitTests.Mocks;
 using Xunit;
-using Encryption;
+using Cryptography;
 using Communication;
 
 namespace UnitTests

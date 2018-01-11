@@ -1,5 +1,5 @@
 using Communication;
-using Encryption;
+using Cryptography;
 using Xunit;
 
 namespace UnitTests

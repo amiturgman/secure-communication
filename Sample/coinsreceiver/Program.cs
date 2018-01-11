@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.Threading;
-using Encryption;
+using Cryptography;
 using Communication;
 using Blockchain;
 

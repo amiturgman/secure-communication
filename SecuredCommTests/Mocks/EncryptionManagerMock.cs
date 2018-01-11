@@ -1,5 +1,5 @@
 ﻿using System;
-using Encryption;
+using Cryptography;
 
 namespace UnitTests
 {

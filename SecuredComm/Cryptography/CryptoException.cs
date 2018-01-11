@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Encryption
+namespace Cryptography
 {
     public class CryptoException : Exception
     {
