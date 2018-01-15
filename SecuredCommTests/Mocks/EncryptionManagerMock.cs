@@ -1,9 +1,9 @@
 ﻿using System;
-using Contracts;
+using Cryptography;
 
 namespace UnitTests
 {
-    public class EncryptionManagerMock : IEncryptionManager
+    public class EncryptionManagerMock : IEncryption
     {
         public byte[] Decrypt(byte[] encryptedData)
         {

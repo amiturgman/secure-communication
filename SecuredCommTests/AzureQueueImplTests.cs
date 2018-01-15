@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Contracts;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
-using SecuredCommunication;
 using UnitTests.Mocks;
 using Xunit;
+using Cryptography;
+using Communication;
 
 namespace UnitTests
 {
@@ -34,7 +34,7 @@ namespace UnitTests
             // Init
             var queueMock = new CloudQueueClientWrapperMock();
             var keyVaultMock = new KeyVaultMock("url");
-            var encryptionManager = new KeyVaultSecretManager("emc", "emc", "emc", "emc", keyVaultMock, keyVaultMock);
+            var encryptionManager = new KeyVaultEncryption("emc", "emc", "emc", "emc", keyVaultMock, keyVaultMock);
             await encryptionManager.Initialize();
 
             var queueName = "queueName";
@@ -61,7 +61,7 @@ namespace UnitTests
             // Init
             var queueMock = new CloudQueueClientWrapperMock();
             var keyVaultMock = new KeyVaultMock("url");
-            var encryptionManager = new KeyVaultSecretManager("emc", "emc", "emc", "emc", keyVaultMock, keyVaultMock);
+            var encryptionManager = new KeyVaultEncryption("emc", "emc", "emc", "emc", keyVaultMock, keyVaultMock);
             await encryptionManager.Initialize();
 
             var queueName = "queueName";

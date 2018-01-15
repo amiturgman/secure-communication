@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Configuration;
 using System.Threading;
-using SecuredCommunication;
+using Cryptography;
+using Communication;
+using Blockchain;
 
 namespace CoinsReceiver
 {
@@ -35,7 +37,7 @@ namespace CoinsReceiver
             var signKeyName = ConfigurationManager.AppSettings["SignKeyName"];
             var verifyKeyName = ConfigurationManager.AppSettings["VerifyKeyName"];
 
-            var secretsMgmnt = new KeyVaultSecretManager(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, kv, kv);
+            var secretsMgmnt = new KeyVaultEncryption(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, kv, kv);
             secretsMgmnt.Initialize().Wait();
             //var securedComm = new RabbitMQBusImpl(ConfigurationManager.AppSettings["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");
             var queueClient = new CloudQueueClientWrapper(ConfigurationManager.AppSettings["AzureStorageConnectionString"]);

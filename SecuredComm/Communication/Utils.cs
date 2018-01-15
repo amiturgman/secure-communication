@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace SecuredCommunication
+namespace Communication
 {
     /// <summary>
     /// Provides utility helper methods

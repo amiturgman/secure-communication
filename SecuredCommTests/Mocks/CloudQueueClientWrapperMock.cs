@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using SecuredCommunication;
+﻿using Communication;
+using System.Collections.Generic;
 
 namespace UnitTests.Mocks
 {

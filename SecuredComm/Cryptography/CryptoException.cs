@@ -1,33 +1,29 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace SecuredCommunication
+namespace Cryptography
 {
-    /// <summary>
-    /// This class will wrap all secure communication handled exceptions
-    /// </summary>
-    public class SecureCommunicationException : Exception
+    public class CryptoException : Exception
     {
-        public SecureCommunicationException()
+        public CryptoException()
         {
         }
 
-        public SecureCommunicationException(string message) : base(message)
+        public CryptoException(string message) : base(message)
         {
         }
 
-        public SecureCommunicationException(string message, Exception innerException) : base(message, innerException)
+        public CryptoException(string message, Exception innerException) : base(message, innerException)
         {
         }
 
-        public SecureCommunicationException(SerializationInfo serializationInfo, StreamingContext streamingContext) :
+        public CryptoException(SerializationInfo serializationInfo, StreamingContext streamingContext) : 
             base(serializationInfo, streamingContext)
         {
-
         }
     }
 
-    public class SignatureVerificationException : SecureCommunicationException
+    public class SignatureVerificationException : CryptoException
     {
         public SignatureVerificationException()
         {
@@ -47,7 +43,7 @@ namespace SecuredCommunication
         }
     }
 
-    public class DecryptionException : SecureCommunicationException
+    public class DecryptionException : CryptoException
     {
         public DecryptionException()
         {
@@ -67,7 +63,7 @@ namespace SecuredCommunication
         }
     }
 
-    public class EncryptionException : SecureCommunicationException
+    public class EncryptionException : CryptoException
     {
         public EncryptionException()
         {

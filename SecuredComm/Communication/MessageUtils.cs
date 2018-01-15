@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Security.Cryptography;
-using Contracts;
+using Cryptography;
 
-namespace SecuredCommunication
+namespace Communication
 {
     /// <summary>
     /// Helper utility methods related to the <see cref="Message"/> class
@@ -16,7 +16,7 @@ namespace SecuredCommunication
         /// <param name="encryptionManager">The encryption manager</param>
         /// <param name="isEncrypted">A flag that indicates whether the message needs to be encrypted</param>
         /// <returns>A byte array representing the message</returns>
-        public static byte[] CreateMessageForQueue(string data, IEncryptionManager encryptionManager, bool isEncrypted)
+        public static byte[] CreateMessageForQueue(string data, IEncryption encryptionManager, bool isEncrypted)
         {
             if (encryptionManager == null)
             {
@@ -54,7 +54,7 @@ namespace SecuredCommunication
         /// <param name="messageInBytes">The message in bytes.</param>
         /// <param name="encryptionManager">Encryption manager.</param>
         /// <param name="callback">The callback to preform once the message is decrypted (if needed) and verified</param>
-        public static void ProcessQueueMessage(byte[] messageInBytes, IEncryptionManager encryptionManager,
+        public static void ProcessQueueMessage(byte[] messageInBytes, IEncryption encryptionManager,
             Action<byte[]> callback)
         {
             // Deserialize the  byte array to Message object

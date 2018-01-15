@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Cryptography;
+using System;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using Contracts;
 using Microsoft.Azure.KeyVault.Models;
 
 namespace UnitTests

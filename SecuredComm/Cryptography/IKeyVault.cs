@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Azure.KeyVault.Models;
 
-namespace Contracts
+namespace Cryptography
 {
     /// <summary>
     /// A wrapper that handles key vault functionality

@@ -1,6 +1,5 @@
-using Contracts;
+using Cryptography;
 using Xunit;
-using SecuredCommunication;
 using System.Configuration;
 
 namespace UnitTests
@@ -29,7 +28,7 @@ namespace UnitTests
         [Fact]
         public void Sanity_VerifyAzureQueueImplCanBeCreated()
         {
-            var secretsMock = (IEncryptionManager)new EncryptionManagerMock();
+            var secretsMock = (IEncryption)new EncryptionManagerMock();
             //var sec = new AzureQueueImpl("connectionstring", secretsMock, false);
 
         }

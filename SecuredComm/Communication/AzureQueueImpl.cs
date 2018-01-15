@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Contracts;
 using Microsoft.WindowsAzure.Storage; 
 using Microsoft.WindowsAzure.Storage.Queue;
+using Cryptography;
 
-
-namespace SecuredCommunication
+namespace Communication
 {
-    public class AzureQueueImpl : IQueueManager
+    public class AzureQueueImpl : IQueue
     {
 
         #region private members
@@ -22,13 +21,13 @@ namespace SecuredCommunication
         private bool m_isActive;
         private bool m_isInitialized;
 
-        private readonly IEncryptionManager m_secretMgmt;
+        private readonly IEncryption m_secretMgmt;
         private readonly bool m_isEncrypted;
         private readonly string m_queueName;
 
         #endregion
 
-        public AzureQueueImpl(string queueName, ICloudQueueClientWrapper queueClient, IEncryptionManager secretMgmnt, bool isEncrypted)
+        public AzureQueueImpl(string queueName, ICloudQueueClientWrapper queueClient, IEncryption secretMgmnt, bool isEncrypted)
         {
             m_queueClient = queueClient;
             m_secretMgmt = secretMgmnt;

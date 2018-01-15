@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using Contracts;
 
-namespace SecuredCommunication
+namespace Cryptography
 {
     /// <summary>
     /// Manages the crypto operations which can be applied on a message using the loaded certificates.
     /// </summary>
-    public class EncryptionHelper : IEncryptionManager
+    public class CertificatesEncryption : IEncryption
     {
         #region private members
 
@@ -19,7 +18,7 @@ namespace SecuredCommunication
 
         #endregion
 
-        public EncryptionHelper(X509Certificate2 encryptionCert, X509Certificate2 decryptionCert, X509Certificate2 signCert, X509Certificate2 verifyCert)
+        public CertificatesEncryption(X509Certificate2 encryptionCert, X509Certificate2 decryptionCert, X509Certificate2 signCert, X509Certificate2 verifyCert)
         {
             m_signCert = signCert;
             m_verifyCert = verifyCert;

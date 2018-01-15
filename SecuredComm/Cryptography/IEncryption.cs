@@ -1,10 +1,10 @@
-﻿namespace Contracts
+﻿namespace Cryptography
 {
     /// <summary>
     /// Provides the interface for all of the cryptographic operations which we
     /// need as part of the communication pipeline
     /// </summary>
-    public interface IEncryptionManager
+    public interface IEncryption
     {
         /// <summary>
         /// Encrypt the specified data.

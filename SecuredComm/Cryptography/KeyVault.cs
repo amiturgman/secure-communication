@@ -4,9 +4,8 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure.KeyVault.Models;
-using Contracts;
 
-namespace SecuredCommunication
+namespace Cryptography
 {
     public class KeyVault : IKeyVault
     {

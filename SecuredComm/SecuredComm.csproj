@@ -15,6 +15,7 @@
     <PackageReference Include="WindowsAzure.Storage" Version="8.7.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Contracts\Contracts.csproj" />
+    <Folder Include="Blockchain\" />
+    <Folder Include="Cryptography\" />
   </ItemGroup>
 </Project>

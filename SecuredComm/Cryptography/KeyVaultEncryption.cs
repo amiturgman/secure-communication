@@ -2,16 +2,15 @@
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using Contracts;
 using Org.BouncyCastle.Utilities.Encoders;
 
-namespace SecuredCommunication
+namespace Cryptography
 {
     /// <summary>
-    /// An implementation of <see cref="IEncryptionManager"/>, in this implementation the certificates
+    /// An implementation of <see cref="IEncryption"/>, in this implementation the certificates
     /// are loaded from two given key vaults
     /// </summary>
-    public class KeyVaultSecretManager : IEncryptionManager
+    public class KeyVaultEncryption : IEncryption
     {
         #region private members
 
@@ -23,7 +22,7 @@ namespace SecuredCommunication
         private readonly string m_signKeyName;
         private readonly string m_verifyKeyName;
 
-        private EncryptionHelper m_encryptionHelper;
+        private CertificatesEncryption m_encryptionHelper;
         private bool m_isInit;
 
         #endregion
@@ -39,7 +38,7 @@ namespace SecuredCommunication
         /// <param name="verifyKeyName">Verify key name.</param>
         /// <param name="privateKv">A KV with private keys. Will be used for decryption and signing</param>
         /// <param name="publicKv">A KV just with public keys. Will be used for encryption and verifying</param>
-        public KeyVaultSecretManager(string encryptionKeyName, string decryptionKeyName, string signKeyName, string verifyKeyName, IKeyVault privateKv, IKeyVault publicKv)
+        public KeyVaultEncryption(string encryptionKeyName, string decryptionKeyName, string signKeyName, string verifyKeyName, IKeyVault privateKv, IKeyVault publicKv)
         {
             // marked as false as we still need to initialize the EncryptionHelper later
             m_isInit = false;
@@ -54,7 +53,7 @@ namespace SecuredCommunication
         }
 
         /// <summary>
-        /// Initialize the <see cref="EncryptionHelper"/> object with all the certificates taken from the keyvaults
+        /// Initialize the <see cref="CertificatesEncryption"/> object with all the certificates taken from the keyvaults
         /// </summary>
         public async Task Initialize() {
 
@@ -76,7 +75,7 @@ namespace SecuredCommunication
 
             // Now, we have an 'EncryptionHelper', which can help us encrypt, decrypt, sign and verify using
             // the pre-fetched certificates
-            m_encryptionHelper = new EncryptionHelper(encryptionCert, decryptionCert, signCert, verifyCert);
+            m_encryptionHelper = new CertificatesEncryption(encryptionCert, decryptionCert, signCert, verifyCert);
 
             m_isInit = true;
         }
@@ -178,7 +177,7 @@ namespace SecuredCommunication
         {
             if (!m_isInit)
             {
-                throw new SecureCommunicationException("Initialize method needs to be called before accessing class methods");
+                throw new CryptoException("Initialize method needs to be called before accessing class methods");
             }
         }
 
