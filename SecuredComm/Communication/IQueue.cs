@@ -12,7 +12,7 @@ namespace Communication
         /// Enqueue a message to the queue
         /// </summary>
         /// <param name="msg">Message.</param>
-        Task EnqueueAsync(string msg);
+        Task EnqueueAsync(byte[] msg);
 
         /// <summary>
         /// Creates a listener on a queue.

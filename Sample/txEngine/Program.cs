@@ -71,7 +71,7 @@ namespace TransactionEngine
                     Thread.Sleep(3000);
 
                     // notify a user about his balance change
-                    securedCommForNotifications.EnqueueAsync(reciverAddress).Wait();
+                    securedCommForNotifications.EnqueueAsync(Utils.ToByteArray(reciverAddress)).Wait();
                 },
                 TimeSpan.FromSeconds(3)).Wait();
         }

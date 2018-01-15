@@ -20,7 +20,7 @@ namespace UnitTests
 
             try
             {
-                await azureQueue.EnqueueAsync("some message");
+                await azureQueue.EnqueueAsync(Utils.ToByteArray("some message"));
             }
             catch (SecureCommunicationException ex)
             {
@@ -43,7 +43,7 @@ namespace UnitTests
 
             // Enqueue message
             var msg = "new message";
-            await azureQueue.EnqueueAsync(msg);
+            await azureQueue.EnqueueAsync(Utils.ToByteArray(msg));
 
             var queueRefernce = queueMock.GetQueueReference(queueName);
 
@@ -70,7 +70,7 @@ namespace UnitTests
 
             // Enqueue Message
             var msg = "new message";
-            await azureQueue.EnqueueAsync(msg);
+            await azureQueue.EnqueueAsync(Utils.ToByteArray(msg));
 
             var task = azureQueue.DequeueAsync((decrypted) =>
             {

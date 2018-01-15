@@ -90,7 +90,7 @@ namespace Communication
             throw new SecureCommunicationException("This method signature is not supported for the rabbitMQ implementation");
         }
 
-        public Task EnqueueAsync(string data)
+        public Task EnqueueAsync(byte[] data)
         {
             ThrowIfNotInitialized();
            

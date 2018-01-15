@@ -16,25 +16,27 @@ namespace Communication
         /// <param name="encryptionManager">The encryption manager</param>
         /// <param name="isEncrypted">A flag that indicates whether the message needs to be encrypted</param>
         /// <returns>A byte array representing the message</returns>
-        public static byte[] CreateMessageForQueue(string data, IEncryption encryptionManager, bool isEncrypted)
+        public static byte[] CreateMessageForQueue(byte[] data, IEncryption encryptionManager, bool isEncrypted)
         {
             if (encryptionManager == null)
             {
                 throw new ArgumentNullException(nameof(encryptionManager));
             }
 
-            // Convert the data to byte array
-            var dataInBytes = data != null ? Utils.ToByteArray(data) : throw new ArgumentNullException(nameof(data));
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
 
             // Sign the message
-            var signature = encryptionManager.Sign(dataInBytes);
+            var signature = encryptionManager.Sign(data);
 
             if (isEncrypted)
             {
                 try
                 {
                     // Encrypt the message
-                    dataInBytes = encryptionManager.Encrypt(dataInBytes);
+                    data = encryptionManager.Encrypt(data);
                 }
                 catch (CryptographicException ex)
                 {
@@ -45,7 +47,7 @@ namespace Communication
             }
 
             // Convert the message to byte array
-            return Utils.ToByteArray(new Message(isEncrypted, dataInBytes, signature));
+            return Utils.ToByteArray(new Message(isEncrypted, data, signature));
         }
 
         /// <summary>

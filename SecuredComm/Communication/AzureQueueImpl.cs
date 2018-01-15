@@ -49,7 +49,7 @@ namespace Communication
         /// Enqueues a message, it will be automatically signed and if chosen (ctor) encrypted as well
         /// </summary>
         /// <param name="msg">Message.</param>
-        public async Task EnqueueAsync(string msg)
+        public async Task EnqueueAsync(byte[] msg)
         {
             ThrowIfNotInitialized();
 

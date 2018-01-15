@@ -139,8 +139,8 @@ namespace CoinsSender
             {
                 var amountToSend = 0.001;
                 // Message structure: {amountToSend};{senderName};{reciverAddress}
-                securedComm.EnqueueAsync(
-                    $"{amountToSend};{c_senderId};{reciverAddress}").Wait();
+                var message = $"{amountToSend};{c_senderId};{reciverAddress}";
+                securedComm.EnqueueAsync(Utils.ToByteArray(message)).Wait();
 
                 // Sleep 1 minute
                 Thread.Sleep(60000);
