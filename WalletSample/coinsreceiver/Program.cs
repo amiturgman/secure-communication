@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Threading;
 using Wallet.Blockchain;
 using Wallet.Communication;
+using Wallet.Communication.AzureQueueDependencies;
 using Wallet.Cryptography;
 
 namespace CoinsReceiver

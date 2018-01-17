@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Wallet.Blockchain;
 using Wallet.Communication;
+using Wallet.Communication.AzureQueueDependencies;
 using Wallet.Cryptography;
 
 namespace TransactionEngine

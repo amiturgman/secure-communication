@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Wallet.Communication;
+using Wallet.Communication.AzureQueueDependencies;
 
 namespace UnitTests.Mocks
 {

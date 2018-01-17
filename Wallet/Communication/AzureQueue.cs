@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
+using Wallet.Communication.AzureQueueDependencies;
 using Wallet.Cryptography;
 
 namespace Wallet.Communication
@@ -119,88 +120,4 @@ namespace Wallet.Communication
         }
 #endregion
     }
-    public interface ICloudQueueClientWrapper
-    {
-        ICloudQueueWrapper GetQueueReference(string queueName);
-    }
-
-    public interface ICloudQueueWrapper
-    {
-        Task AddMessageAsync(CloudQueueMessage message);
-        Task CreateIfNotExistsAsync();
-        Task<CloudQueueMessage> GetMessageAsync(TimeSpan? visibilityTimeout, QueueRequestOptions options,
-            OperationContext operationContext);
-
-        Task DeleteMessageAsync(CloudQueueMessage message);
-    }
-
-    public class CloudQueueClientWrapper : ICloudQueueClientWrapper
-    {
-        private readonly Lazy<CloudQueueClient> _cloudQueueClient;
-
-        public CloudQueueClientWrapper(string connectionString)
-        {
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                throw new ArgumentException("Connection string doesn't contain value");
-            }
-
-            _cloudQueueClient = new Lazy<CloudQueueClient>(() =>
-            {
-                // First connect to our Azure storage.
-                var storageAccount = CloudStorageAccount.Parse(connectionString);
-
-                // Create the queue client.
-                return storageAccount.CreateCloudQueueClient();
-            });
-        }
-
-        public ICloudQueueWrapper GetQueueReference(string queueName)
-        {
-            if (string.IsNullOrEmpty(queueName))
-            {
-                throw new ArgumentException("queueName doesn't contain value");
-            }
-
-            var cloudQueue = _cloudQueueClient.Value.GetQueueReference(queueName);
-            return new CloudQueueWrapper(cloudQueue);
-        }
-    }
-
-
-    public class CloudQueueWrapper : ICloudQueueWrapper
-    {
-        private readonly CloudQueue _cloudQueue;
-
-        public CloudQueueWrapper(CloudQueue cloudQueue)
-        {
-            _cloudQueue = cloudQueue ?? throw new ArgumentNullException(nameof(cloudQueue));
-        }
-
-        public async Task CreateIfNotExistsAsync()
-        {
-            await _cloudQueue.CreateIfNotExistsAsync();
-        }
-
-        public async Task<CloudQueueMessage> GetMessageAsync(TimeSpan? visibilityTimeout, QueueRequestOptions options, OperationContext operationContext)
-        {
-            return await _cloudQueue.GetMessageAsync(visibilityTimeout, options, operationContext);
-        }
-
-        public async Task DeleteMessageAsync(CloudQueueMessage message)
-        {
-            await _cloudQueue.DeleteMessageAsync(message);
-        }
-
-        public async Task AddMessageAsync(CloudQueueMessage message)
-        {
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message));
-            }
-
-            await _cloudQueue.AddMessageAsync(message);
-        }
-    }
-
 }

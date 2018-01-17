@@ -4,6 +4,7 @@ using System.Threading;
 using Microsoft.Azure.KeyVault.Models;
 using Wallet.Blockchain;
 using Wallet.Communication;
+using Wallet.Communication.AzureQueueDependencies;
 using Wallet.Cryptography;
 
 namespace CoinsSender
