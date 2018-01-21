@@ -41,8 +41,8 @@ namespace Wallet.Blockchain
         /// <summary>
         /// Gets the balance of the provided account
         /// </summary>
-        /// <param name="address">The public address of the account</param>
+        /// <param name="publicAddress">The public address of the account</param>
         /// <returns>Returns the balance in ether.</returns>
-        Task<decimal> GetCurrentBalance(string address);
+        Task<decimal> GetCurrentBalance(string publicAddress);
     }
 }

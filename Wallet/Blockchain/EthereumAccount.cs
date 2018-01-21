@@ -17,7 +17,13 @@ namespace Wallet.Blockchain
         private IKeyVault m_kv;
 
         #region Public Methods
-        public EthereumAccount(IKeyVault keyVault, string nodeUrl = "")
+
+        /// <summary>
+        /// Ctor for EthereumAccount class
+        /// </summary>
+        /// <param name="keyVault">The Azure KeyVault Url where the clients' private keys are saved.</param>
+        /// <param name="nodeUrl">The Ethereum node Url. If it's empty, it will work with the local Ethereum testnet.</param>
+        public EthereumAccount(IKeyVault keyVault, string nodeUrl = "") 
         {
             m_kv = keyVault;
             m_web3 = string.IsNullOrEmpty(nodeUrl) ? new Web3() : new Web3(nodeUrl);
@@ -53,8 +59,8 @@ namespace Wallet.Blockchain
         /// <summary>
         /// Sign a blockchain transaction
         /// </summary>
-        /// <param name="senderIdentifier">The sender identifier (Id, name etc.)</param>
-        /// <param name="recieverAddress">The receiver address</param>
+        /// <param name="senderIdentifier">The sender identifier, as it saved in the Azure KeyVault (Id, name etc.)</param>
+        /// <param name="recieverAddress">The receiver public address</param>
         /// <param name="amountInWei">The amount to send in Wei (ethereum units)</param>
         /// <returns>The transaction hash</returns>
         public async Task<string> SignTransactionAsync(string senderIdentifier, string recieverAddress, BigInteger amountInWei)
@@ -79,12 +85,12 @@ namespace Wallet.Blockchain
         /// <summary>
         /// Gets the balance of the provided account
         /// </summary>
-        /// <param name="address">The public address of the account</param>
+        /// <param name="publicAddress">The public address of the account</param>
         /// <returns>Returns the balance in ether.</returns>
-        public async Task<decimal> GetCurrentBalance(string address)
+        public async Task<decimal> GetCurrentBalance(string publicAddress)
         {
             var unitConverion = new Nethereum.Util.UnitConversion();
-            return unitConverion.FromWei(await m_web3.Eth.GetBalance.SendRequestAsync(address));
+            return unitConverion.FromWei(await m_web3.Eth.GetBalance.SendRequestAsync(publicAddress));
         }
         #endregion
 
