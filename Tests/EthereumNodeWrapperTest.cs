@@ -9,7 +9,7 @@ namespace UnitTests
         [Fact]
         public async void Sanity_Get_Balance()
         {
-            var kvInfo = new KeyVaultMock("http://dummyKvUri");
+            var kvInfo = new DatabaseMock("http://dummyKvUri");
             var ethereumWallet = new EthereumAccount(kvInfo, "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE");
             var transactionHash = await ethereumWallet.GetCurrentBalance(TestConstants.publicKey);
 
@@ -19,7 +19,7 @@ namespace UnitTests
         [Fact]
         public async void Test_SendTransaction()
         {
-            var kvInfo = new KeyVaultMock("http://dummyKvUri");
+            var kvInfo = new DatabaseMock("http://dummyKvUri");
             var ethereumWallet = new EthereumAccount(kvInfo, "https://rinkeby.infura.io/fIF86MY6m3PHewhhJ0yE");
             var transactionHash = await 
                 ethereumWallet.SignTransactionAsync("sender", TestConstants.publicKey, 100);
