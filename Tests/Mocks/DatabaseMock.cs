@@ -5,7 +5,7 @@ using Wallet.Cryptography;
 
 namespace UnitTests
 {
-    public class DatabaseMock : IDatabase
+    public class DatabaseMock : ISecretsStore
     {
         private string kvUri;
 

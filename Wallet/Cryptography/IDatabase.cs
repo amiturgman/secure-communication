@@ -5,7 +5,7 @@ namespace Wallet.Cryptography
     /// <summary>
     /// A wrapper that handles data base functionality
     /// </summary>
-    public interface IDatabase
+    public interface ISecretsStore
     {
         /// <summary>
         /// Gets the specified secret

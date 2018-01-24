@@ -14,8 +14,8 @@ namespace Wallet.Cryptography
     {
         #region private members
 
-        private readonly IDatabase m_privateKeyVault;
-        private readonly IDatabase m_publicKeyVault;
+        private readonly ISecretsStore m_privateKeyVault;
+        private readonly ISecretsStore m_publicKeyVault;
 
         private readonly string m_decryptionKeyName;
         private readonly string m_encryptionKeyName;
@@ -27,7 +27,7 @@ namespace Wallet.Cryptography
 
         #endregion
 
-        #region Private Methods
+        #region Public Methods
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:SecuredCommunication.KeyVaultSecretManager"/> class.
@@ -43,8 +43,8 @@ namespace Wallet.Cryptography
             string decryptionKeyName, 
             string signKeyName, 
             string verifyKeyName, 
-            IDatabase privateKv, 
-            IDatabase publicKv)
+            ISecretsStore privateKv, 
+            ISecretsStore publicKv)
         {
             // marked as false as we still need to initialize the EncryptionHelper later
             m_isInit = false;

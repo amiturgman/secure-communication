@@ -14,7 +14,7 @@ namespace Wallet.Blockchain
     public class EthereumAccount : IBlockchainAccount
     {
         private readonly Web3 m_web3;
-        private IDatabase m_db;
+        private ISecretsStore m_db;
 
         #region Public Methods
 
@@ -23,7 +23,7 @@ namespace Wallet.Blockchain
         /// </summary>
         /// <param name="keyVault">The Azure KeyVault Url where the clients' private keys are saved.</param>
         /// <param name="nodeUrl">The Ethereum node Url. If it's empty, it will work with the local Ethereum testnet.</param>
-        public EthereumAccount(IDatabase database, string nodeUrl = "") 
+        public EthereumAccount(ISecretsStore database, string nodeUrl = "") 
         {
             m_db = database;
             m_web3 = string.IsNullOrEmpty(nodeUrl) ? new Web3() : new Web3(nodeUrl);

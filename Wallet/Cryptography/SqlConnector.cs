@@ -6,7 +6,7 @@ using Wallet.Communication;
 
 namespace Wallet.Cryptography
 {
-    public class SqlConnector : IDatabase
+    public class SqlConnector : ISecretsStore
     {
         private SqlConnectionStringBuilder m_sqlConnectionStringBuilder;
         private bool m_isInitialized;

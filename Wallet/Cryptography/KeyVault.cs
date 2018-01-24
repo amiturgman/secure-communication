@@ -7,7 +7,7 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace Wallet.Cryptography
 {
-    public class KeyVault : IDatabase
+    public class KeyVault : ISecretsStore
     {
         public string Url { get; }
 
