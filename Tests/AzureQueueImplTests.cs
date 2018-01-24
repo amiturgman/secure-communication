@@ -33,7 +33,7 @@ namespace UnitTests
         {
             // Init
             var queueMock = new CloudQueueClientWrapperMock();
-            var keyVaultMock = new KeyVaultMock("url");
+            var keyVaultMock = new DatabaseMock("url");
             var encryptionManager = new KeyVaultCryptoActions("emc", "emc", "emc", "emc", keyVaultMock, keyVaultMock);
             await encryptionManager.Initialize();
 
@@ -60,7 +60,7 @@ namespace UnitTests
         {
             // Init
             var queueMock = new CloudQueueClientWrapperMock();
-            var keyVaultMock = new KeyVaultMock("url");
+            var keyVaultMock = new DatabaseMock("url");
             var encryptionManager = new KeyVaultCryptoActions("emc", "emc", "emc", "emc", keyVaultMock, keyVaultMock);
             await encryptionManager.Initialize();
 

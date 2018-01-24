@@ -14,8 +14,8 @@ namespace Wallet.Cryptography
     {
         #region private members
 
-        private readonly IKeyVault m_privateKeyVault;
-        private readonly IKeyVault m_publicKeyVault;
+        private readonly ISecretsStore m_privateKeyVault;
+        private readonly ISecretsStore m_publicKeyVault;
 
         private readonly string m_decryptionKeyName;
         private readonly string m_encryptionKeyName;
@@ -27,7 +27,7 @@ namespace Wallet.Cryptography
 
         #endregion
 
-        #region Private Methods
+        #region Public Methods
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:SecuredCommunication.KeyVaultSecretManager"/> class.
@@ -38,7 +38,13 @@ namespace Wallet.Cryptography
         /// <param name="verifyKeyName">Verify key name.</param>
         /// <param name="privateKv">A KV with private keys. Will be used for decryption and signing</param>
         /// <param name="publicKv">A KV just with public keys. Will be used for encryption and verifying</param>
-        public KeyVaultCryptoActions(string encryptionKeyName, string decryptionKeyName, string signKeyName, string verifyKeyName, IKeyVault privateKv, IKeyVault publicKv)
+        public KeyVaultCryptoActions(
+            string encryptionKeyName,
+            string decryptionKeyName, 
+            string signKeyName, 
+            string verifyKeyName, 
+            ISecretsStore privateKv, 
+            ISecretsStore publicKv)
         {
             // marked as false as we still need to initialize the EncryptionHelper later
             m_isInit = false;
@@ -68,10 +74,10 @@ namespace Wallet.Cryptography
             await Task.WhenAll(tasks);
 
             // when using 'Result' we know that the task is actually done already
-            var encryptionCert = SecretToCertificate(encryptSecretTask.Result.Value);
-            var decryptionCert = SecretToCertificate(decryptSecretTask.Result.Value);
-            var signCert = SecretToCertificate(signSecretTask.Result.Value);
-            var verifyCert = SecretToCertificate(verifySecretTask.Result.Value);
+            var encryptionCert = SecretToCertificate(encryptSecretTask.Result);
+            var decryptionCert = SecretToCertificate(decryptSecretTask.Result);
+            var signCert = SecretToCertificate(signSecretTask.Result);
+            var verifyCert = SecretToCertificate(verifySecretTask.Result);
 
             // Now, we have an 'EncryptionHelper', which can help us encrypt, decrypt, sign and verify using
             // the pre-fetched certificates

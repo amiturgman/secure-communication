@@ -14,7 +14,7 @@ namespace Wallet.Blockchain
     public class EthereumAccount : IBlockchainAccount
     {
         private readonly Web3 m_web3;
-        private IKeyVault m_kv;
+        private ISecretsStore m_db;
 
         #region Public Methods
 
@@ -23,9 +23,9 @@ namespace Wallet.Blockchain
         /// </summary>
         /// <param name="keyVault">The Azure KeyVault Url where the clients' private keys are saved.</param>
         /// <param name="nodeUrl">The Ethereum node Url. If it's empty, it will work with the local Ethereum testnet.</param>
-        public EthereumAccount(IKeyVault keyVault, string nodeUrl = "") 
+        public EthereumAccount(ISecretsStore database, string nodeUrl = "") 
         {
-            m_kv = keyVault;
+            m_db = database;
             m_web3 = string.IsNullOrEmpty(nodeUrl) ? new Web3() : new Web3(nodeUrl);
         }
 
@@ -105,7 +105,7 @@ namespace Wallet.Blockchain
         {
             try
             {
-                await m_kv.SetSecretAsync(identifier, privateKey);
+                await m_db.SetSecretAsync(identifier, privateKey);
             }
             catch (KeyVaultErrorException exc)
             {
@@ -121,7 +121,7 @@ namespace Wallet.Blockchain
         /// <returns>The user's public key</returns>
         private async Task<string> GetPrivateKeyAsync(string identifier)
         {
-            return (await m_kv.GetSecretAsync(identifier)).Value;
+            return await m_db.GetSecretAsync(identifier);
         }
         #endregion
     }

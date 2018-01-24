@@ -14,7 +14,7 @@ namespace UnitTests
         [Fact]
         public void Sanity_VerifyCanBeCreated()
         {
-            var kvInfo = new KeyVaultMock("http://dummyKvUri");
+            var kvInfo = new DatabaseMock("http://dummyKvUri");
             var secretsMgmnt = new KeyVaultCryptoActions(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
             secretsMgmnt.Initialize().Wait();
         }
@@ -24,7 +24,7 @@ namespace UnitTests
         {
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
-            var kvInfo = new KeyVaultMock(kvUri);
+            var kvInfo = new DatabaseMock(kvUri);
             var secretsMgmnt = new KeyVaultCryptoActions(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
             await secretsMgmnt.Initialize();
 
@@ -39,7 +39,7 @@ namespace UnitTests
         {
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
-            var kvInfo = new KeyVaultMock(kvUri);
+            var kvInfo = new DatabaseMock(kvUri);
             var secretsMgmnt = new KeyVaultCryptoActions(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
             await secretsMgmnt.Initialize();
 
@@ -60,7 +60,7 @@ namespace UnitTests
         {
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
-            var kvInfo = new KeyVaultMock(kvUri);
+            var kvInfo = new DatabaseMock(kvUri);
             var secretsMgmnt = new KeyVaultCryptoActions(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
             await secretsMgmnt.Initialize();
 
@@ -75,7 +75,7 @@ namespace UnitTests
         {
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
-            var kvInfo = new KeyVaultMock(kvUri);
+            var kvInfo = new DatabaseMock(kvUri);
             var secretsMgmnt = new KeyVaultCryptoActions(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, kvInfo, kvInfo);
             await secretsMgmnt.Initialize();
 

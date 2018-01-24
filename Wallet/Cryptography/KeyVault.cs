@@ -7,7 +7,7 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace Wallet.Cryptography
 {
-    public class KeyVault : IKeyVault
+    public class KeyVault : ISecretsStore
     {
         public string Url { get; }
 
@@ -39,11 +39,11 @@ namespace Wallet.Cryptography
         /// </summary>
         /// <returns>The secret</returns>
         /// <param name="secretName">Secret identifier</param>
-        public async Task<SecretBundle> GetSecretAsync(string secretName)
+        public async Task<string> GetSecretAsync(string secretName)
         {
             try
             {
-                return await m_kvClient.GetSecretAsync(Url, secretName);
+                return (await m_kvClient.GetSecretAsync(Url, secretName)).Value;
             }
             catch (KeyVaultErrorException ex)
             {
@@ -58,11 +58,11 @@ namespace Wallet.Cryptography
         /// <returns>The secret.</returns>
         /// <param name="secretName">Secret identifier.</param>
         /// <param name="value">The value to be stored.</param>
-        public async Task<SecretBundle> SetSecretAsync(string secretName, string value)
+        public async Task SetSecretAsync(string secretName, string value)
         {
             try
             {
-                return await m_kvClient.SetSecretAsync(Url, secretName, value);
+                await m_kvClient.SetSecretAsync(Url, secretName, value);
             }
             catch (KeyVaultErrorException ex)
             {

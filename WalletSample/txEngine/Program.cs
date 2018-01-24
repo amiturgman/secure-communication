@@ -43,7 +43,10 @@ namespace TransactionEngine
             var taskInitNotifications = securedCommForNotifications.Initialize();
             Task.WhenAll(taskInitTransactions, taskInitNotifications).Wait();
 
-            var ethereumNodeWrapper = new EthereumAccount(kv, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
+            var sqlDb = new SqlConnector(ConfigurationManager.AppSettings["SqlUserID"], ConfigurationManager.AppSettings["SqlPassword"],
+                ConfigurationManager.AppSettings["SqlInitialCatalog"], ConfigurationManager.AppSettings["SqlDataSource"]);
+            sqlDb.Initialize().Wait();
+            var ethereumNodeWrapper = new EthereumAccount(sqlDb, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
 
             // Listen on transactions requests, process them and notify the users when done
             securedCommForTransactions.DequeueAsync(

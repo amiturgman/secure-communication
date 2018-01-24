@@ -24,15 +24,17 @@ namespace CoinsSender
 
         static void Main(string[] args)
         {
-            var kv = new KeyVault(ConfigurationManager.AppSettings["AzureKeyVaultUri"],
-                ConfigurationManager.AppSettings["applicationId"], ConfigurationManager.AppSettings["applicationSecret"]);
-            var ethereumNodeWrapper = new EthereumAccount(kv, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
-            
+            var sqlDb = new SqlConnector(ConfigurationManager.AppSettings["SqlUserID"], ConfigurationManager.AppSettings["SqlPassword"],
+                ConfigurationManager.AppSettings["SqlInitialCatalog"], ConfigurationManager.AppSettings["SqlDataSource"]);
+            sqlDb.Initialize().Wait();
+
+            var ethereumAccount = new EthereumAccount(sqlDb, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
+
             while (true)
             {
                 Console.WriteLine("To run the demo with Ethereum Testnet press 1");
                 Console.WriteLine("To run the demo with Docker TestRpc press 2");
-                
+
                 Console.WriteLine("Press any other key to exit");
                 Console.WriteLine();
 
@@ -41,10 +43,10 @@ namespace CoinsSender
                 switch (userInput)
                 {
                     case 1:
-                        EthereumTestnetDemo(kv, ethereumNodeWrapper);
+                        EthereumTestnetDemo(ethereumAccount);
                         continue;
                     case 2:
-                        EthereumTestRpcDemo(kv, ethereumNodeWrapper);
+                        EthereumTestRpcDemo(ethereumAccount);
                         continue;
                     default:
                         return;
@@ -52,7 +54,7 @@ namespace CoinsSender
             }
         }
 
-        private static void EthereumTestRpcDemo(KeyVault kv, EthereumAccount ethereumAccount)
+        private static void EthereumTestRpcDemo(EthereumAccount ethereumAccount)
         {
             var senderPrivateKey = "0x4faec59e004fd62384813d760e55d6df65537b4ccf62f268253ad7d4243a7193";
             var reciverPrivateKey = "0x03fd5782c37523be6598ca0e5d091756635d144e42d518bb5f8db11cf931b447";
@@ -79,11 +81,11 @@ namespace CoinsSender
                 }
             } finally
             {
-                SendCoins(kv, ethereumAccount);
+                SendCoins(ethereumAccount);
             }
         }
 
-        private static void EthereumTestnetDemo(KeyVault kv, EthereumAccount ethereumAccount)
+        private static void EthereumTestnetDemo(EthereumAccount ethereumAccount)
         {
             while (true)
             {
@@ -97,13 +99,13 @@ namespace CoinsSender
                         ethereumAccount.CreateAccountAsync(c_senderId).Wait();
                         ethereumAccount.CreateAccountAsync(c_ReciverId).Wait();
 
-                        var senderPublicAddress = ethereumAccount.GetPublicAddressAsync(c_senderId).Result;
+                        var senderPublicAddress = ethereumAccount.GetPublicAddressAsync(c_senderId);
                         Console.WriteLine("Accounts were created. " +
                                           $"To continue the demo please send ether to address {senderPublicAddress}{Environment.NewLine}" +
                                           "You can send ether for: https://www.rinkeby.io/#faucet");
                         continue;
                     case 2:
-                        SendCoins(kv, ethereumAccount);
+                        SendCoins(ethereumAccount);
                         break;
                     default:
                         return;
@@ -111,7 +113,7 @@ namespace CoinsSender
             }
         }
 
-        private static void SendCoins(KeyVault kv, EthereumAccount ethereumAccount)
+        private static void SendCoins(EthereumAccount ethereumAccount)
         {
             Console.WriteLine("Sender - Happy to transfer my crypto coins!");
 
@@ -126,6 +128,8 @@ namespace CoinsSender
             var signKeyName = ConfigurationManager.AppSettings["SignKeyName"];
             var verifyKeyName = ConfigurationManager.AppSettings["VerifyKeyName"];
 
+            var kv = new KeyVault(ConfigurationManager.AppSettings["AzureKeyVaultUri"],
+                ConfigurationManager.AppSettings["applicationId"], ConfigurationManager.AppSettings["applicationSecret"]);
             var secretsMgmnt = new KeyVaultCryptoActions(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, kv, kv);
             secretsMgmnt.Initialize().Wait();
             //var securedComm = new RabbitMQBusImpl(ConfigurationManager.AppSettings["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");

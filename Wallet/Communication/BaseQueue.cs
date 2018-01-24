@@ -46,14 +46,14 @@ namespace Wallet.Communication
         /// Encrypts (if needed), signs and converts the message to byte array
         /// </summary>
         /// <param name="data">The data to send on the queue</param>
-        /// <param name="cryptoActionsManager">The encryption manager</param>
+        /// <param name="cryptoActions">The encryption manager</param>
         /// <param name="isEncrypted">A flag that indicates whether the message needs to be encrypted</param>
         /// <returns>A byte array representing the message</returns>
-        protected byte[] CreateMessage(byte[] data, ICryptoActions cryptoActionsManager, bool isEncrypted)
+        protected byte[] CreateMessage(byte[] data, ICryptoActions cryptoActions, bool isEncrypted)
         {
-            if (cryptoActionsManager == null)
+            if (cryptoActions == null)
             {
-                throw new ArgumentNullException(nameof(cryptoActionsManager));
+                throw new ArgumentNullException(nameof(cryptoActions));
             }
 
             if (data == null)
@@ -62,14 +62,14 @@ namespace Wallet.Communication
             }
 
             // Sign the message
-            var signature = cryptoActionsManager.Sign(data);
+            var signature = cryptoActions.Sign(data);
 
             if (isEncrypted)
             {
                 try
                 {
                     // Encrypt the message
-                    data = cryptoActionsManager.Encrypt(data);
+                    data = cryptoActions.Encrypt(data);
                 }
                 catch (CryptographicException ex)
                 {

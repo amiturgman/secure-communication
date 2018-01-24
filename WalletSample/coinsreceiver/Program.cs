@@ -24,14 +24,18 @@ namespace CoinsReceiver
         static void Main(string[] args)
         {
             // Init
-            var kv = new KeyVault(ConfigurationManager.AppSettings["AzureKeyVaultUri"], 
+            var kv = new KeyVault(ConfigurationManager.AppSettings["AzureKeyVaultUri"],
                 ConfigurationManager.AppSettings["applicationId"], ConfigurationManager.AppSettings["applicationSecret"]);
-            var ethereumNodeWrapper = new EthereumAccount(kv, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
+            var sqlDb = new SqlConnector(ConfigurationManager.AppSettings["SqlUserID"], ConfigurationManager.AppSettings["SqlPassword"],
+                ConfigurationManager.AppSettings["SqlInitialCatalog"], ConfigurationManager.AppSettings["SqlDataSource"]);
+            sqlDb.Initialize().Wait();
+
+            var ethereumAccount = new EthereumAccount(sqlDb, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
 
             Console.WriteLine("Receiver - I just love getting new crypto coins");
 
-            var reciverAddress = ethereumNodeWrapper.GetPublicAddressAsync(c_ReciverId).Result;            
-            PrintCurrentBalance(reciverAddress, ethereumNodeWrapper.GetCurrentBalance(reciverAddress).Result);
+            var reciverAddress = ethereumAccount.GetPublicAddressAsync(c_ReciverId).Result;
+            PrintCurrentBalance(reciverAddress, ethereumAccount.GetCurrentBalance(reciverAddress).Result);
 
             var encryptionKeyName = ConfigurationManager.AppSettings["EncryptionKeyName"];
             var decryptionKeyName = ConfigurationManager.AppSettings["DecryptionKeyName"];
@@ -55,7 +59,7 @@ namespace CoinsReceiver
                         {
                             Console.WriteLine("Great, Balance change!");
                             PrintCurrentBalance(reciverAddress,
-                                ethereumNodeWrapper.GetCurrentBalance(reciverAddress).Result);
+                                ethereumAccount.GetCurrentBalance(reciverAddress).Result);
                         }
                         else
                         {

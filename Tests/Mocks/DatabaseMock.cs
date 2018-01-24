@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using Microsoft.Azure.KeyVault.Models;
 using Wallet.Cryptography;
 
 namespace UnitTests
 {
-    public class KeyVaultMock : IKeyVault
+    public class DatabaseMock : ISecretsStore
     {
         private string kvUri;
 
-        public KeyVaultMock(string kvUri)
+        public DatabaseMock(string kvUri)
         {
             this.kvUri = kvUri;
         }
@@ -20,23 +19,23 @@ namespace UnitTests
             return kvUri;
         }
 
-        public Task<SecretBundle> GetSecretAsync(string secretName)
+        public Task<string> GetSecretAsync(string secretName)
         {
             Console.WriteLine("Starting get secret");
             if (secretName.Equals("sender"))
             {
-                return Task.FromResult(new SecretBundle(TestConstants.privateKey));
+                return Task.FromResult(TestConstants.privateKey);
             }
 
             var x = new X509Certificate2("../../../testCert.pfx", "abc123ABC", X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
             //var key = await GetKeyAsync(secretName);
             byte[] certBytes = x.Export(X509ContentType.Pkcs12);
-            var secBundle = new SecretBundle(Convert.ToBase64String(certBytes));
+            var certString = Convert.ToBase64String(certBytes);
             Console.WriteLine("finished get secret");
-            return Task.FromResult(secBundle);
+            return Task.FromResult(certString);
         }
 
-        public Task<SecretBundle> SetSecretAsync(string secretName, string value)
+        public Task SetSecretAsync(string secretName, string value)
         {
             throw new NotImplementedException();
         }
