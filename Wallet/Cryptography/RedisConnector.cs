@@ -46,7 +46,8 @@ namespace Wallet.Cryptography
                 throw new SecureCommunicationException("Object was already initialized");
             }
 
-            m_redis = ConnectionMultiplexer.Connect(m_connectionString);
+            ConfigurationOptions options = ConfigurationOptions.Parse(m_connectionString);
+            m_redis = ConnectionMultiplexer.Connect(options);
             m_db = m_redis.GetDatabase();
 
             m_isInitialized = true;
@@ -62,8 +63,8 @@ namespace Wallet.Cryptography
             ThrowIfNotInitialized();
 
             // if the RedisConnector was supplied with a CryptoActions implementation, then the value will be saved ENCRYPTED, otherwise UNENCRYPTED.
-            var encryptedValue = Utils.FromByteArray<string>(m_cryptoActions.Encrypt(Utils.ToByteArray(privateKey)));
-            await m_db.StringSetAsync(identifier, IsInEncryptMode ? encryptedValue : privateKey);
+            var value = IsInEncryptMode ? Utils.FromByteArray<string>(m_cryptoActions.Encrypt(Utils.ToByteArray(privateKey))) : privateKey;
+            await m_db.StringSetAsync(identifier, value);
         }
 
         /// <summary>
