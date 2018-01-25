@@ -21,8 +21,21 @@ namespace Wallet.Cryptography
                                PrivateKey  nvarchar(128)     not null
                             );";
 
-        private const string GetPrivateKeyByIdQueryTempalte = @"SELECT * FROM accounts Where Id='{0}'";
-        private const string InsertIntoAccountsTableQueryTemplate = @"INSERT INTO accounts (Id, PrivateKey) VALUES ('{0}', '{1}');";
+        private const string CreateGetPrivateKeyStoreProcedure = @"
+                                IF NOT EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND OBJECT_ID = OBJECT_ID('dbo.Get_PrivateKey'))
+                                    exec('CREATE PROC Get_PrivateKey @ID nchar(30)   
+	                                AS
+	                                SELECT * FROM accounts Where Id=@ID')";
+
+        private const string CreateSetPrivateKeyStoreProcedure = @"
+                                IF NOT EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND OBJECT_ID = OBJECT_ID('dbo.Set_PrivateKey'))
+                                    exec('CREATE PROC Set_PrivateKey @ID nchar(30), @PrivateKey nvarchar(128)   
+                                    AS
+                                INSERT INTO accounts (Id, PrivateKey) VALUES (@ID, @PrivateKey)')";
+
+
+        private const string GetPrivateKeyByIdQueryTemplate = @"Exec Get_PrivateKey '{0}';";
+        private const string InsertIntoAccountsTableQueryTemplate = @"Exec Set_PrivateKey '{0}','{1}';";
 
         public SqlConnector(string userId, string password, string initialCatalog, string dataSource)
         {
@@ -45,7 +58,10 @@ namespace Wallet.Cryptography
 
         public async Task Initialize()
         {
+            // Create accounts table and store procedures
             await ExecuteNonQueryAsync(CreateAccountsTableQuery);
+            await ExecuteNonQueryAsync(CreateGetPrivateKeyStoreProcedure);
+            await ExecuteNonQueryAsync(CreateSetPrivateKeyStoreProcedure);
             m_isInitialized = true;
         }
 
@@ -74,7 +90,7 @@ namespace Wallet.Cryptography
                 try
                 {
                     connection.Open();
-                    using (SqlCommand command = new SqlCommand(string.Format(GetPrivateKeyByIdQueryTempalte, identifier), connection))
+                    using (SqlCommand command = new SqlCommand(string.Format(GetPrivateKeyByIdQueryTemplate, identifier), connection))
                     {
                         using (SqlDataReader reader = await command.ExecuteReaderAsync())
                         {
