@@ -24,20 +24,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ilanatest", "ilanatest\ilanatest.csproj", "{6E75BC68-DC54-4912-836F-4DFB4F06B973}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SecuredComm", "SecuredComm\SecuredComm.csproj", "{9E9101B8-5203-4B42-907D-9F34A279BD87}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{7717C474-8822-4687-9DCC-F40F332C39EF}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoinsSender", "Sample\coinssender\CoinsSender.csproj", "{3D1DF2E5-3D20-4272-B133-0B74F48D35EB}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoinsReceiver", "Sample\coinsreceiver\CoinsReceiver.csproj", "{1FB73EFC-DB29-4933-99FF-71B3CF00F9FF}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TransactionEngine", "Sample\txEngine\TransactionEngine.csproj", "{965D4BE9-70C9-461F-99A1-D5E1E185CA0C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "SecuredCommTests\Tests.csproj", "{E6F968F8-986B-47B4-83A7-FA0499309209}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts", "Contracts\Contracts.csproj", "{2FF945C0-097B-4452-AF82-D20C38DD86C6}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", "{B49DC42B-8111-404B-9898-6BCC3AED350E}"
 	ProjectSection(SolutionItems) = preProject
 		keyGenerationScript.ps1 = keyGenerationScript.ps1
@@ -74,10 +60,6 @@ Global
 		{089B2DF9-C31B-4D7B-A710-03E623B91D06}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6E75BC68-DC54-4912-836F-4DFB4F06B973}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6E75BC68-DC54-4912-836F-4DFB4F06B973}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2FF945C0-097B-4452-AF82-D20C38DD86C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2FF945C0-097B-4452-AF82-D20C38DD86C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2FF945C0-097B-4452-AF82-D20C38DD86C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2FF945C0-097B-4452-AF82-D20C38DD86C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
