@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Contracts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SecuredCommunication;
+using Wallet.Communication;
+using Wallet.Communication.AzureQueueDependencies;
+using Wallet.Cryptography;
 
 namespace ilanatest
 {
@@ -21,14 +22,14 @@ namespace ilanatest
 
         public IConfiguration Configuration { get; }
         public KeyVault KV;
-        public AzureQueueImpl securedComm;
+        public AzureQueue securedComm;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
 
-            services.AddSingleton<IQueueManager, AzureQueueImpl>((serviceProvider) =>
+            services.AddSingleton<IQueue, AzureQueue>((serviceProvider) =>
             {
                 KV = new KeyVault(Configuration["AzureKeyVaultUri"],
                     Configuration["applicationId"], Configuration["applicationSecret"]);
@@ -37,15 +38,18 @@ namespace ilanatest
                 var signKeyName = Configuration["SignKeyName"];
                 var verifyKeyName = Configuration["VerifyKeyName"];
 
-                var secretsMgmnt = new KeyVaultSecretManager(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, KV, KV);
+                var secretsMgmnt = new KeyVaultCryptoActions(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, KV, KV);
                 secretsMgmnt.Initialize().Wait();
                 //var securedComm = new RabbitMQBusImpl(config["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");
                 var queueClient = new CloudQueueClientWrapper(Configuration["AzureStorageConnectionString"]);
-                securedComm = new AzureQueueImpl("ilanatest", queueClient, secretsMgmnt, true);
+                securedComm = new AzureQueue("ilanatest", queueClient, secretsMgmnt, true);
                 securedComm.Initialize().Wait();
                 securedComm.DequeueAsync(msg =>
                 {
                     Console.WriteLine(msg);
+                }, msg =>
+                {
+                    Console.WriteLine("Failed");
                 }, TimeSpan.FromSeconds(1));
                 return securedComm;
             });

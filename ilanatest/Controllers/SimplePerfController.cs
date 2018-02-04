@@ -1,19 +1,19 @@
 ﻿using System;
-using Contracts;
 using Microsoft.AspNetCore.Mvc;
-using SecuredCommunication;
+using Wallet.Communication;
+using Wallet.Cryptography;
 
 namespace ilanatest.Controllers
 {
     public class SimplePerfController : Controller
     {
         bool isInit;
-        AzureQueueImpl m_comm;
+        AzureQueue m_comm;
         KeyVault kv;
 
-        public SimplePerfController( IQueueManager _comm)
+        public SimplePerfController( IQueue _comm)
         {
-            m_comm = (AzureQueueImpl) _comm;
+            m_comm = (AzureQueue) _comm;
         }
 
         // GET: /<controller>/
@@ -25,7 +25,7 @@ namespace ilanatest.Controllers
 
         public string Enqueue()
         {
-            m_comm.EnqueueAsync("Hi Bye").Wait();
+            m_comm.EnqueueAsync(Utils.ToByteArray<string>("Hi Bye")).Wait();
             return "Enqueued";
         }
 
@@ -34,6 +34,9 @@ namespace ilanatest.Controllers
             m_comm.DequeueAsync((msg) =>
             {
                 Console.WriteLine(msg);
+            }, (msg) =>
+            {
+                Console.WriteLine("Failed");
             }, TimeSpan.FromSeconds(1)).Wait();
             return "dequeue";
 
