@@ -22,7 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", 
 		WalletSample\Deployment\template.json = WalletSample\Deployment\template.json
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ilanatest", "ilanatest\ilanatest.csproj", "{6E75BC68-DC54-4912-836F-4DFB4F06B973}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerfWebApp", "Performance\PerfWebApp.csproj", "{6E75BC68-DC54-4912-836F-4DFB4F06B973}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", "{B49DC42B-8111-404B-9898-6BCC3AED350E}"
 	ProjectSection(SolutionItems) = preProject
@@ -31,6 +31,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", 
 		Sample\Deployment\parameters.json = Sample\Deployment\parameters.json
 		Sample\Deployment\template.json = Sample\Deployment\template.json
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Performance", "Performance", "{350FC875-C9AF-4F4E-9140-0AB5D4C5A3A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,7 @@ Global
 		{49206470-5E90-4BA4-999F-BF7663EC3E93} = {90D4D08A-DAD5-40ED-959E-4B560C75ADA4}
 		{F359DD2F-F6BE-4302-A3FB-57F92394F524} = {90D4D08A-DAD5-40ED-959E-4B560C75ADA4}
 		{646B01F5-998F-4B0B-BFB1-9EB6E42DDEF1} = {90D4D08A-DAD5-40ED-959E-4B560C75ADA4}
+		{6E75BC68-DC54-4912-836F-4DFB4F06B973} = {350FC875-C9AF-4F4E-9140-0AB5D4C5A3A9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4737FFEB-AAC1-40F3-BDC1-B601CAE22546}

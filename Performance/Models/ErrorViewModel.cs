@@ -1,6 +1,6 @@
 using System;
 
-namespace ilanatest.Models
+namespace Performance.Models
 {
     public class ErrorViewModel
     {

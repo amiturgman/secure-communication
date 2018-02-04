@@ -10,7 +10,7 @@ using Wallet.Communication;
 using Wallet.Communication.AzureQueueDependencies;
 using Wallet.Cryptography;
 
-namespace ilanatest
+namespace Performance
 {
     public class Startup
     {
@@ -31,6 +31,7 @@ namespace ilanatest
 
             services.AddSingleton<IQueue, AzureQueue>((serviceProvider) =>
             {
+                const string queueName = "somequeue";
                 KV = new KeyVault(Configuration["AzureKeyVaultUri"],
                     Configuration["applicationId"], Configuration["applicationSecret"]);
                 var encryptionKeyName = Configuration["EncryptionKeyName"];
@@ -42,15 +43,9 @@ namespace ilanatest
                 secretsMgmnt.Initialize().Wait();
                 //var securedComm = new RabbitMQBusImpl(config["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");
                 var queueClient = new CloudQueueClientWrapper(Configuration["AzureStorageConnectionString"]);
-                securedComm = new AzureQueue("ilanatest", queueClient, secretsMgmnt, true);
+                securedComm = new AzureQueue(queueName, queueClient, secretsMgmnt, true);
                 securedComm.Initialize().Wait();
-                securedComm.DequeueAsync(msg =>
-                {
-                    Console.WriteLine(msg);
-                }, msg =>
-                {
-                    Console.WriteLine("Failed");
-                }, TimeSpan.FromSeconds(1));
+
                 return securedComm;
             });
         }

@@ -3,13 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Wallet.Communication;
 using Wallet.Cryptography;
 
-namespace ilanatest.Controllers
+namespace Performance.Controllers
 {
     public class SimplePerfController : Controller
     {
-        bool isInit;
         AzureQueue m_comm;
-        KeyVault kv;
 
         public SimplePerfController( IQueue _comm)
         {
@@ -29,17 +27,24 @@ namespace ilanatest.Controllers
             return "Enqueued";
         }
 
-        public string Dequeue()
+        public string StartDequeue()
         {
             m_comm.DequeueAsync((msg) =>
             {
                 Console.WriteLine(msg);
             }, (msg) =>
             {
-                Console.WriteLine("Failed");
-            }, TimeSpan.FromSeconds(1)).Wait();
-            return "dequeue";
+                Console.WriteLine("Failed processing message from queue");
+            }, TimeSpan.FromSeconds(1));
 
+            return "Started listening";
+        }
+
+        public string StopDequeue()
+        {
+            m_comm.CancelListeningOnQueue();
+
+            return "Stopped";
         }
     }
 }
