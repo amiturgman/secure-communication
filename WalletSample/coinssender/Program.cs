@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Configuration;
 using System.Threading;
-using Microsoft.Azure.KeyVault.Models;
 using Wallet.Blockchain;
 using Wallet.Communication;
 using Wallet.Communication.AzureQueueDependencies;
@@ -24,33 +23,25 @@ namespace CoinsSender
 
         static void Main(string[] args)
         {
-            var sqlDb = new SqlConnector(ConfigurationManager.AppSettings["SqlUserID"], ConfigurationManager.AppSettings["SqlPassword"],
-                ConfigurationManager.AppSettings["SqlInitialCatalog"], ConfigurationManager.AppSettings["SqlDataSource"]);
+            var sqlDb = new SqlConnector(ConfigurationManager.AppSettings["SqlUserID"],
+                ConfigurationManager.AppSettings["SqlPassword"],
+                ConfigurationManager.AppSettings["SqlInitialCatalog"],
+                ConfigurationManager.AppSettings["SqlDataSource"]);
             sqlDb.Initialize().Wait();
 
             var ethereumAccount = new EthereumAccount(sqlDb, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
 
-            while (true)
+            // If Ethereum node url is empty, the program will run with local Ethereum Test RPC
+            // Otherwise, it will run with the real Ethereum TestNet.
+            if (string.IsNullOrEmpty(ConfigurationManager.AppSettings["EthereumNodeUrl"]))
             {
-                Console.WriteLine("To run the demo with Ethereum Testnet press 1");
-                Console.WriteLine("To run the demo with Docker TestRpc press 2");
-
-                Console.WriteLine("Press any other key to exit");
-                Console.WriteLine();
-
-                var userInput = double.Parse(Console.ReadLine());
-
-                switch (userInput)
-                {
-                    case 1:
-                        EthereumTestnetDemo(ethereumAccount);
-                        continue;
-                    case 2:
-                        EthereumTestRpcDemo(ethereumAccount);
-                        continue;
-                    default:
-                        return;
-                }
+                Console.WriteLine("Running with Docker TestRpc");
+                EthereumTestRpcDemo(ethereumAccount);
+            }
+            else
+            {
+                Console.WriteLine("Running with Ethereum Testnet");
+                EthereumTestnetDemo(ethereumAccount);
             }
         }
 
@@ -58,28 +49,25 @@ namespace CoinsSender
         {
             var senderPrivateKey = "0x4faec59e004fd62384813d760e55d6df65537b4ccf62f268253ad7d4243a7193";
             var reciverPrivateKey = "0x03fd5782c37523be6598ca0e5d091756635d144e42d518bb5f8db11cf931b447";
-          
-            Console.WriteLine($"Please run the docker image with the following command:{Environment.NewLine}"+
-                "docker run -d -p 8545:8545 trufflesuite/ganache-cli:latest " +
-                $"--account=\"{senderPrivateKey}, 300000000000000000000\"" +
-                $" --account=\"{reciverPrivateKey}, 0\"");
-            Console.WriteLine("Press enter once the docker is running");
-            Console.ReadLine();
 
-            // Check if Account already stored in KeyVault
+            Console.WriteLine($"Please run the docker image with the following command:{Environment.NewLine}" +
+                              "docker run -d -p 8545:8545 trufflesuite/ganache-cli:latest " +
+                              $"--account=\"{senderPrivateKey}, 300000000000000000000\"" +
+                              $" --account=\"{reciverPrivateKey}, 0\"");
+
+            // Check if Account already stored in KeyStore
             try
             {
                 var senderAccount = ethereumAccount.GetPublicAddressAsync(c_senderId).Result;
                 var reciverAccount = ethereumAccount.GetPublicAddressAsync(c_ReciverId).Result;
-
-            } catch (Exception ex)
+            }
+            catch (Exception)
             {
-                if (ex.InnerException is KeyVaultErrorException && ex.InnerException.Message.Contains("Secret not found"))
-                {
-                    ethereumAccount.CreateAccountAsync(c_senderId, senderPrivateKey).Wait();
-                    ethereumAccount.CreateAccountAsync(c_ReciverId, reciverPrivateKey).Wait();
-                }
-            } finally
+                // TODO: Add Check for key not found exception 
+                ethereumAccount.CreateAccountAsync(c_senderId, senderPrivateKey).Wait();
+                ethereumAccount.CreateAccountAsync(c_ReciverId, reciverPrivateKey).Wait();
+            }
+            finally
             {
                 SendCoins(ethereumAccount);
             }
@@ -87,30 +75,24 @@ namespace CoinsSender
 
         private static void EthereumTestnetDemo(EthereumAccount ethereumAccount)
         {
-            while (true)
+            try
             {
-                Console.WriteLine("To create new accounts press 1");
-                Console.WriteLine("If you already created sender and receiver accounts press 2");
-                var input = double.Parse(Console.ReadLine());
-                switch (input)
-                {
-                    case 1:
-                        // Create accounts
-                        ethereumAccount.CreateAccountAsync(c_senderId).Wait();
-                        ethereumAccount.CreateAccountAsync(c_ReciverId).Wait();
-
-                        var senderPublicAddress = ethereumAccount.GetPublicAddressAsync(c_senderId);
-                        Console.WriteLine("Accounts were created. " +
-                                          $"To continue the demo please send ether to address {senderPublicAddress}{Environment.NewLine}" +
-                                          "You can send ether for: https://www.rinkeby.io/#faucet");
-                        continue;
-                    case 2:
-                        SendCoins(ethereumAccount);
-                        break;
-                    default:
-                        return;
-                }
+                var senderAccount = ethereumAccount.GetPublicAddressAsync(c_senderId).Result;
+                var reciverAccount = ethereumAccount.GetPublicAddressAsync(c_ReciverId).Result;
             }
+            catch (Exception ex)
+            {
+                // TODO: Add Check for key not found exception 
+                ethereumAccount.CreateAccountAsync(c_senderId).Wait();
+                ethereumAccount.CreateAccountAsync(c_ReciverId).Wait();
+
+                var senderPublicAddress = ethereumAccount.GetPublicAddressAsync(c_senderId);
+                Console.WriteLine("Accounts were created. " +
+                                  $"To continue the demo please send ether to address {senderPublicAddress}{Environment.NewLine}" +
+                                  "You can send ether for: https://www.rinkeby.io/#faucet");
+            }
+
+            SendCoins(ethereumAccount);
         }
 
         private static void SendCoins(EthereumAccount ethereumAccount)
@@ -139,7 +121,7 @@ namespace CoinsSender
             securedComm.Initialize().Wait();
 
             // While there are sufficient funds, transfer some...
-            while (balance > 0)
+            while (balance >= 0)
             {
                 var amountToSend = 0.001;
                 // Message structure: {amountToSend};{senderName};{reciverAddress}

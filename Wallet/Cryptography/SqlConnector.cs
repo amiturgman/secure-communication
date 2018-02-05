@@ -75,8 +75,6 @@ namespace Wallet.Cryptography
         public async Task SetSecretAsync(string identifier, string privateKey)
         {
             ThrowIfNotInitialized();
-            checkForSQLInjection(identifier);
-            checkForSQLInjection(privateKey);
 
             identifier = identifier.Replace("'", "''");
             privateKey = privateKey.Replace("'", "''");
@@ -111,7 +109,6 @@ namespace Wallet.Cryptography
         public async Task<string> GetSecretAsync(string identifier)
         {
             ThrowIfNotInitialized();
-            checkForSQLInjection(identifier);
 
             identifier = identifier.Replace("'", "''");
 
@@ -168,28 +165,6 @@ namespace Wallet.Cryptography
             if (!m_isInitialized)
             {
                 throw new SecureCommunicationException("Object was not initialized");
-            }
-        }
-
-        private static void checkForSQLInjection(string input)
-        {
-            string[] sqlCheckList =
-            {
-                "--", ";--", ";", "/*", "*/", "@@", "@", "char",
-                "nchar", "varchar", "nvarchar", "alter", "begin", "cast",
-                "create", "cursor", "declare", "delete", "drop", "end", "exec",
-                "execute", "fetch", "insert", "kill", "select", "sys",
-                "sysobjects", "syscolumns", "table", "update"
-            };
-
-            string checkString = input.Replace("'", "''");
-
-            for (int i = 0; i <= sqlCheckList.Length - 1; i++)
-            {
-                if (checkString.IndexOf(sqlCheckList[i], StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    throw new InvalidParameterException("Parameters suspected with SQL injection");
-                }
             }
         }
     }
