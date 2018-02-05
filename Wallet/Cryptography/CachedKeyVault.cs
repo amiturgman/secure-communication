@@ -8,14 +8,8 @@ namespace Wallet.Cryptography
     /// <summary>
     /// RedisConnector allows for secrets to be stored and retrieved from a Redis server. If a CryptoActions instance is provided then the secrets will be stored encrypted.
     /// </summary>
-    public class RedisConnector : ISecretsStore
+    public class CachedKeyVault : ISecretsStore
     {
-        #region public properties
-
-        public bool IsInEncryptMode { get; }
-        
-        #endregion
-        
         #region private members
 
         private bool m_isInitialized;
@@ -23,20 +17,17 @@ namespace Wallet.Cryptography
         private ConnectionMultiplexer m_redis;
         private string m_connectionString;
         private ICryptoActions m_cryptoActions;
+        private ISecretsStore m_keyVault;
 
         #endregion
-
-        public RedisConnector(string connectionString)
+        
+        public CachedKeyVault(string connectionString, ISecretsStore keyVault, ICryptoActions cryptoActions)
         {
             m_isInitialized = false;
             m_connectionString = connectionString;
-        }
 
-        public RedisConnector(string connectionString, ICryptoActions cryptoActions) : this(connectionString)
-        {
+            m_keyVault = keyVault ?? throw new ArgumentNullException(nameof(keyVault)); ;
             m_cryptoActions = cryptoActions ?? throw new ArgumentNullException(nameof(cryptoActions));
-
-            IsInEncryptMode = true;
         }
 
         public void Initialize()
@@ -62,9 +53,16 @@ namespace Wallet.Cryptography
         {
             ThrowIfNotInitialized();
 
-            // if the RedisConnector was supplied with a CryptoActions implementation, then the value will be saved ENCRYPTED, otherwise UNENCRYPTED.
-            var value = IsInEncryptMode ? Utils.FromByteArray<string>(m_cryptoActions.Encrypt(Utils.ToByteArray(privateKey))) : privateKey;
-            await m_db.StringSetAsync(identifier, value);
+            // The value will be saved ENCRYPTED.
+            var value = Utils.FromByteArray<string>(m_cryptoActions.Encrypt(Utils.ToByteArray(privateKey)));
+            
+            // stored UNEncrypted in keyvault, as keyvault is already safe
+            var kvTask = m_keyVault.SetSecretAsync(identifier, privateKey);
+
+            // But ENCRYPTED in redis
+            var redisTask = m_db.StringSetAsync(identifier, value);
+
+            await Task.WhenAll(new Task[] { kvTask, redisTask });
         }
 
         /// <summary>
@@ -76,8 +74,21 @@ namespace Wallet.Cryptography
         {
             ThrowIfNotInitialized();
 
-            var rawValue = (await m_db.StringGetAsync(identifier)).ToString();
-            return IsInEncryptMode ? Utils.FromByteArray<string>(m_cryptoActions.Decrypt(Utils.ToByteArray(rawValue))) : rawValue;
+            var rawValue = await m_db.StringGetAsync(identifier);
+            if (rawValue.IsNullOrEmpty)
+            {
+                // Get from KV (returns in unencrypted format)
+                var unEncryptedSecret = await m_keyVault.GetSecretAsync(identifier);
+
+                // Store in Redis (in Encrypted way)
+                await m_db.StringSetAsync(
+                    identifier, 
+                    m_cryptoActions.Encrypt(Utils.ToByteArray(unEncryptedSecret)));
+
+                return unEncryptedSecret;
+            }
+
+            return Utils.FromByteArray<string>(m_cryptoActions.Decrypt(Utils.ToByteArray(rawValue)));
         }
 
         #region privateMethods
