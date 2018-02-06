@@ -101,7 +101,7 @@ namespace Wallet.Cryptography
                 return secret;
             }
 
-            return Utils.FromByteArray<string>(m_cryptoActions.Decrypt(Utils.ToByteArray(rawValue)));
+            return Utils.FromByteArray<string>(m_cryptoActions.Decrypt(rawValue));
         }
 
         #region privateMethods
