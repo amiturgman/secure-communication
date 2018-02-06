@@ -2,11 +2,12 @@
 using System.Threading.Tasks;
 using Wallet.Communication;
 using StackExchange.Redis;
+using Microsoft.Azure.KeyVault.Models;
 
 namespace Wallet.Cryptography
 {
     /// <summary>
-    /// RedisConnector allows for secrets to be stored and retrieved from a Redis server. If a CryptoActions instance is provided then the secrets will be stored encrypted.
+    /// KV client with redis cache layer. 
     /// </summary>
     public class CachedKeyVault : ISecretsStore
     {
@@ -53,16 +54,16 @@ namespace Wallet.Cryptography
         {
             ThrowIfNotInitialized();
 
-            // The value will be saved ENCRYPTED.
-            var value = Utils.FromByteArray<string>(m_cryptoActions.Encrypt(Utils.ToByteArray(privateKey)));
+            // The encryptedSecret will be saved ENCRYPTED.
+            var encryptedSecret = Utils.FromByteArray<string>(m_cryptoActions.Encrypt(Utils.ToByteArray(privateKey)));
             
             // stored UNEncrypted in keyvault, as keyvault is already safe
-            // If a previous value exists, it will be overwritten
+            // If a previous encryptedSecret exists, it will be overwritten
             var kvTask = m_keyVault.SetSecretAsync(identifier, privateKey);
 
             // But ENCRYPTED in redis
-            // If a previous value exists, it will be overwritten
-            var redisTask = m_db.StringSetAsync(identifier, value);
+            // If a previous encryptedSecret exists, it will be overwritten
+            var redisTask = m_db.StringSetAsync(identifier, encryptedSecret);
 
             await Task.WhenAll(new Task[] { kvTask, redisTask });
         }
@@ -82,22 +83,22 @@ namespace Wallet.Cryptography
             if (rawValue.IsNullOrEmpty)
             {
                 // Get from KV (returns in unencrypted format)
-                var unEncryptedSecret = "";
+                var secret = "";
                 try
                 {
-                    unEncryptedSecret = await m_keyVault.GetSecretAsync(identifier);
+                    secret = await m_keyVault.GetSecretAsync(identifier);
                 }
-                catch (Exception exc)
+                catch (KeyVaultErrorException exc)
                 {
-                    throw new SecureCommunicationException("key: '" + identifier + "' was not found in KV", exc);
+                    throw new SecureCommunicationException($"key: '{identifier}' was not found in KV", exc);
                 }
 
                 // Store in Redis (in Encrypted way)
                 await m_db.StringSetAsync(
                     identifier, 
-                    m_cryptoActions.Encrypt(Utils.ToByteArray(unEncryptedSecret)));
+                    m_cryptoActions.Encrypt(Utils.ToByteArray(secret)));
 
-                return unEncryptedSecret;
+                return secret;
             }
 
             return Utils.FromByteArray<string>(m_cryptoActions.Decrypt(Utils.ToByteArray(rawValue)));
