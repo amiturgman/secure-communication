@@ -26,14 +26,6 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerfWebApp", "Performance\PerfWebApp.csproj", "{6E75BC68-DC54-4912-836F-4DFB4F06B973}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", "{B49DC42B-8111-404B-9898-6BCC3AED350E}"
-	ProjectSection(SolutionItems) = preProject
-		keyGenerationScript.ps1 = keyGenerationScript.ps1
-		Sample\Deployment\oneclick.ps1 = Sample\Deployment\oneclick.ps1
-		Sample\Deployment\parameters.json = Sample\Deployment\parameters.json
-		Sample\Deployment\template.json = Sample\Deployment\template.json
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Performance", "Performance", "{350FC875-C9AF-4F4E-9140-0AB5D4C5A3A9}"
 EndProject
 Global
