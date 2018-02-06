@@ -57,9 +57,11 @@ namespace Wallet.Cryptography
             var value = Utils.FromByteArray<string>(m_cryptoActions.Encrypt(Utils.ToByteArray(privateKey)));
             
             // stored UNEncrypted in keyvault, as keyvault is already safe
+            // If a previous value exists, it will be overwritten
             var kvTask = m_keyVault.SetSecretAsync(identifier, privateKey);
 
             // But ENCRYPTED in redis
+            // If a previous value exists, it will be overwritten
             var redisTask = m_db.StringSetAsync(identifier, value);
 
             await Task.WhenAll(new Task[] { kvTask, redisTask });
@@ -75,10 +77,20 @@ namespace Wallet.Cryptography
             ThrowIfNotInitialized();
 
             var rawValue = await m_db.StringGetAsync(identifier);
+
+            // key not present in redis
             if (rawValue.IsNullOrEmpty)
             {
                 // Get from KV (returns in unencrypted format)
-                var unEncryptedSecret = await m_keyVault.GetSecretAsync(identifier);
+                var unEncryptedSecret = "";
+                try
+                {
+                    unEncryptedSecret = await m_keyVault.GetSecretAsync(identifier);
+                }
+                catch (Exception exc)
+                {
+                    throw new SecureCommunicationException("key: '" + identifier + "' was not found in KV", exc);
+                }
 
                 // Store in Redis (in Encrypted way)
                 await m_db.StringSetAsync(
