@@ -5,6 +5,7 @@ using Wallet.Blockchain;
 using Wallet.Communication;
 using Wallet.Communication.AzureQueueDependencies;
 using Wallet.Cryptography;
+using static Wallet.Cryptography.KeyVaultCryptoActions;
 
 namespace CoinsReceiver
 {
@@ -16,7 +17,6 @@ namespace CoinsReceiver
     {
         #region private members
 
-
         private const string c_ReciverId = "reciverAccount";
 
         #endregion
@@ -25,9 +25,12 @@ namespace CoinsReceiver
         {
             // Init
             var kv = new KeyVault(ConfigurationManager.AppSettings["AzureKeyVaultUri"],
-                ConfigurationManager.AppSettings["applicationId"], ConfigurationManager.AppSettings["applicationSecret"]);
-            var sqlDb = new SqlConnector(ConfigurationManager.AppSettings["SqlUserID"], ConfigurationManager.AppSettings["SqlPassword"],
-                ConfigurationManager.AppSettings["SqlInitialCatalog"], ConfigurationManager.AppSettings["SqlDataSource"]);
+                ConfigurationManager.AppSettings["applicationId"],
+                ConfigurationManager.AppSettings["applicationSecret"]);
+            var sqlDb = new SqlConnector(ConfigurationManager.AppSettings["SqlUserID"],
+                ConfigurationManager.AppSettings["SqlPassword"],
+                ConfigurationManager.AppSettings["SqlInitialCatalog"],
+                ConfigurationManager.AppSettings["SqlDataSource"]);
             sqlDb.Initialize().Wait();
 
             var ethereumAccount = new EthereumAccount(sqlDb, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
@@ -47,10 +50,19 @@ namespace CoinsReceiver
             var signCertPassword = ConfigurationManager.AppSettings["SignCertPassword"];
             var verifyCertPassword = ConfigurationManager.AppSettings["VerifyCertPassword"];
 
-            var secretsMgmnt = new KeyVaultCryptoActions(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, encryptionCertPassword, decryptionCertPassword, signCertPassword, verifyCertPassword, kv, kv);
+            var secretsMgmnt =
+                new KeyVaultCryptoActions(
+                    new CertificateInfo(encryptionKeyName, encryptionCertPassword),
+                    new CertificateInfo(decryptionKeyName, decryptionCertPassword),
+                    new CertificateInfo(signKeyName, signCertPassword),
+                    new CertificateInfo(verifyKeyName, verifyCertPassword),
+                    kv,
+                    kv);
+
             secretsMgmnt.Initialize().Wait();
             //var securedComm = new RabbitMQBusImpl(ConfigurationManager.AppSettings["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");
-            var queueClient = new CloudQueueClientWrapper(ConfigurationManager.AppSettings["AzureStorageConnectionString"]);
+            var queueClient =
+                new CloudQueueClientWrapper(ConfigurationManager.AppSettings["AzureStorageConnectionString"]);
             var securedComm = new AzureQueue("notifications", queueClient, secretsMgmnt, true);
             securedComm.Initialize().Wait();
 

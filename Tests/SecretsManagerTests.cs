@@ -1,6 +1,7 @@
 using Wallet.Communication;
 using Wallet.Cryptography;
 using Xunit;
+using static Wallet.Cryptography.KeyVaultCryptoActions;
 
 namespace UnitTests
 {
@@ -15,7 +16,13 @@ namespace UnitTests
         public void Sanity_VerifyCanBeCreated()
         {
             var kvInfo = new DatabaseMock("http://dummyKvUri");
-            var secretsMgmnt = new KeyVaultCryptoActions(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, string.Empty, string.Empty, string.Empty, string.Empty, kvInfo, kvInfo);
+            var secretsMgmnt = new KeyVaultCryptoActions(
+                new CertificateInfo(c_encKeyName, string.Empty),
+                new CertificateInfo(c_decKeyName, string.Empty),
+                new CertificateInfo(c_signKeyName, string.Empty),
+                new CertificateInfo(c_verifyKeyName, string.Empty),
+                kvInfo,
+                kvInfo);
             secretsMgmnt.Initialize().Wait();
         }
 
@@ -25,7 +32,13 @@ namespace UnitTests
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
             var kvInfo = new DatabaseMock(kvUri);
-            var secretsMgmnt = new KeyVaultCryptoActions(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, string.Empty, string.Empty, string.Empty, string.Empty, kvInfo, kvInfo);
+            var secretsMgmnt = new KeyVaultCryptoActions(
+                new CertificateInfo(c_encKeyName, string.Empty),
+                new CertificateInfo(c_decKeyName, string.Empty),
+                new CertificateInfo(c_signKeyName, string.Empty),
+                new CertificateInfo(c_verifyKeyName, string.Empty),
+                kvInfo,
+                kvInfo);
             await secretsMgmnt.Initialize();
 
             var encryptedData = secretsMgmnt.Encrypt(Utils.ToByteArray(rawData));
@@ -40,7 +53,13 @@ namespace UnitTests
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
             var kvInfo = new DatabaseMock(kvUri);
-            var secretsMgmnt = new KeyVaultCryptoActions(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, string.Empty, string.Empty, string.Empty, string.Empty, kvInfo, kvInfo);
+            var secretsMgmnt = new KeyVaultCryptoActions(
+                new CertificateInfo(c_encKeyName, string.Empty),
+                new CertificateInfo(c_decKeyName, string.Empty),
+                new CertificateInfo(c_signKeyName, string.Empty),
+                new CertificateInfo(c_verifyKeyName, string.Empty),
+                kvInfo,
+                kvInfo);
             await secretsMgmnt.Initialize();
 
             // Encrypt
@@ -61,7 +80,13 @@ namespace UnitTests
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
             var kvInfo = new DatabaseMock(kvUri);
-            var secretsMgmnt = new KeyVaultCryptoActions(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, string.Empty, string.Empty, string.Empty, string.Empty, kvInfo, kvInfo);
+            var secretsMgmnt = new KeyVaultCryptoActions(
+                new CertificateInfo(c_encKeyName, string.Empty),
+                new CertificateInfo(c_decKeyName, string.Empty),
+                new CertificateInfo(c_signKeyName, string.Empty),
+                new CertificateInfo(c_verifyKeyName, string.Empty),
+                kvInfo,
+                kvInfo);
             await secretsMgmnt.Initialize();
 
             // Sign the data
@@ -76,7 +101,13 @@ namespace UnitTests
             var kvUri = "http://dummyKvUri";
             var rawData = "Some data !!!";
             var kvInfo = new DatabaseMock(kvUri);
-            var secretsMgmnt = new KeyVaultCryptoActions(c_encKeyName, c_decKeyName, c_signKeyName, c_verifyKeyName, string.Empty, string.Empty, string.Empty, string.Empty, kvInfo, kvInfo);
+            var secretsMgmnt = new KeyVaultCryptoActions(
+                new CertificateInfo(c_encKeyName, string.Empty),
+                new CertificateInfo(c_decKeyName, string.Empty),
+                new CertificateInfo(c_signKeyName, string.Empty),
+                new CertificateInfo(c_verifyKeyName, string.Empty),
+                kvInfo,
+                kvInfo);
             await secretsMgmnt.Initialize();
 
             // Sign the data

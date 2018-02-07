@@ -5,6 +5,7 @@ using Wallet.Blockchain;
 using Wallet.Communication;
 using Wallet.Communication.AzureQueueDependencies;
 using Wallet.Cryptography;
+using static Wallet.Cryptography.KeyVaultCryptoActions;
 
 namespace CoinsSender
 {
@@ -116,12 +117,21 @@ namespace CoinsSender
             var verifyCertPassword = ConfigurationManager.AppSettings["VerifyCertPassword"];
 
             var kv = new KeyVault(ConfigurationManager.AppSettings["AzureKeyVaultUri"],
-                ConfigurationManager.AppSettings["applicationId"], ConfigurationManager.AppSettings["applicationSecret"]);
-            var secretsMgmnt = new KeyVaultCryptoActions(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, encryptionCertPassword, decryptionCertPassword, signCertPassword, verifyCertPassword, kv, kv);
+                ConfigurationManager.AppSettings["applicationId"],
+                ConfigurationManager.AppSettings["applicationSecret"]);
+            var secretsMgmnt =
+                new KeyVaultCryptoActions(
+                    new CertificateInfo(encryptionKeyName, encryptionCertPassword),
+                    new CertificateInfo(decryptionKeyName, decryptionCertPassword),
+                    new CertificateInfo(signKeyName, signCertPassword),
+                    new CertificateInfo(verifyKeyName, verifyCertPassword),
+                    kv,
+                    kv);
             secretsMgmnt.Initialize().Wait();
             //var securedComm = new RabbitMQBusImpl(ConfigurationManager.AppSettings["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");
 
-            var queueClient = new CloudQueueClientWrapper(ConfigurationManager.AppSettings["AzureStorageConnectionString"]);
+            var queueClient =
+                new CloudQueueClientWrapper(ConfigurationManager.AppSettings["AzureStorageConnectionString"]);
             var securedComm = new AzureQueue("transactions", queueClient, secretsMgmnt, true);
             securedComm.Initialize().Wait();
 
