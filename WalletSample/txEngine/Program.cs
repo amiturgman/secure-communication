@@ -31,7 +31,12 @@ namespace TransactionEngine
             var signKeyName = ConfigurationManager.AppSettings["SignKeyName"];
             var verifyKeyName = ConfigurationManager.AppSettings["VerifyKeyName"];
 
-            var secretsMgmnt = new KeyVaultCryptoActions(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, kv, kv);
+            var encryptionCertPassword = ConfigurationManager.AppSettings["EncryptionCertPassword"];
+            var decryptionCertPassword = ConfigurationManager.AppSettings["DecryptionCertPassword"];
+            var signCertPassword = ConfigurationManager.AppSettings["SignCertPassword"];
+            var verifyCertPassword = ConfigurationManager.AppSettings["VerifyCertPassword"];
+
+            var secretsMgmnt = new KeyVaultCryptoActions(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, encryptionCertPassword, decryptionCertPassword, signCertPassword, verifyCertPassword, kv, kv);
             secretsMgmnt.Initialize().Wait();
 
             //var securedComm = new RabbitMQBusImpl(ConfigurationManager.AppSettings["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");

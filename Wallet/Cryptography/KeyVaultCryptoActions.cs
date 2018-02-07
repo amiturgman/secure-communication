@@ -22,6 +22,11 @@ namespace Wallet.Cryptography
         private readonly string m_signKeyName;
         private readonly string m_verifyKeyName;
 
+        private readonly string m_encryptionCertPassword;
+        private readonly string m_decryptionCertPassword;
+        private readonly string m_signCertPassword;
+        private readonly string m_verifyCertPassword;
+
         private CertificatesCryptoActions _mCryptoActionsHelper;
         private bool m_isInit;
 
@@ -42,7 +47,11 @@ namespace Wallet.Cryptography
             string encryptionKeyName,
             string decryptionKeyName, 
             string signKeyName, 
-            string verifyKeyName, 
+            string verifyKeyName,
+            string encryptionCertPassword,
+            string decryptionCertPassword,
+            string signCertPassword,
+            string verifyCertPassword,
             ISecretsStore privateKv, 
             ISecretsStore publicKv)
         {
@@ -53,6 +62,10 @@ namespace Wallet.Cryptography
             m_encryptionKeyName = encryptionKeyName;
             m_signKeyName = signKeyName;
             m_verifyKeyName = verifyKeyName;
+            m_decryptionCertPassword = decryptionCertPassword;
+            m_encryptionCertPassword = encryptionCertPassword;
+            m_signCertPassword = signCertPassword;
+            m_verifyCertPassword = verifyCertPassword;
 
             m_privateKeyVault = privateKv;
             m_publicKeyVault = publicKv;
@@ -74,10 +87,10 @@ namespace Wallet.Cryptography
             await Task.WhenAll(tasks);
 
             // when using 'Result' we know that the task is actually done already
-            var encryptionCert = SecretToCertificate(encryptSecretTask.Result);
-            var decryptionCert = SecretToCertificate(decryptSecretTask.Result);
-            var signCert = SecretToCertificate(signSecretTask.Result);
-            var verifyCert = SecretToCertificate(verifySecretTask.Result);
+            var encryptionCert = SecretToCertificate(encryptSecretTask.Result, m_encryptionCertPassword);
+            var decryptionCert = SecretToCertificate(decryptSecretTask.Result, m_decryptionCertPassword);
+            var signCert = SecretToCertificate(signSecretTask.Result, m_signCertPassword);
+            var verifyCert = SecretToCertificate(verifySecretTask.Result, m_verifyCertPassword);
 
             // Now, we have an 'EncryptionHelper', which can help us encrypt, decrypt, sign and verify using
             // the pre-fetched certificates
@@ -166,14 +179,14 @@ namespace Wallet.Cryptography
         /// </summary>
         /// <returns>The certificate object</returns>
         /// <param name="secret">Base64 string representation of a certificate</param>
-        private static X509Certificate2 SecretToCertificate(string secret)
+        private static X509Certificate2 SecretToCertificate(string secret, string certPassword)
         {
             if (string.IsNullOrEmpty(secret))
             {
                 throw new ArgumentException("secret must be supplied");
             }
 
-            return new X509Certificate2(Base64.Decode(secret));
+            return new X509Certificate2(Base64.Decode(secret), certPassword, X509KeyStorageFlags.PersistKeySet);
         }
 
         /// <summary>

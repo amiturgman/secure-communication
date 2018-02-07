@@ -39,7 +39,12 @@ namespace Performance
                 var signKeyName = Configuration["SignKeyName"];
                 var verifyKeyName = Configuration["VerifyKeyName"];
 
-                var secretsMgmnt = new KeyVaultCryptoActions(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, KV, KV);
+                var encryptionCertPassword = Configuration["EncryptionCertPassword"];
+                var decryptionCertPassword = Configuration["DecryptionCertPassword"];
+                var signCertPassword = Configuration["SignCertPassword"];
+                var verifyCertPassword = Configuration["VerifyCertPassword"];
+
+                var secretsMgmnt = new KeyVaultCryptoActions(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, encryptionCertPassword, decryptionCertPassword, signCertPassword, verifyCertPassword, KV, KV);
                 secretsMgmnt.Initialize().Wait();
                 //var securedComm = new RabbitMQBusImpl(config["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");
                 var queueClient = new CloudQueueClientWrapper(Configuration["AzureStorageConnectionString"]);
