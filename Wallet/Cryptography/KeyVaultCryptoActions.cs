@@ -12,15 +12,27 @@ namespace Wallet.Cryptography
     /// </summary>
     public class KeyVaultCryptoActions : ICryptoActions
     {
+        public class CertificateInfo
+        {
+            public CertificateInfo(string name, string password)
+            {
+                Name = name;
+                Password = password;
+            }
+
+            public string Name { get; private set; }
+            public string Password { get; private set; }
+        }
+
         #region private members
 
         private readonly ISecretsStore m_privateKeyVault;
         private readonly ISecretsStore m_publicKeyVault;
 
-        private readonly string m_decryptionKeyName;
-        private readonly string m_encryptionKeyName;
-        private readonly string m_signKeyName;
-        private readonly string m_verifyKeyName;
+        private readonly CertificateInfo m_encryptionCertInfo;
+        private readonly CertificateInfo m_decryptionCertInfo;
+        private readonly CertificateInfo m_signCertInfo;
+        private readonly CertificateInfo m_verifyCertInfo;
 
         private CertificatesCryptoActions _mCryptoActionsHelper;
         private bool m_isInit;
@@ -32,27 +44,27 @@ namespace Wallet.Cryptography
         /// <summary>
         /// Initializes a new instance of the <see cref="T:SecuredCommunication.KeyVaultSecretManager"/> class.
         /// </summary>
-        /// <param name="encryptionKeyName">Encryption key name.</param>
-        /// <param name="decryptionKeyName">Decryption key name.</param>
-        /// <param name="signKeyName">Sign key name.</param>
-        /// <param name="verifyKeyName">Verify key name.</param>
+        /// <param name="encryptionCertInfo">needed info for this certificate import process</param>
+        /// <param name="decryptionCertInfo">needed info for this certificate import process</param>
+        /// <param name="signCertInfo">needed info for this certificate import process</param>
+        /// <param name="verifyCertInfo">needed info for this certificate import process</param>
         /// <param name="privateKv">A KV with private keys. Will be used for decryption and signing</param>
         /// <param name="publicKv">A KV just with public keys. Will be used for encryption and verifying</param>
         public KeyVaultCryptoActions(
-            string encryptionKeyName,
-            string decryptionKeyName, 
-            string signKeyName, 
-            string verifyKeyName, 
-            ISecretsStore privateKv, 
+            CertificateInfo encryptionCertInfo,
+            CertificateInfo decryptionCertInfo,
+            CertificateInfo signCertInfo,
+            CertificateInfo verifyCertInfo,
+            ISecretsStore privateKv,
             ISecretsStore publicKv)
         {
             // marked as false as we still need to initialize the EncryptionHelper later
             m_isInit = false;
 
-            m_decryptionKeyName = decryptionKeyName;
-            m_encryptionKeyName = encryptionKeyName;
-            m_signKeyName = signKeyName;
-            m_verifyKeyName = verifyKeyName;
+            m_encryptionCertInfo = encryptionCertInfo;
+            m_decryptionCertInfo = decryptionCertInfo;
+            m_signCertInfo = signCertInfo;
+            m_verifyCertInfo = verifyCertInfo;
 
             m_privateKeyVault = privateKv;
             m_publicKeyVault = publicKv;
@@ -61,23 +73,23 @@ namespace Wallet.Cryptography
         /// <summary>
         /// Initialize the <see cref="CertificatesCryptoActions"/> object with all the certificates taken from the keyvaults
         /// </summary>
-        public async Task Initialize() {
-
+        public async Task Initialize()
+        {
             // TODO: handle partial assignment of values
-            var encryptSecretTask = m_publicKeyVault.GetSecretAsync(m_encryptionKeyName);
-            var decryptSecretTask = m_privateKeyVault.GetSecretAsync(m_decryptionKeyName);
-            var signSecretTask = m_publicKeyVault.GetSecretAsync(m_signKeyName);
-            var verifySecretTask = m_publicKeyVault.GetSecretAsync(m_verifyKeyName);
+            var encryptSecretTask = m_publicKeyVault.GetSecretAsync(m_encryptionCertInfo.Name);
+            var decryptSecretTask = m_privateKeyVault.GetSecretAsync(m_decryptionCertInfo.Name);
+            var signSecretTask = m_publicKeyVault.GetSecretAsync(m_signCertInfo.Name);
+            var verifySecretTask = m_publicKeyVault.GetSecretAsync(m_verifyCertInfo.Name);
 
             // wait on all of the tasks concurrently
-            var tasks = new Task[] { encryptSecretTask, decryptSecretTask, signSecretTask, verifySecretTask };
+            var tasks = new Task[] {encryptSecretTask, decryptSecretTask, signSecretTask, verifySecretTask};
             await Task.WhenAll(tasks);
 
             // when using 'Result' we know that the task is actually done already
-            var encryptionCert = SecretToCertificate(encryptSecretTask.Result);
-            var decryptionCert = SecretToCertificate(decryptSecretTask.Result);
-            var signCert = SecretToCertificate(signSecretTask.Result);
-            var verifyCert = SecretToCertificate(verifySecretTask.Result);
+            var encryptionCert = SecretToCertificate(encryptSecretTask.Result, m_encryptionCertInfo.Password);
+            var decryptionCert = SecretToCertificate(decryptSecretTask.Result, m_decryptionCertInfo.Password);
+            var signCert = SecretToCertificate(signSecretTask.Result, m_signCertInfo.Password);
+            var verifyCert = SecretToCertificate(verifySecretTask.Result, m_verifyCertInfo.Password);
 
             // Now, we have an 'EncryptionHelper', which can help us encrypt, decrypt, sign and verify using
             // the pre-fetched certificates
@@ -148,6 +160,7 @@ namespace Wallet.Cryptography
             {
                 throw new ArgumentNullException(nameof(data));
             }
+
             if (signature == null)
             {
                 throw new ArgumentNullException(nameof(signature));
@@ -166,14 +179,14 @@ namespace Wallet.Cryptography
         /// </summary>
         /// <returns>The certificate object</returns>
         /// <param name="secret">Base64 string representation of a certificate</param>
-        private static X509Certificate2 SecretToCertificate(string secret)
+        private static X509Certificate2 SecretToCertificate(string secret, string certPassword)
         {
             if (string.IsNullOrEmpty(secret))
             {
                 throw new ArgumentException("secret must be supplied");
             }
 
-            return new X509Certificate2(Base64.Decode(secret));
+            return new X509Certificate2(Base64.Decode(secret), certPassword, X509KeyStorageFlags.PersistKeySet);
         }
 
         /// <summary>

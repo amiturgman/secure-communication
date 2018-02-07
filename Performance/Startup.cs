@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Wallet.Communication;
 using Wallet.Communication.AzureQueueDependencies;
 using Wallet.Cryptography;
+using static Wallet.Cryptography.KeyVaultCryptoActions;
 
 namespace Performance
 {
@@ -17,7 +18,6 @@ namespace Performance
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            
         }
 
         public IConfiguration Configuration { get; }
@@ -39,7 +39,18 @@ namespace Performance
                 var signKeyName = Configuration["SignKeyName"];
                 var verifyKeyName = Configuration["VerifyKeyName"];
 
-                var secretsMgmnt = new KeyVaultCryptoActions(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, KV, KV);
+                var encryptionCertPassword = Configuration["EncryptionCertPassword"];
+                var decryptionCertPassword = Configuration["DecryptionCertPassword"];
+                var signCertPassword = Configuration["SignCertPassword"];
+                var verifyCertPassword = Configuration["VerifyCertPassword"];
+
+                var secretsMgmnt = new KeyVaultCryptoActions(
+                    new CertificateInfo(encryptionKeyName, encryptionCertPassword),
+                    new CertificateInfo(decryptionKeyName, decryptionCertPassword),
+                    new CertificateInfo(signKeyName, signCertPassword),
+                    new CertificateInfo(verifyKeyName, verifyCertPassword),
+                    KV,
+                    KV);
                 secretsMgmnt.Initialize().Wait();
                 //var securedComm = new RabbitMQBusImpl(config["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");
                 var queueClient = new CloudQueueClientWrapper(Configuration["AzureStorageConnectionString"]);

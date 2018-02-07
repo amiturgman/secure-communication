@@ -7,6 +7,7 @@ using UnitTests.Mocks;
 using Xunit;
 using Wallet.Communication;
 using Wallet.Cryptography;
+using static Wallet.Cryptography.KeyVaultCryptoActions;
 
 namespace UnitTests
 {
@@ -34,7 +35,13 @@ namespace UnitTests
             // Init
             var queueMock = new CloudQueueClientWrapperMock();
             var keyVaultMock = new DatabaseMock("url");
-            var encryptionManager = new KeyVaultCryptoActions("emc", "emc", "emc", "emc", keyVaultMock, keyVaultMock);
+            var encryptionManager = new KeyVaultCryptoActions(
+                new CertificateInfo("emc", string.Empty),
+                new CertificateInfo("emc", string.Empty),
+                new CertificateInfo("emc", string.Empty),
+                new CertificateInfo("emc", string.Empty),
+                keyVaultMock,
+                keyVaultMock);
             await encryptionManager.Initialize();
 
             var queueName = "queueName";
@@ -61,7 +68,13 @@ namespace UnitTests
             // Init
             var queueMock = new CloudQueueClientWrapperMock();
             var keyVaultMock = new DatabaseMock("url");
-            var encryptionManager = new KeyVaultCryptoActions("emc", "emc", "emc", "emc", keyVaultMock, keyVaultMock);
+            var encryptionManager = new KeyVaultCryptoActions(
+                new CertificateInfo("emc", string.Empty),
+                new CertificateInfo("emc", string.Empty),
+                new CertificateInfo("emc", string.Empty),
+                new CertificateInfo("emc", string.Empty),
+                keyVaultMock,
+                keyVaultMock);
             await encryptionManager.Initialize();
 
             var queueName = "queueName";
@@ -73,11 +86,10 @@ namespace UnitTests
             await azureQueue.EnqueueAsync(Utils.ToByteArray(msg));
 
             var task = azureQueue.DequeueAsync(decrypted =>
-            {
-                // Verify that the decrypted message equals to the original
-                Assert.Equal(msg, Utils.FromByteArray<string>(decrypted));
-
-            },  (message) => { Console.WriteLine("Verification failure, doing nothing"); },
+                {
+                    // Verify that the decrypted message equals to the original
+                    Assert.Equal(msg, Utils.FromByteArray<string>(decrypted));
+                }, (message) => { Console.WriteLine("Verification failure, doing nothing"); },
                 TimeSpan.FromMilliseconds(1));
 
             Thread.Sleep(10000);

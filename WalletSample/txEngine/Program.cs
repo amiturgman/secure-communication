@@ -6,6 +6,7 @@ using Wallet.Blockchain;
 using Wallet.Communication;
 using Wallet.Communication.AzureQueueDependencies;
 using Wallet.Cryptography;
+using static Wallet.Cryptography.KeyVaultCryptoActions;
 
 namespace TransactionEngine
 {
@@ -24,18 +25,32 @@ namespace TransactionEngine
             var unitConverion = new Nethereum.Util.UnitConversion();
 
             var kv = new KeyVault(ConfigurationManager.AppSettings["AzureKeyVaultUri"],
-                ConfigurationManager.AppSettings["applicationId"], ConfigurationManager.AppSettings["applicationSecret"]);
+                ConfigurationManager.AppSettings["applicationId"],
+                ConfigurationManager.AppSettings["applicationSecret"]);
 
             var encryptionKeyName = ConfigurationManager.AppSettings["EncryptionKeyName"];
             var decryptionKeyName = ConfigurationManager.AppSettings["DecryptionKeyName"];
             var signKeyName = ConfigurationManager.AppSettings["SignKeyName"];
             var verifyKeyName = ConfigurationManager.AppSettings["VerifyKeyName"];
 
-            var secretsMgmnt = new KeyVaultCryptoActions(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, kv, kv);
+            var encryptionCertPassword = ConfigurationManager.AppSettings["EncryptionCertPassword"];
+            var decryptionCertPassword = ConfigurationManager.AppSettings["DecryptionCertPassword"];
+            var signCertPassword = ConfigurationManager.AppSettings["SignCertPassword"];
+            var verifyCertPassword = ConfigurationManager.AppSettings["VerifyCertPassword"];
+
+            var secretsMgmnt =
+                new KeyVaultCryptoActions(
+                    new CertificateInfo(encryptionKeyName, encryptionCertPassword),
+                    new CertificateInfo(decryptionKeyName, decryptionCertPassword),
+                    new CertificateInfo(signKeyName, signCertPassword),
+                    new CertificateInfo(verifyKeyName, verifyCertPassword),
+                    kv,
+                    kv);
             secretsMgmnt.Initialize().Wait();
 
             //var securedComm = new RabbitMQBusImpl(ConfigurationManager.AppSettings["rabbitMqUri"], secretsMgmnt, true, "securedCommExchange");
-            var queueClient = new CloudQueueClientWrapper(ConfigurationManager.AppSettings["AzureStorageConnectionString"]);
+            var queueClient =
+                new CloudQueueClientWrapper(ConfigurationManager.AppSettings["AzureStorageConnectionString"]);
 
             var securedCommForTransactions = new AzureQueue("transactions", queueClient, secretsMgmnt, true);
             var securedCommForNotifications = new AzureQueue("notifications", queueClient, secretsMgmnt, true);
@@ -43,8 +58,10 @@ namespace TransactionEngine
             var taskInitNotifications = securedCommForNotifications.Initialize();
             Task.WhenAll(taskInitTransactions, taskInitNotifications).Wait();
 
-            var sqlDb = new SqlConnector(ConfigurationManager.AppSettings["SqlUserID"], ConfigurationManager.AppSettings["SqlPassword"],
-                ConfigurationManager.AppSettings["SqlInitialCatalog"], ConfigurationManager.AppSettings["SqlDataSource"]);
+            var sqlDb = new SqlConnector(ConfigurationManager.AppSettings["SqlUserID"],
+                ConfigurationManager.AppSettings["SqlPassword"],
+                ConfigurationManager.AppSettings["SqlInitialCatalog"],
+                ConfigurationManager.AppSettings["SqlDataSource"]);
             sqlDb.Initialize().Wait();
             var ethereumNodeWrapper = new EthereumAccount(sqlDb, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
 
@@ -62,7 +79,8 @@ namespace TransactionEngine
 
                     try
                     {
-                        var transactionHash = ethereumNodeWrapper.SignTransactionAsync(senderName, reciverAddress, amount).Result;
+                        var transactionHash = ethereumNodeWrapper
+                            .SignTransactionAsync(senderName, reciverAddress, amount).Result;
                         var transactionResult = ethereumNodeWrapper.SendRawTransactionAsync(transactionHash).Result;
                     }
                     catch (Exception ex)
@@ -77,10 +95,7 @@ namespace TransactionEngine
                     // notify a user about his balance change
                     securedCommForNotifications.EnqueueAsync(Utils.ToByteArray(reciverAddress)).Wait();
                 },
-                (message) =>
-                {
-                    Console.WriteLine("Verification failure, doing nothing");
-                },
+                (message) => { Console.WriteLine("Verification failure, doing nothing"); },
                 TimeSpan.FromSeconds(3)).Wait();
         }
     }

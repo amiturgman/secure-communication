@@ -56,7 +56,7 @@ $flag = [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exp
 $collection = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2Collection
 $collection.Import($pfxFilePath, $plainpass, $flag)
 $pkcs12ContentType = [System.Security.Cryptography.X509Certificates.X509ContentType]::Pkcs12
-$clearBytes = $collection.Export($pkcs12ContentType)
+$clearBytes = $collection.Export($pkcs12ContentType, $plainpass)
 $fileContentEncoded = [System.Convert]::ToBase64String($clearBytes)
 $secret = ConvertTo-SecureString -String $fileContentEncoded -Force -AsPlainText
 $secretContentType = 'application/x-pkcs12'
