@@ -51,11 +51,10 @@ namespace Wallet.Communication
             ThrowIfNotInitialized();
 
             var messageInBytes = CreateMessage(msg, m_cryptoActions, m_isEncrypted);
-            var message = CloudQueueMessage.CreateCloudQueueMessageFromByteArray(messageInBytes);
 
             try
             {
-                await m_queue.AddMessageAsync(message);
+                await m_queue.AddMessageAsync(new CloudQueueMessage(messageInBytes));
             }
             catch (StorageException ex)
             {

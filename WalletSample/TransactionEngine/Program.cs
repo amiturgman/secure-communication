@@ -61,7 +61,9 @@ namespace TransactionEngine
             var sqlDb = new SqlConnector(ConfigurationManager.AppSettings["SqlUserID"],
                 ConfigurationManager.AppSettings["SqlPassword"],
                 ConfigurationManager.AppSettings["SqlInitialCatalog"],
-                ConfigurationManager.AppSettings["SqlDataSource"]);
+                ConfigurationManager.AppSettings["SqlDataSource"],
+                ConfigurationManager.AppSettings["applicationId"],
+                ConfigurationManager.AppSettings["applicationSecret"]);
             sqlDb.Initialize().Wait();
             var ethereumNodeWrapper = new EthereumAccount(sqlDb, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
 
@@ -72,7 +74,7 @@ namespace TransactionEngine
                     Console.WriteLine("Got work!");
 
                     var data = Utils.FromByteArray<string>(msg);
-                    var msgArray = data.Split(";");
+                    var msgArray = data.Split(';');
                     var amount = unitConverion.ToWei(msgArray[0]);
                     var senderName = msgArray[1];
                     var reciverAddress = msgArray[2];

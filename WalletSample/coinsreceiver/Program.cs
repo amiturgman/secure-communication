@@ -30,7 +30,9 @@ namespace CoinsReceiver
             var sqlDb = new SqlConnector(ConfigurationManager.AppSettings["SqlUserID"],
                 ConfigurationManager.AppSettings["SqlPassword"],
                 ConfigurationManager.AppSettings["SqlInitialCatalog"],
-                ConfigurationManager.AppSettings["SqlDataSource"]);
+                ConfigurationManager.AppSettings["SqlDataSource"],
+                ConfigurationManager.AppSettings["applicationId"],
+                ConfigurationManager.AppSettings["applicationSecret"]);
             sqlDb.Initialize().Wait();
 
             var ethereumAccount = new EthereumAccount(sqlDb, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
@@ -71,7 +73,7 @@ namespace CoinsReceiver
                 securedComm.DequeueAsync(
                     msg =>
                     {
-                        var data = Utils.FromByteArray<string>(msg);
+                       var data = Utils.FromByteArray<string>(msg);
                         if (data.Equals(reciverAddress, StringComparison.OrdinalIgnoreCase))
                         {
                             Console.WriteLine("Great, Balance change!");

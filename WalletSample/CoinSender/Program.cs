@@ -27,7 +27,9 @@ namespace CoinsSender
             var sqlDb = new SqlConnector(ConfigurationManager.AppSettings["SqlUserID"],
                 ConfigurationManager.AppSettings["SqlPassword"],
                 ConfigurationManager.AppSettings["SqlInitialCatalog"],
-                ConfigurationManager.AppSettings["SqlDataSource"]);
+                ConfigurationManager.AppSettings["SqlDataSource"],
+                ConfigurationManager.AppSettings["applicationId"],
+                ConfigurationManager.AppSettings["applicationSecret"]);
             sqlDb.Initialize().Wait();
 
             var ethereumAccount = new EthereumAccount(sqlDb, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
@@ -81,10 +83,10 @@ namespace CoinsSender
                 var senderAccount = ethereumAccount.GetPublicAddressAsync(c_senderId).Result;
                 var reciverAccount = ethereumAccount.GetPublicAddressAsync(c_ReciverId).Result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO: Add Check for key not found exception 
-                ethereumAccount.CreateAccountAsync(c_senderId).Wait();
+                ethereumAccount.CreateAccountAsync(c_senderId, "0x6d1ae68da64400f4b29baf4bde6fc9796e71480e8f1a502ad6fc2dae92dce268").Wait();
                 ethereumAccount.CreateAccountAsync(c_ReciverId).Wait();
 
                 var senderPublicAddress = ethereumAccount.GetPublicAddressAsync(c_senderId);

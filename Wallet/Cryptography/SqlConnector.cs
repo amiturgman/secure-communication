@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Microsoft.SqlServer.Management.AlwaysEncrypted.AzureKeyVaultProvider;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
-using Org.BouncyCastle.Security;
 using Wallet.Communication;
 
 namespace Wallet.Cryptography
@@ -12,6 +14,7 @@ namespace Wallet.Cryptography
     {
         private SqlConnectionStringBuilder m_sqlConnectionStringBuilder;
         private bool m_isInitialized;
+        private static ClientCredential _clientCredential;
 
         // SQL queries
         private const string CreateAccountsTableQuery = @"
@@ -39,9 +42,12 @@ namespace Wallet.Cryptography
         private const string GetPrivateKeyByIdSPName = "Get_PrivateKey";
         private const string InsertIntoAccountsTableSPName = "Set_PrivateKey";
 
-        public SqlConnector(string userId, string password, string initialCatalog, string dataSource)
+        public SqlConnector(string userId, string password, string initialCatalog, string dataSource, string clientId, string clientSecret)
         {
             m_isInitialized = false;
+
+
+            _clientCredential = new ClientCredential(clientId, clientSecret);
 
             m_sqlConnectionStringBuilder = new SqlConnectionStringBuilder
             {
@@ -54,7 +60,8 @@ namespace Wallet.Cryptography
                 TrustServerCertificate = true,
                 ConnectTimeout = 60,
                 ApplicationIntent = ApplicationIntent.ReadWrite,
-                MultiSubnetFailover = false
+                MultiSubnetFailover = false,
+                ColumnEncryptionSetting = SqlConnectionColumnEncryptionSetting.Enabled
             };
         }
 
@@ -64,6 +71,14 @@ namespace Wallet.Cryptography
             await ExecuteNonQueryAsync(CreateAccountsTableQuery);
             await ExecuteNonQueryAsync(CreateGetPrivateKeyStoreProcedure);
             await ExecuteNonQueryAsync(CreateSetPrivateKeyStoreProcedure);
+
+            var azureKeyVaultProvider = new SqlColumnEncryptionAzureKeyVaultProvider(GetToken);
+            var providers = new Dictionary<string, SqlColumnEncryptionKeyStoreProvider>
+            {
+                { SqlColumnEncryptionAzureKeyVaultProvider.ProviderName, azureKeyVaultProvider }
+            };
+
+            SqlConnection.RegisterColumnEncryptionKeyStoreProviders(providers);
             m_isInitialized = true;
         }
 
@@ -166,6 +181,17 @@ namespace Wallet.Cryptography
             {
                 throw new SecureCommunicationException("Object was not initialized");
             }
+        }
+
+        private async static Task<string> GetToken(string authority, string resource, string scope)
+        {
+            var authContext = new AuthenticationContext(authority);
+            AuthenticationResult result = await authContext.AcquireTokenAsync(resource, _clientCredential);
+
+            if (result == null)
+                throw new InvalidOperationException("Failed to obtain the access token");
+
+            return result.AccessToken;
         }
     }
 
