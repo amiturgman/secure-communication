@@ -3,14 +3,13 @@ using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
-using Org.BouncyCastle.Security;
 using Wallet.Communication;
 
 namespace Wallet.Cryptography
 {
     public class SqlConnector : ISecretsStore
     {
-        private SqlConnectionStringBuilder m_sqlConnectionStringBuilder;
+        private readonly SqlConnectionStringBuilder m_sqlConnectionStringBuilder;
         private bool m_isInitialized;
 
         // SQL queries

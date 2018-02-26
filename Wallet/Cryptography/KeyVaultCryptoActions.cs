@@ -179,6 +179,7 @@ namespace Wallet.Cryptography
         /// </summary>
         /// <returns>The certificate object</returns>
         /// <param name="secret">Base64 string representation of a certificate</param>
+        /// <param name="certPassword">The password which protects the given certificate</param>
         private static X509Certificate2 SecretToCertificate(string secret, string certPassword)
         {
             if (string.IsNullOrEmpty(secret))

@@ -16,7 +16,7 @@ namespace Wallet.Communication
         private const int MessagePeekTimeInSeconds = 60;
 
         private ICloudQueueWrapper m_queue;
-        private ICloudQueueClientWrapper m_queueClient;
+        private readonly ICloudQueueClientWrapper m_queueClient;
         private bool m_isActive;
         private bool m_isInitialized;
 
