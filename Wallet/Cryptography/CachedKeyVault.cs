@@ -82,7 +82,7 @@ namespace Wallet.Cryptography
             // key not present in redis
             if (!rawValue.IsNullOrEmpty)
             {
-                return Utils.FromByteArray<string>(m_cryptoActions.Decrypt(Utils.ToByteArray(rawValue)));
+                return Utils.FromByteArray<string>(m_cryptoActions.Decrypt(rawValue));
             }
 
             // Get from KV (returns in unencrypted format)
