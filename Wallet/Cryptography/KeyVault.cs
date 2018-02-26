@@ -13,7 +13,7 @@ namespace Wallet.Cryptography
 
         #region private members
 
-        private KeyVaultClient m_kvClient;
+        private readonly KeyVaultClient m_kvClient;
         private readonly string m_applicationId;
         private readonly string m_applicationSecret;
 

@@ -12,7 +12,7 @@ namespace Wallet.Cryptography
 {
     public class SqlConnector : ISecretsStore
     {
-        private SqlConnectionStringBuilder m_sqlConnectionStringBuilder;
+        private readonly SqlConnectionStringBuilder m_sqlConnectionStringBuilder;
         private bool m_isInitialized;
         private static ClientCredential _clientCredential;
 
