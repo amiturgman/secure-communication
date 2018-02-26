@@ -81,7 +81,7 @@ namespace CoinsSender
                 var senderAccount = ethereumAccount.GetPublicAddressAsync(c_senderId).Result;
                 var reciverAccount = ethereumAccount.GetPublicAddressAsync(c_ReciverId).Result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO: Add Check for key not found exception 
                 ethereumAccount.CreateAccountAsync(c_senderId).Wait();

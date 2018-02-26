@@ -16,9 +16,9 @@ namespace Wallet.Cryptography
         private bool m_isInitialized;
         private IDatabase m_db;
         private ConnectionMultiplexer m_redis;
-        private string m_connectionString;
-        private ICryptoActions m_cryptoActions;
-        private ISecretsStore m_keyVault;
+        private readonly string m_connectionString;
+        private readonly ICryptoActions m_cryptoActions;
+        private readonly ISecretsStore m_keyVault;
 
         #endregion
         
@@ -80,28 +80,28 @@ namespace Wallet.Cryptography
             var rawValue = await m_db.StringGetAsync(identifier);
 
             // key not present in redis
-            if (rawValue.IsNullOrEmpty)
+            if (!rawValue.IsNullOrEmpty)
             {
-                // Get from KV (returns in unencrypted format)
-                var secret = "";
-                try
-                {
-                    secret = await m_keyVault.GetSecretAsync(identifier);
-                }
-                catch (KeyVaultErrorException exc)
-                {
-                    throw new SecureCommunicationException($"key: '{identifier}' was not found in KV", exc);
-                }
-
-                // Store in Redis (in Encrypted way)
-                await m_db.StringSetAsync(
-                    identifier, 
-                    m_cryptoActions.Encrypt(Utils.ToByteArray(secret)));
-
-                return secret;
+                return Utils.FromByteArray<string>(m_cryptoActions.Decrypt(Utils.ToByteArray(rawValue)));
             }
 
-            return Utils.FromByteArray<string>(m_cryptoActions.Decrypt(Utils.ToByteArray(rawValue)));
+            // Get from KV (returns in unencrypted format)
+            var secret = "";
+            try
+            {
+                secret = await m_keyVault.GetSecretAsync(identifier);
+            }
+            catch (KeyVaultErrorException exc)
+            {
+                throw new SecureCommunicationException($"key: '{identifier}' was not found in KV", exc);
+            }
+
+            // Store in Redis (in Encrypted way)
+            await m_db.StringSetAsync(
+                identifier, 
+                m_cryptoActions.Encrypt(Utils.ToByteArray(secret)));
+
+            return secret;
         }
 
         #region privateMethods

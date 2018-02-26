@@ -14,14 +14,14 @@ namespace Wallet.Blockchain
     public class EthereumAccount : IBlockchainAccount
     {
         private readonly Web3 m_web3;
-        private ISecretsStore m_db;
+        private readonly ISecretsStore m_db;
 
         #region Public Methods
 
         /// <summary>
         /// Ctor for EthereumAccount class
         /// </summary>
-        /// <param name="keyVault">The Azure KeyVault Url where the clients' private keys are saved.</param>
+        /// <param name="database">The database which holds the clients' private keys.</param>
         /// <param name="nodeUrl">The Ethereum node Url. If it's empty, it will work with the local Ethereum testnet.</param>
         public EthereumAccount(ISecretsStore database, string nodeUrl = "") 
         {
