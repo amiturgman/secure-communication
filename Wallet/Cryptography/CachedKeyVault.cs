@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Wallet.Communication;
-using StackExchange.Redis;
 using Microsoft.Azure.KeyVault.Models;
+using StackExchange.Redis;
+using Wallet.Communication;
 
 namespace Wallet.Cryptography
 {
@@ -21,13 +21,13 @@ namespace Wallet.Cryptography
         private readonly ISecretsStore m_keyVault;
 
         #endregion
-        
+
         public CachedKeyVault(string connectionString, ISecretsStore keyVault, ICryptoActions cryptoActions)
         {
             m_isInitialized = false;
             m_connectionString = connectionString;
 
-            m_keyVault = keyVault ?? throw new ArgumentNullException(nameof(keyVault)); ;
+            m_keyVault = keyVault ?? throw new ArgumentNullException(nameof(keyVault));
             m_cryptoActions = cryptoActions ?? throw new ArgumentNullException(nameof(cryptoActions));
         }
 
@@ -38,7 +38,7 @@ namespace Wallet.Cryptography
                 throw new SecureCommunicationException("Object was already initialized");
             }
 
-            ConfigurationOptions options = ConfigurationOptions.Parse(m_connectionString);
+            var options = ConfigurationOptions.Parse(m_connectionString);
             m_redis = ConnectionMultiplexer.Connect(options);
             m_db = m_redis.GetDatabase();
 
@@ -56,7 +56,7 @@ namespace Wallet.Cryptography
 
             // The encryptedSecret will be saved ENCRYPTED.
             var encryptedSecret = Utils.FromByteArray<string>(m_cryptoActions.Encrypt(Utils.ToByteArray(privateKey)));
-            
+
             // stored UNEncrypted in keyvault, as keyvault is already safe
             // If a previous encryptedSecret exists, it will be overwritten
             var kvTask = m_keyVault.SetSecretAsync(identifier, privateKey);
@@ -65,7 +65,7 @@ namespace Wallet.Cryptography
             // If a previous encryptedSecret exists, it will be overwritten
             var redisTask = m_db.StringSetAsync(identifier, encryptedSecret);
 
-            await Task.WhenAll(new Task[] { kvTask, redisTask });
+            await Task.WhenAll(kvTask, redisTask);
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Wallet.Cryptography
 
             var rawValue = await m_db.StringGetAsync(identifier);
 
-            // key not present in redis
+            // key present in redis
             if (!rawValue.IsNullOrEmpty)
             {
                 return Utils.FromByteArray<string>(m_cryptoActions.Decrypt(rawValue));
@@ -98,7 +98,7 @@ namespace Wallet.Cryptography
 
             // Store in Redis (in Encrypted way)
             await m_db.StringSetAsync(
-                identifier, 
+                identifier,
                 m_cryptoActions.Encrypt(Utils.ToByteArray(secret)));
 
             return secret;
@@ -113,6 +113,7 @@ namespace Wallet.Cryptography
                 throw new SecureCommunicationException("Object was not initialized");
             }
         }
+
         #endregion
     }
 }

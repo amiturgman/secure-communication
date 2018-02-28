@@ -17,9 +17,9 @@ namespace Wallet.Communication
         private IModel m_channel;
         private EventingBasicConsumer m_consumer;
         private bool m_isInitialized;
-        private string m_rabitMqUri;
+        private readonly string m_rabitMqUri;
         private IBasicProperties m_queueProperties;
-        private string m_queueName;
+        private readonly string m_queueName;
 
         #endregion
 
@@ -31,7 +31,9 @@ namespace Wallet.Communication
             string queueName) : base(cryptoActions)
         {
             // Sanity
-            if (string.IsNullOrEmpty(rabitMqUri) || string.IsNullOrEmpty(exchangeName) | string.IsNullOrEmpty(queueName)) {
+            if (string.IsNullOrEmpty(rabitMqUri) ||
+                string.IsNullOrEmpty(exchangeName) | string.IsNullOrEmpty(queueName))
+            {
                 throw new ArgumentException("RabbitMQ uri, exchange name and queue name must be supplied");
             }
 
@@ -43,12 +45,12 @@ namespace Wallet.Communication
 
         public void Initialize()
         {
-            ConnectionFactory factory = new ConnectionFactory
+            var factory = new ConnectionFactory
             {
                 Uri = new Uri(m_rabitMqUri)
             };
 
-            IConnection conn = factory.CreateConnection();
+            var conn = factory.CreateConnection();
             m_channel = conn.CreateModel();
             m_channel.ExchangeDeclare(m_exchangeName, ExchangeType.Direct);
 
@@ -65,7 +67,8 @@ namespace Wallet.Communication
         {
             ThrowIfNotInitialized();
 
-            if (callbackOnSuccess == null) {
+            if (callbackOnSuccess == null)
+            {
                 throw new ArgumentException("callback cannot be null");
             }
 
@@ -84,13 +87,14 @@ namespace Wallet.Communication
 
         public Task DequeueAsync(Action<byte[]> callbackOnSuccess, Action<Message> callbackOnFailure, TimeSpan waitTime)
         {
-            throw new SecureCommunicationException("This method signature is not supported for the rabbitMQ implementation");
+            throw new SecureCommunicationException(
+                "This method signature is not supported for the rabbitMQ implementation");
         }
 
         public Task EnqueueAsync(byte[] data)
         {
             ThrowIfNotInitialized();
-           
+
             var msgAsBytes = CreateMessage(data, m_cryptoActions, m_isEncrypted);
             m_channel.BasicPublish(
                 exchange: m_exchangeName,

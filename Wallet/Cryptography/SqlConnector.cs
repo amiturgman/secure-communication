@@ -99,7 +99,7 @@ namespace Wallet.Cryptography
                 try
                 {
                     connection.Open();
-                    using (SqlCommand command = new SqlCommand(InsertIntoAccountsTableSPName, connection))
+                    using (var command = new SqlCommand(InsertIntoAccountsTableSPName, connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@ID", identifier);
@@ -132,12 +132,12 @@ namespace Wallet.Cryptography
                 try
                 {
                     connection.Open();
-                    using (SqlCommand command = new SqlCommand(GetPrivateKeyByIdSPName, connection))
+                    using (var command = new SqlCommand(GetPrivateKeyByIdSPName, connection))
                     {
                         command.CommandType = CommandType.StoredProcedure;
                         command.Parameters.Add("@ID", SqlDbType.NVarChar).Value = identifier;
 
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
                             await reader.ReadAsync();
                             var result = reader.GetString(reader.GetOrdinal("PrivateKey"));
@@ -162,7 +162,7 @@ namespace Wallet.Cryptography
                 try
                 {
                     connection.Open();
-                    using (SqlCommand command = new SqlCommand(query, connection))
+                    using (var command = new SqlCommand(query, connection))
                     {
                         await command.ExecuteNonQueryAsync();
                     }

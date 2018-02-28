@@ -30,7 +30,7 @@ namespace Wallet.Cryptography
             Url = kvUrl;
             m_applicationId = applicationId;
             m_applicationSecret = applicationSecret;
-           
+
             m_kvClient = new KeyVaultClient(GetAccessTokenAsync, new HttpClient());
         }
 
@@ -71,12 +71,12 @@ namespace Wallet.Cryptography
             }
         }
 
-    #region Private Methods
+        #region Private Methods
 
         private async Task<string> GetAccessTokenAsync(
-          string authority,
-          string resource,
-          string scope)
+            string authority,
+            string resource,
+            string scope)
         {
             var clientCredential = new ClientCredential(m_applicationId, m_applicationSecret);
             var context = new AuthenticationContext(authority, TokenCache.DefaultShared);

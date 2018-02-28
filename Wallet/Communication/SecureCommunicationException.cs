@@ -23,7 +23,6 @@ namespace Wallet.Communication
         public SecureCommunicationException(SerializationInfo serializationInfo, StreamingContext streamingContext) :
             base(serializationInfo, streamingContext)
         {
-
         }
     }
 }

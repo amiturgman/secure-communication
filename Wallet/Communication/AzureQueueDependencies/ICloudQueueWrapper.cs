@@ -9,6 +9,7 @@ namespace Wallet.Communication.AzureQueueDependencies
     {
         Task AddMessageAsync(CloudQueueMessage message);
         Task CreateIfNotExistsAsync();
+
         Task<CloudQueueMessage> GetMessageAsync(TimeSpan? visibilityTimeout, QueueRequestOptions options,
             OperationContext operationContext);
 
@@ -30,7 +31,8 @@ namespace Wallet.Communication.AzureQueueDependencies
             await _cloudQueue.CreateIfNotExistsAsync();
         }
 
-        public async Task<CloudQueueMessage> GetMessageAsync(TimeSpan? visibilityTimeout, QueueRequestOptions options, OperationContext operationContext)
+        public async Task<CloudQueueMessage> GetMessageAsync(TimeSpan? visibilityTimeout, QueueRequestOptions options,
+            OperationContext operationContext)
         {
             return await _cloudQueue.GetMessageAsync(visibilityTimeout, options, operationContext);
         }

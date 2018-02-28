@@ -41,5 +41,4 @@ namespace Wallet.Communication.AzureQueueDependencies
             return new CloudQueueWrapper(cloudQueue);
         }
     }
-
 }
