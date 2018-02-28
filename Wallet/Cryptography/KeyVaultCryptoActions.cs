@@ -20,8 +20,8 @@ namespace Wallet.Cryptography
                 Password = password;
             }
 
-            public string Name { get; private set; }
-            public string Password { get; private set; }
+            public string Name { get; }
+            public string Password { get; }
         }
 
         #region private members

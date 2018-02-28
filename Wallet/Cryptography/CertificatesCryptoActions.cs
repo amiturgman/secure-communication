@@ -18,7 +18,8 @@ namespace Wallet.Cryptography
 
         #endregion
 
-        public CertificatesCryptoActions(X509Certificate2 encryptionCert, X509Certificate2 decryptionCert, X509Certificate2 signCert, X509Certificate2 verifyCert)
+        public CertificatesCryptoActions(X509Certificate2 encryptionCert, X509Certificate2 decryptionCert,
+            X509Certificate2 signCert, X509Certificate2 verifyCert)
         {
             m_signCert = signCert;
             m_verifyCert = verifyCert;
@@ -39,7 +40,7 @@ namespace Wallet.Cryptography
             {
                 // GetRSAPrivateKey returns an object with an independent lifetime, so it should be
                 // handled via a using statement.
-                using (RSA rsa = m_decryptionCert.GetRSAPrivateKey())
+                using (var rsa = m_decryptionCert.GetRSAPrivateKey())
                 {
                     return rsa.Decrypt(encryptedData, RSAEncryptionPadding.OaepSHA1);
                 }
@@ -62,7 +63,7 @@ namespace Wallet.Cryptography
             {
                 // GetRSAPublicKey returns an object with an independent lifetime, so it should be
                 // handled via a using statement.
-                using (RSA rsa = m_encryptionCert.GetRSAPublicKey())
+                using (var rsa = m_encryptionCert.GetRSAPublicKey())
                 {
                     // OAEP allows for multiple hashing algorithms, what was formerly just "OAEP" is
                     // now OAEP-SHA1.
@@ -86,7 +87,7 @@ namespace Wallet.Cryptography
             // Verify input
             if (data == null) throw new ArgumentNullException(nameof(data));
 
-            using (RSA rsa = m_signCert.GetRSAPrivateKey())
+            using (var rsa = m_signCert.GetRSAPrivateKey())
             {
                 return rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
             }
@@ -105,7 +106,7 @@ namespace Wallet.Cryptography
             if (signature == null) throw new ArgumentNullException(nameof(signature));
 
             // Verify data
-            using (RSA rsa = m_verifyCert.GetRSAPublicKey())
+            using (var rsa = m_verifyCert.GetRSAPublicKey())
             {
                 return rsa.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
             }

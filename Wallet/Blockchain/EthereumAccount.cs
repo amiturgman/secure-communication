@@ -2,9 +2,10 @@
 using System.Numerics;
 using System.Threading.Tasks;
 using Microsoft.Azure.KeyVault.Models;
+using Nethereum.Signer;
+using Nethereum.Util;
 using Nethereum.Web3;
 using Wallet.Cryptography;
-using EthECKey = Nethereum.Signer.EthECKey;
 
 namespace Wallet.Blockchain
 {
@@ -23,7 +24,7 @@ namespace Wallet.Blockchain
         /// </summary>
         /// <param name="database">The database which holds the clients' private keys.</param>
         /// <param name="nodeUrl">The Ethereum node Url. If it's empty, it will work with the local Ethereum testnet.</param>
-        public EthereumAccount(ISecretsStore database, string nodeUrl = "") 
+        public EthereumAccount(ISecretsStore database, string nodeUrl = "")
         {
             m_db = database;
             m_web3 = string.IsNullOrEmpty(nodeUrl) ? new Web3() : new Web3(nodeUrl);
@@ -63,13 +64,16 @@ namespace Wallet.Blockchain
         /// <param name="recieverAddress">The receiver public address</param>
         /// <param name="amountInWei">The amount to send in Wei (ethereum units)</param>
         /// <returns>The transaction hash</returns>
-        public async Task<string> SignTransactionAsync(string senderIdentifier, string recieverAddress, BigInteger amountInWei)
+        public async Task<string> SignTransactionAsync(string senderIdentifier, string recieverAddress,
+            BigInteger amountInWei)
         {
             var senderPrivateKey = await GetPrivateKeyAsync(senderIdentifier);
             var senderEthKey = new EthECKey(senderPrivateKey);
 
-            var txCount = await m_web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(senderEthKey.GetPublicAddress());
-            return Web3.OfflineTransactionSigner.SignTransaction(senderPrivateKey, recieverAddress, amountInWei, txCount.Value);
+            var txCount =
+                await m_web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(senderEthKey.GetPublicAddress());
+            return Web3.OfflineTransactionSigner.SignTransaction(senderPrivateKey, recieverAddress, amountInWei,
+                txCount.Value);
         }
 
         /// <summary>
@@ -89,12 +93,14 @@ namespace Wallet.Blockchain
         /// <returns>Returns the balance in ether.</returns>
         public async Task<decimal> GetCurrentBalance(string publicAddress)
         {
-            var unitConverion = new Nethereum.Util.UnitConversion();
+            var unitConverion = new UnitConversion();
             return unitConverion.FromWei(await m_web3.Eth.GetBalance.SendRequestAsync(publicAddress));
         }
+
         #endregion
 
         #region Private Methods
+
         /// <summary>
         /// Stores the account async.
         /// </summary>
@@ -123,6 +129,7 @@ namespace Wallet.Blockchain
         {
             return await m_db.GetSecretAsync(identifier);
         }
+
         #endregion
     }
 }

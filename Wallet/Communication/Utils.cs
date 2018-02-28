@@ -26,10 +26,10 @@ namespace Wallet.Communication
             }
 
             var ser = new DataContractSerializer(typeof(T));
-            using (MemoryStream ms = new MemoryStream(data))
+            using (var ms = new MemoryStream(data))
             {
-                object obj = ser.ReadObject(ms);
-                return (T)obj;
+                var obj = ser.ReadObject(ms);
+                return (T) obj;
             }
         }
     }

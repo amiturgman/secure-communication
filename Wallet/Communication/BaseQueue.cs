@@ -22,7 +22,8 @@ namespace Wallet.Communication
         /// <param name="callbackOnSuccess">Callback on verify success</param>
         /// <param name="callbackOnFailure">Callback on verify failure</param>
         /// <param name="message">The message in bytes</param>
-        protected void ProccessMessage(Action<byte[]> callbackOnSuccess, Action<Message> callbackOnFailure, byte[] message)
+        protected void ProccessMessage(Action<byte[]> callbackOnSuccess, Action<Message> callbackOnFailure,
+            byte[] message)
         {
             var deserializedMessage = DeserializedMessage(message);
             var data = deserializedMessage.Data;
@@ -75,7 +76,9 @@ namespace Wallet.Communication
                 {
                     throw new EncryptionException("Encryption failed", ex);
                 }
-            } else {
+            }
+            else
+            {
                 Console.WriteLine("NOTICE: The enqueued message was NOT encrypted!");
             }
 

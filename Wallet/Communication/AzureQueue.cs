@@ -10,7 +10,6 @@ namespace Wallet.Communication
 {
     public class AzureQueue : BaseQueue, IQueue
     {
-
         #region private members
 
         private const int MessagePeekTimeInSeconds = 60;
@@ -25,7 +24,8 @@ namespace Wallet.Communication
 
         #endregion
 
-        public AzureQueue(string queueName, ICloudQueueClientWrapper queueClient, ICryptoActions cryptoActions, bool isEncrypted) : base(cryptoActions)
+        public AzureQueue(string queueName, ICloudQueueClientWrapper queueClient, ICryptoActions cryptoActions,
+            bool isEncrypted) : base(cryptoActions)
         {
             m_queueClient = queueClient;
             m_isEncrypted = isEncrypted;
@@ -66,7 +66,8 @@ namespace Wallet.Communication
 
         public Task<string> DequeueAsync(Action<byte[]> callbackOnSuccess, Action<Message> callbackOnFailure)
         {
-            throw new SecureCommunicationException("This method signature is not supported for the Azure BaseQueue implementation");
+            throw new SecureCommunicationException(
+                "This method signature is not supported for the Azure BaseQueue implementation");
         }
 
         /// <summary>
@@ -113,11 +114,14 @@ namespace Wallet.Communication
 
         #region privateMethods
 
-        private void ThrowIfNotInitialized(){
-            if (!m_isInitialized) {
+        private void ThrowIfNotInitialized()
+        {
+            if (!m_isInitialized)
+            {
                 throw new SecureCommunicationException("Object was not initialized");
             }
         }
-#endregion
+
+        #endregion
     }
 }
