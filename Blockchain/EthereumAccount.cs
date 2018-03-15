@@ -4,6 +4,7 @@ using Nethereum.Signer;
 using Nethereum.Util;
 using Nethereum.Web3;
 using Cryptography;
+using System;
 
 namespace Blockchain
 {
@@ -33,7 +34,7 @@ namespace Blockchain
         /// </summary>
         /// <param name="identifier">key pair identifier.</param>
         /// <param name="privateKey">The given private key to store, if not supplied a new private key will be generated</param>
-        public async Task CreateAccountAsync(string identifier, string privateKey = "")
+        public async Task<string> CreateAccountAsync(string identifier, string privateKey = "")
         {
             if (string.IsNullOrEmpty(privateKey))
             {
@@ -42,6 +43,7 @@ namespace Blockchain
             }
 
             await StoreAccountAsync(identifier, privateKey);
+            return new EthECKey(privateKey).GetPublicAddress();
         }
 
         /// <summary>
@@ -85,12 +87,23 @@ namespace Blockchain
         }
 
         /// <summary>
-        /// Gets the balance of the provided account
+        /// Gets the balance of the provided account - if public address provided get balance by address
+        /// Otherwise get balance by identifier
         /// </summary>
         /// <param name="publicAddress">The public address of the account</param>
         /// <returns>Returns the balance in ether.</returns>
-        public async Task<decimal> GetCurrentBalance(string publicAddress)
+        public async Task<decimal> GetCurrentBalance(string publicAddress ="", string identifier="")
         {
+            if (string.IsNullOrEmpty(publicAddress) && string.IsNullOrEmpty(identifier))
+            {
+                throw new ArgumentNullException("public address or identifier should be provided");
+            }
+            
+            if (string.IsNullOrEmpty(publicAddress))
+            {
+                publicAddress = await GetPublicAddressAsync(identifier);
+            }
+
             var unitConverion = new UnitConversion();
             return unitConverion.FromWei(await m_web3.Eth.GetBalance.SendRequestAsync(publicAddress));
         }

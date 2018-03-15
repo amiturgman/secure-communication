@@ -6,10 +6,11 @@
 
         public string DestinationAddress { get; set; }
 
-        public decimal  Balance { get; set; }
+        public decimal Balance { get; set; }
 
         public string WalletAddress{ get; set; }
 
-
+        public string SenderId { get; set; }
     }
+
 }

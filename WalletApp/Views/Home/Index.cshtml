@@ -4,29 +4,55 @@
 
 @using WalletApp.Models
 
-<form action="/home/GetBalanceAsync">
+<h3>Create Account</h3>
+<form action="/home/CreateAccountAsync">
     <ul class="form-style-1">
+        <li><label>User Id</label><input type="text" name="SenderId" class="field-divided" /></li>
 
         <li>
-            <span>Wallet address:</span><input type="text" name="WalletAddress" class="field-divided" placeholder="0xXXXXXXX" />
+            <input type="submit" value="Submit" />
         </li>
+        @if (ViewBag != null && ViewBag.model != null && ViewBag.model.WalletAddress != null && ViewBag.model.Balance == 0)
+    {
         <li>
-            @if (ViewBag == null || ViewBag.model == null || ViewBag.model.Balance == null)
-            {
-                <span>Balance:</span><span id="balance">empty</span>
-            }
-            else
-            {
-                <span>Balance:</span><span id="balance">@ViewBag.model.Balance</span>
-            }
-
-            <input type="submit" value="Refresh Balance" />
+            <span>Account Created! Public Address: @ViewBag.model.WalletAddress</span>
         </li>
-        
+}
+
     </ul>
 </form>
-<form action="/home/SendFunds">
+
+<hr />
+<h3>Get Balance</h3>
+<form action="/home/GetBalanceAsync">
     <ul class="form-style-1">
+        <li>
+            <label>User Id:</label><input type="text" name="SenderId" class="field-divided" placeholder="id123"
+                                                 value=@((ViewBag == null || ViewBag.model == null || ViewBag.model.SenderId == null) ? "" : ViewBag.model.SenderId )>
+        </li>
+        <li>
+            <label>Wallet address:</label><input type="text" name="WalletAddress" class="field-divided" placeholder="0xXXXXXXX"
+                                                 value=@((ViewBag == null || ViewBag.model == null || ViewBag.model.WalletAddress == null) ? "" : ViewBag.model.WalletAddress )>
+        </li>
+        <li>
+            <input type="submit" value="Refresh Balance" />
+        </li>
+        @if (ViewBag != null && ViewBag.model != null && ViewBag.model.Balance != null)
+    {
+        <li>
+            <span>Balance: @ViewBag.model.Balance</span>
+        </li>
+}
+
+
+    </ul>
+</form>
+
+<hr />
+<h3>Send Funds</h3>
+<form action="/home/SendFundsAsync">
+    <ul class="form-style-1">
+        <li><label>Sender Id<span class="required">*</span></label><input type="text" name="SenderId" class="field-divided" placeholder="id123" /></li>
         <li><label>Destination address<span class="required">*</span></label><input type="text" name="DestinationAddress" class="field-divided" placeholder="0xXXXXXXX" /></li>
         <li><label>Amount<span class="required">*</span></label><input type="text" name="Amount" class="field-divided" placeholder="0" /></li>
 

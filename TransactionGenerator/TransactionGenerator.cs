@@ -112,9 +112,7 @@ namespace TransactionGenerator
                         throw;
                     }
 
-                    // Wait for miner
-                    Thread.Sleep(3000);
-
+                    //TODO: Is this still needed?
                     // notify a user about his balance change
                     securedCommForNotifications.EnqueueAsync(Communication.Utils.ToByteArray(reciverAddress)).Wait();
                 },

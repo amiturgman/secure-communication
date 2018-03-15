@@ -41,19 +41,32 @@ namespace WalletApp.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
-        public virtual ActionResult SendFunds(HomeViewModel model)
+        
+        public async  Task<ActionResult> SendFundsAsync(HomeViewModel model)
         {
-            var message = $"{model.Amount};{"SenderAccount"};{model.DestinationAddress}";
-            m_queue.EnqueueAsync(Utils.ToByteArray(message)).Wait();
+            var message = $"{model.Amount};{model.SenderId};{model.DestinationAddress}";
+            await m_queue.EnqueueAsync(Utils.ToByteArray(message));
             return View("Index");
         }
 
         public async Task<ActionResult> GetBalanceAsync(HomeViewModel model)
         {
-            var balance = await m_ethereumAccount.GetCurrentBalance(model.WalletAddress);
+            var balance = await m_ethereumAccount.GetCurrentBalance(model.WalletAddress, model.SenderId);
             ViewBag.model = new HomeViewModel() { Balance = balance,
-                        WalletAddress = model.WalletAddress};
+                        WalletAddress = model.WalletAddress,
+                        SenderId = model.SenderId};
+
+            return View("Index");
+        }
+
+        public async Task<ActionResult> CreateAccountAsync(HomeViewModel model)
+        {
+            var publicAddress = await m_ethereumAccount.CreateAccountAsync(model.SenderId);
+            
+            ViewBag.model = new HomeViewModel()
+            {
+                WalletAddress = publicAddress,
+            };
 
             return View("Index");
         }
