@@ -34,7 +34,7 @@ namespace Communication
             m_isInitialized = false;
         }
 
-        public async Task Initialize()
+        public async Task InitializeAsync()
         {
             m_queue = m_queueClient.GetQueueReference(m_queueName);
             await m_queue.CreateIfNotExistsAsync();

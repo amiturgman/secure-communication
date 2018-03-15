@@ -54,8 +54,8 @@ namespace TransactionEngine
 
             var securedCommForTransactions = new AzureQueue("transactions", queueClient, secretsMgmnt, true);
             var securedCommForNotifications = new AzureQueue("notifications", queueClient, secretsMgmnt, true);
-            var taskInitTransactions = securedCommForTransactions.Initialize();
-            var taskInitNotifications = securedCommForNotifications.Initialize();
+            var taskInitTransactions = securedCommForTransactions.InitializeAsync();
+            var taskInitNotifications = securedCommForNotifications.InitializeAsync();
             Task.WhenAll(taskInitTransactions, taskInitNotifications).Wait();
 
             var sqlDb = new SqlConnector(ConfigurationManager.AppSettings["SqlUserID"],

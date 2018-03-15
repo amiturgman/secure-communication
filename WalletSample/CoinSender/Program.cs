@@ -135,7 +135,7 @@ namespace CoinsSender
             var queueClient =
                 new CloudQueueClientWrapper(ConfigurationManager.AppSettings["AzureStorageConnectionString"]);
             var securedComm = new AzureQueue("transactions", queueClient, secretsMgmnt, true);
-            securedComm.Initialize().Wait();
+            securedComm.InitializeAsync().Wait();
 
             // While there are sufficient funds, transfer some...
             while (balance >= 0)

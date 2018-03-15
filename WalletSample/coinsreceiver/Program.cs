@@ -66,7 +66,7 @@ namespace CoinsReceiver
             var queueClient =
                 new CloudQueueClientWrapper(ConfigurationManager.AppSettings["AzureStorageConnectionString"]);
             var securedComm = new AzureQueue("notifications", queueClient, secretsMgmnt, true);
-            securedComm.Initialize().Wait();
+            securedComm.InitializeAsync().Wait();
 
             // Listen on the notifications queue, check balance when a notification arrives
             var consumerTag =
