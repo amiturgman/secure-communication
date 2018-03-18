@@ -15,7 +15,9 @@
         @if (ViewBag != null && ViewBag.model != null && ViewBag.model.WalletAddress != null && ViewBag.model.Balance == 0)
     {
         <li>
-            <span>Account Created! Public Address: @ViewBag.model.WalletAddress</span>
+            <div class="success">Account Created!</div>
+            <div>Public Address: @ViewBag.model.WalletAddress</div>
+            <div>To Transfer Ether to this address follow the instructions <a href="https://www.rinkeby.io/#faucet" target="_blank">here</a> </div>
         </li>
 }
 
@@ -26,6 +28,7 @@
 <h3>Get Balance</h3>
 <form action="/home/GetBalanceAsync">
     <ul class="form-style-1">
+        <li>Fill in the User Id <b>OR</b> the Wallet Address to get the balance:</li>
         <li>
             <label>User Id:</label><input type="text" name="SenderId" class="field-divided" placeholder="id123"
                                                  value=@((ViewBag == null || ViewBag.model == null || ViewBag.model.SenderId == null) ? "" : ViewBag.model.SenderId )>
@@ -40,7 +43,7 @@
         @if (ViewBag != null && ViewBag.model != null && ViewBag.model.Balance != null)
     {
         <li>
-            <span>Balance: @ViewBag.model.Balance</span>
+            <span class="success">Balance: @ViewBag.model.Balance</span>
         </li>
 }
 
@@ -64,6 +67,10 @@
 
 
 <style type="text/css">
+    .success {
+        font: 15px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+        font-weight: bold
+    }
     .form-style-1 {
         margin: 10px auto;
         max-width: 400px;
@@ -76,9 +83,11 @@
             display: block;
             list-style: none;
             margin: 10px 0 0 0;
+            font-size: 12px;
         }
 
         .form-style-1 label {
+  
             margin: 0 0 3px 0;
             padding: 0px;
             display: block;
