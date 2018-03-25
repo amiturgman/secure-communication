@@ -20,7 +20,12 @@
                                     AzureActiveDirectory="true"
                                     ServerCertThumbprint="0123456789012345678901234567890123456789" />
   -->
-  <ClusterConnectionParameters ConnectionEndpoint="saaswallet.eastus2.cloudapp.azure.com:19000" X509Credential="true" ServerCertThumbprint="828650566FD24BB631CFE29B44D5122DA641AB31" FindType="FindByThumbprint" FindValue="828650566FD24BB631CFE29B44D5122DA641AB31" StoreLocation="CurrentUser" StoreName="My" />
+
+  <!-- Fill with your own certificate thumprint and SF cluster name -->
+  <!-- <ClusterConnectionParameters ConnectionEndpoint="<SFClusterName>.southcentralus.cloudapp.azure.com:19000" X509Credential="true" ServerCertThumbprint="E59709604163161EA8216D72222CB8D5C4B590C2" FindType="FindByThumbprint" FindValue="E59709604163161EA8216D72222CB8D5C4B590C2" StoreLocation="CurrentUser" StoreName="My" /> -->
   <ApplicationParameterFile Path="..\ApplicationParameters\Cloud.xml" />
   <CopyPackageParameters CompressPackage="true" />
+  <UpgradeDeployment Mode="Monitored" Enabled="false">
+    <Parameters FailureAction="Rollback" Force="True" />
+  </UpgradeDeployment>
 </PublishProfile>
