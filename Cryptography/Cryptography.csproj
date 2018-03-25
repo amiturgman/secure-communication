@@ -72,7 +72,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CachedKeyVault.cs" />
     <Compile Include="CertificatesCryptoActions.cs" />
     <Compile Include="CryptoException.cs" />
     <Compile Include="ICryptoActions.cs" />

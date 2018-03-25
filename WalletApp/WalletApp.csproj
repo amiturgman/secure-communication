@@ -25,7 +25,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Blockchain\Blockchain.csproj" />
     <ProjectReference Include="..\Communication\Communication.csproj" />
-    <ProjectReference Include="..\Cryptography\Cryptography.csproj" />
   </ItemGroup>
 
   <ItemGroup>

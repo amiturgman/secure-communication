@@ -46,7 +46,7 @@ namespace UnitTests
 
             var queueName = "queueName";
             var azureQueue = new AzureQueue(queueName, queueMock, encryptionManager, true);
-            await azureQueue.Initialize();
+            await azureQueue.InitializeAsync();
 
             // Enqueue message
             var msg = "new message";
@@ -79,7 +79,7 @@ namespace UnitTests
 
             var queueName = "queueName";
             var azureQueue = new AzureQueue(queueName, queueMock, encryptionManager, true);
-            await azureQueue.Initialize();
+            await azureQueue.InitializeAsync();
 
             // Enqueue Message
             var msg = "new message";

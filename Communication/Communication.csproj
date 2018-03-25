@@ -157,7 +157,6 @@
     <Compile Include="SecureCommunicationException.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Cryptography\Cryptography.csproj">
       <Project>{5a4952a0-1ffb-4bc8-9854-0277b11854e6}</Project>

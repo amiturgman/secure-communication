@@ -1,47 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Fabric;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Blockchain;
 using Communication;
 using Communication.AzureQueueDependencies;
 using Cryptography;
-using Microsoft.ServiceFabric.Services.Communication.Runtime;
-using Microsoft.ServiceFabric.Services.Runtime;
 using static Cryptography.KeyVaultCryptoActions;
 
-namespace TransactionGenerator
+namespace TransactionEngine
 {
     /// <summary>
-    /// An instance of this class is created for each service instance by the Service Fabric runtime.
+    /// A sample app that listens for transactions requests.
+    /// when one arrives, perform it, and notify about the change 
+    /// to the fans
     /// </summary>
-    internal sealed class TransactionGenerator : StatelessService
+    class Program
     {
-        public TransactionGenerator(StatelessServiceContext context)
-            : base(context)
-        { }
-
-        /// <summary>
-        /// Optional override to create listeners (e.g., TCP, HTTP) for this service replica to handle client or user requests.
-        /// </summary>
-        /// <returns>A collection of listeners.</returns>
-        protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
+        static void Main(string[] args)
         {
-            return new ServiceInstanceListener[0];
-        }
+            Console.WriteLine("TransactionEngine - I do as I told");
 
-        /// <summary>
-        /// This is the main entry point for your service instance.
-        /// </summary>
-        /// <param name="cancellationToken">Canceled when Service Fabric needs to shut down this service instance.</param>
-        protected override async Task RunAsync(CancellationToken cancellationToken)
-        {
-            // TODO: Replace the following sample code with your own logic 
-            //       or remove this RunAsync override if it's not needed in your service.
-
+            // Init
             var unitConverion = new Nethereum.Util.UnitConversion();
 
             var kv = new KeyVault(ConfigurationManager.AppSettings["AzureKeyVaultUri"],
@@ -103,7 +83,6 @@ namespace TransactionGenerator
                     {
                         var transactionHash = ethereumNodeWrapper
                             .SignTransactionAsync(senderName, reciverAddress, amount).Result;
-
                         var transactionResult = ethereumNodeWrapper.SendRawTransactionAsync(transactionHash).Result;
                     }
                     catch (Exception ex)
@@ -112,7 +91,9 @@ namespace TransactionGenerator
                         throw;
                     }
 
-                    //TODO: Is this still needed?
+                    // Wait for miner
+                    Thread.Sleep(3000);
+
                     // notify a user about his balance change
                     securedCommForNotifications.EnqueueAsync(Communication.Utils.ToByteArray(reciverAddress)).Wait();
                 },

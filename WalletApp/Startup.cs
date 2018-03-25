@@ -67,7 +67,7 @@ namespace WalletApp
                 secretsMgmnt.InitializeAsync().Wait();
                 var queueClient = new CloudQueueClientWrapper(Configuration["AzureStorageConnectionString"]);
                 azureQueue = new AzureQueue(queueName, queueClient, secretsMgmnt, true);
-                azureQueue.Initialize().Wait();
+                azureQueue.InitializeAsync().Wait();
 
                 return azureQueue;
             });

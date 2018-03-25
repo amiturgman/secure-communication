@@ -62,7 +62,7 @@ namespace WalletApp.Controllers
         public async Task<ActionResult> CreateAccountAsync(HomeViewModel model)
         {
             var publicAddress = await m_ethereumAccount.CreateAccountAsync(model.SenderId);
-            
+
             ViewBag.model = new HomeViewModel()
             {
                 WalletAddress = publicAddress,

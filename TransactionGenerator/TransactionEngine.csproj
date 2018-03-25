@@ -138,7 +138,7 @@
       <Name>Communication</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cryptography\Cryptography.csproj">
-      <Project>{5A4952A0-1FFB-4BC8-9854-0277B11854E6}</Project>
+      <Project>{5a4952a0-1ffb-4bc8-9854-0277b11854e6}</Project>
       <Name>Cryptography</Name>
     </ProjectReference>
   </ItemGroup>

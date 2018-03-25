@@ -92,13 +92,13 @@ namespace Blockchain
         /// </summary>
         /// <param name="publicAddress">The public address of the account</param>
         /// <returns>Returns the balance in ether.</returns>
-        public async Task<decimal> GetCurrentBalance(string publicAddress ="", string identifier="")
+        public async Task<decimal> GetCurrentBalance(string publicAddress = "", string identifier = "")
         {
             if (string.IsNullOrEmpty(publicAddress) && string.IsNullOrEmpty(identifier))
             {
                 throw new ArgumentNullException("public address or identifier should be provided");
             }
-            
+
             if (string.IsNullOrEmpty(publicAddress))
             {
                 publicAddress = await GetPublicAddressAsync(identifier);
