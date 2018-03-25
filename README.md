@@ -10,10 +10,10 @@ For abstracting the needed secrets for the encryption/signing operations over th
 This project also contains a [Sample](Sample) directory, to get you started.  
 
 # Installation
-1. `Contracts` contains all of the interfaces
-2. `SecuredComm` contains the library implementation. consume it: clone the repository and add the dependency to the library.
-(later we might release this as a nuget / package).
-3. Usage examples:
+1. `Blockchain` - Ethereum and blockchain related functionality
+2. `Communication` - Communication pipeline between micro-services. To consume: clone the repository and add the dependency to the library.
+3. `Cryptography` - Provides functionality for saving the users secrets (private keys) and for securing the micro-services communication pipeline
+4. Usage examples:
 
 ## Ethereum node wrapper
 ```c#
