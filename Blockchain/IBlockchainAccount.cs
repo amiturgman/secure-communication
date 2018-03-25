@@ -13,7 +13,8 @@ namespace Blockchain
         /// </summary>
         /// <param name="identifier">key pair identifier.</param>
         /// <param name="privateKey">The given private key to store, if not supplied a new private key will be generated</param>
-        Task CreateAccountAsync(string identifier, string privateKey = "");
+        /// <returns>The public address of the account</returns>
+        Task<string> CreateAccountAsync(string identifier, string privateKey = "");
 
         /// <summary>
         /// Signs a blockchain transaction
@@ -42,7 +43,8 @@ namespace Blockchain
         /// Gets the balance of the provided account
         /// </summary>
         /// <param name="publicAddress">The public address of the account</param>
+        /// <param name="identifier">The identifier of the account</param>
         /// <returns>Returns the balance in ether.</returns>
-        Task<decimal> GetCurrentBalance(string publicAddress);
+        Task<decimal> GetCurrentBalance(string publicAddress, string identifier);
     }
 }
