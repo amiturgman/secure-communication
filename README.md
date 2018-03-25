@@ -56,16 +56,16 @@ comm.DequeueAsync(msg =>
 ## Installation instructions
 
 The following instructions will help you get started with a working SaaS wallet deployed on Azure.
-1) Open the WalletSample\Deployment\oneclick.ps1 file. The first part of the file consists of paramaters for your deployment.
+1) Open the *WalletSample\Deployment\oneclick.ps1* file. The first part of the file consists of paramaters for your deployment.
 Edit the paramaters with your own choice of values, save and close the file.
-2) Open the Powershell *As Administrator* console and navigate to the file's location.
+2) Open the Powershell console **(As administrator)** and navigate to the file's location.
 3) run .\oneclick.ps1
 
 The script will take a few minutes to finish.
 Once done:
-1) go to 'c:\saaswalletcertificates\' (if left the certificate folder location as is), a pfx file will be present.
+1) go to *c:\saaswalletcertificates* (if left the certificate folder location as is), a pfx file will be present.
 Install is under 'Local Computer\Personal' (the password was specified in the script earlier)
-2) Open up the solution in Visual Studio
-3) Update cloud.xml with the service fabric cluster name and the certificate thumprint (needed to be able to deploy to application)
+2) Open up the solution in Visual Studio **(As administrator)**
+3) Update cloud.xml with the service fabric cluster name and the certificate thumbprint (needed to be able to deploy to application)
 4) Right click on the 'WalletService', click publish, choose the newly created Service Fabric cluster
-5) Once done, navigate to <SFClusterName>.<location>.cloudapp.azure.com/
+5) Once done, navigate to \<SFClusterName\>.\<location\>.cloudapp.azure.com/
