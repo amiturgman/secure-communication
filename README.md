@@ -56,10 +56,16 @@ comm.DequeueAsync(msg =>
 ## Installation instructions
 
 The following instructions will help you get started with a working SaaS wallet deployed on Azure.
-1) Open the *WalletSample\Deployment\oneclick.ps1* file. The first part of the file consists of paramaters for your deployment.
-Edit the paramaters with your own choice of values, save and close the file.
-2) Open the Powershell console **(As administrator)** and navigate to the file's location.
-3) run .\oneclick.ps1
+
+### Prerequisites
+1. An Azure subscription
+2. Create a new Azure Active Directory application. This application will be used for authenticating against Azure: https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-integrating-applications
+3. Get the service principal id and secret for the application from step 2
+
+### Deploy resources
+1. Edit the parameters in the file [WalletSample/Deployment/oneclick.ps1](WalletSample/Deployment/oneclick.ps1)
+2. Open the Powershell console **(As administrator)** and navigate to the file's location.
+3. run .\oneclick.ps1
 
 The script will take a few minutes to finish.
 Once done:
