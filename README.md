@@ -1,55 +1,79 @@
 # Core modules for crypto-currency virtual wallet
 The project consists of the infrastructure Core modules needed for implementing a SaaS cryptocurrency virtual wallet. This project has the following modules:
+### Secrets manager for the communication pipeline
+For abstracting the needed secrets for the encryption/signing operations over the sent messages
 ### A secure communication library over a queue
 For inter micro-services communication
 ### An Ethereum node client
 For querying, signing and sending transactions and data over the public (and test) Ethereum network
-### Secrets manager for the communication pipeline
-For abstracting the needed secrets for the encryption/signing operations over the sent messages
 
-This project also contains a [Sample](Sample) directory, to get you started.  
+This project also contains a [Sample](WalletSample) directory, to get you started.  
 
 # Installation
-1. `Blockchain` - Ethereum and blockchain related functionality
-2. `Communication` - Communication pipeline between micro-services. To consume: clone the repository and add the dependency to the library.
-3. `Cryptography` - Provides functionality for saving the users secrets (private keys) and for securing the micro-services communication pipeline
+The project contains three components:
+a. `Blockchain` - Blockchain (Currently only Ethereum implementation) related functionality
+b. `Communication` - Communication pipeline between micro-services.
+c. `Cryptography` - Provides functionality for saving the users secrets (private keys) and for securing the micro-services communication pipeline
+
+1. To consume, clone the repository and add the projects dependencies to the library.
 4. Usage examples:
-
-## Ethereum node wrapper
-```c#
-// Create the instance
-var ethereumNodeWrapper = new EthereumNodeWrapper(kv, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
-
-// Call methods
-var result = await ethereumNodeWrapper.GetPublicAddressAsync("0x012345...");   
-```
 
 ## Secrets Manager
 ```c#
+
 // Create
-var secretsMgmnt = new KeyVaultSecretManager(encryptionKeyName, decryptionKeyName, signKeyName, verifyKeyName, publicKv, privateKv);
+var kv = new KeyVault(...);
+
+var secretsMgmnt =
+                new KeyVaultCryptoActions(
+                    new CertificateInfo(encryptionKeyName, encryptionCertPassword),
+                    new CertificateInfo(decryptionKeyName, decryptionCertPassword),
+                    new CertificateInfo(signKeyName, signCertPassword),
+                    new CertificateInfo(verifyKeyName, verifyCertPassword),
+                    kv,
+                    kv);
+
 // Initialize
-await secretsMgmnt.Initialize();
+await secretsMgmnt.InitializeAsync();
 
 // Call methods
-secretsMgmnt.Encrypt(msgAsBytes);  
+var rawData = "Some text";
+var encryptedData = secretsMgmnt.Encrypt(Communication.Utils.ToByteArray(rawData));
+var originalData = secretsMgmnt.Decrypt(encryptedData);
+
 ```
 ## Communication pipeline
 ```c#
 // The following code enqueues a message to a queue named 'MyQueue'
+var secretsMgmnt = new KeyVaultCryptoActions(...);
+secretsMgmnt.InitializeAsync().Wait();
+
+var queueClient = new CloudQueueClientWrapper(ConfigurationManager.AppSettings["AzureStorageConnectionString"]);
 // Create
-var comm = new AzureQueueImpl("MyQueue", queueClient, secretsMgmnt, true);
+var securedComm = new AzureQueue("MyQueue", queueClient, secretsMgmnt, true);
 // Init
-await comm.Initialize();
+await securedComm.InitializeAsync();
 
 // Enqueue messages
-comm.EnqueueAsync("Some message meant for someone");
+await securedComm.EnqueueAsync(Communication.Utils.ToByteArray("A message"));
 
-comm.DequeueAsync(msg =>
-  {
-    Console.WriteLine("Decrypted and Verified message is" : + msg);
-  });
+ securedComm.DequeueAsync(
+   msg =>
+   {
+      Console.WriteLine("Decrypted and Verified message is" : + msg);
+   });
   
+```
+
+## Ethereum node wrapper
+```c#
+// Create the instance of the Sql connector (which holds the users' private keys)
+var sqlDb = new SqlConnector(...);
+// Create the instance
+var ethereumNodeWrapper = new EthereumAccount(sqlDb, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
+
+// Call methods
+var result = await ethereumNodeWrapper.GetPublicAddressAsync("0x012345...");   
 ```
 
 # Sample
@@ -59,7 +83,8 @@ The following instructions will help you get started with a working SaaS wallet 
 
 ### Prerequisites
 1. An Azure subscription
-2. Create a new Azure Active Directory application. This application will be used for authenticating against Azure: https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-integrating-applications
+2. Create a new Azure Active Directory application. This application will be used for authenticating against Azure. 
+[Setting AAD application](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-integrating-applications)
 3. Get the service principal id and secret for the application from step 2
 
 ### Deploy resources
@@ -69,9 +94,23 @@ The following instructions will help you get started with a working SaaS wallet 
 
 The script will take a few minutes to finish.
 Once done:
-1) go to *c:\saaswalletcertificates* (if left the certificate folder location as is), a pfx file will be present.
-Install is under 'Local Computer\Personal' (the password was specified in the script earlier)
+1) Go to certificates folder (*c:\saaswalletcertificates* if left the certificate folder location as is), a pfx file will be present.
+Install it under 'Local Computer\Personal' (the password was specified in the script earlier)
 2) Open up the solution in Visual Studio **(As administrator)**
-3) Update cloud.xml with the service fabric cluster name and the certificate thumbprint (needed to be able to deploy to application)
-4) Right click on the 'WalletService', click publish, choose the newly created Service Fabric cluster
-5) Once done, navigate to \<SFClusterName\>.\<location\>.cloudapp.azure.com/
+3) Update [cloud.xml](WalletSF/publishprofiles/cloud.xml) with the Service Fabric cluster name and the certificate thumbprint (needed for deploying to application)
+4) Update [appsettings.json](WalletApp/appsettings.json) and [App.config](TransactionEngine\App.config) file with your Azure resources information
+4.1) The 'EthereumNodeUrl' paramater should be generated by creating a new public/test account:
+https://infura.io/docs/gettingStarted/chooseaNetwork
+5) Right click on the 'WalletService', click publish, choose the newly created Service Fabric cluster
+6) Once done, navigate to \<SFClusterName\>.\<location\>.cloudapp.azure.com/
+
+## Usage
+1. Create a new account
+![Creating a new account for identifier 'MSFT_BLOCKCHAIN'](/images/createAccount.png)
+2. Seed the account with ethereum coins:
+https://faucet.rinkeby.io/
+![Seeding the 'MSFT_BLOCKCHAIN' account with a few coins](/images/seed.png)
+3. Transfer funds to another (already created account)
+![Tranfer funds to another address](/images/sendFunds.png)
+4. Press the 'Get balance' button
+![Get the current balance](/images/getBalance.png)
