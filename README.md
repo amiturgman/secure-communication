@@ -66,15 +66,15 @@ await securedComm.EnqueueAsync(Communication.Utils.ToByteArray("A message"));
   
 ```
 
-## Ethereum node wrapper
+## Ethereum node client
 ```c#
 // Create the instance of the Sql connector (which holds the users' private keys)
 var sqlDb = new SqlConnector(...);
 // Create the instance
-var ethereumNodeWrapper = new EthereumAccount(sqlDb, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
+var ethereumNodeClient = new EthereumAccount(sqlDb, ConfigurationManager.AppSettings["EthereumNodeUrl"]);
 
 // Call methods
-var result = await ethereumNodeWrapper.GetPublicAddressAsync("0x012345...");   
+var result = await ethereumNodeClient.GetPublicAddressAsync("0x012345...");   
 ```
 
 # Sample
