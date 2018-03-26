@@ -11,12 +11,13 @@ This project also contains a [Sample](WalletSample) directory, to get you starte
 
 # Installation
 The project contains three components:
-a. `Blockchain` - Blockchain (Currently only Ethereum implementation) related functionality
-b. `Communication` - Communication pipeline between micro-services.
-c. `Cryptography` - Provides functionality for saving the users secrets (private keys) and for securing the micro-services communication pipeline
+1. `Blockchain` - Blockchain (Currently only Ethereum implementation) related functionality <br>
+2. `Communication` - Communication pipeline between micro-services.<br>
+3. `Cryptography` - Provides functionality for saving the users secrets (private keys) and for securing the micro-services communication pipeline <br>
 
-1. To consume, clone the repository and add the projects dependencies to the library.
-4. Usage examples:
+To consume, clone the repository and add the projects as dependencies.
+
+# Usage examples:
 
 ## Secrets Manager
 ```c#
