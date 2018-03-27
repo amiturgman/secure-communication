@@ -32,7 +32,7 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TransactionGenerator\TransactionEngine.csproj" />
+    <ProjectReference Include="..\TransactionEngine\TransactionEngine.csproj" />
     <ProjectReference Include="..\WalletApp\WalletApp.csproj" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
