@@ -20,11 +20,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blockchain", "Blockchain\Bl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Communication", "Communication\Communication.csproj", "{915BD8E5-960B-4373-9343-EBA0928D5012}"
 EndProject
-Project("{A07B5EB6-E848-4116-A8D0-A826331D98C6}") = "WalletService", "WalletSF\WalletService.sfproj", "{D2C5FA3A-4D39-41B4-8112-26EBFE6A9EEF}"
+Project("{A07B5EB6-E848-4116-A8D0-A826331D98C6}") = "WalletService", "WalletSample\WalletSF\WalletService.sfproj", "{D2C5FA3A-4D39-41B4-8112-26EBFE6A9EEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionEngine", "TransactionGenerator\TransactionEngine.csproj", "{CD64AE74-944A-4034-814F-3456E8AE11FD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionEngine", "WalletSample\TransactionEngine\TransactionEngine.csproj", "{CD64AE74-944A-4034-814F-3456E8AE11FD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WalletApp", "WalletApp\WalletApp.csproj", "{72AFB4A3-C857-44FD-8234-33343678072B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WalletApp", "WalletSample\WalletApp\WalletApp.csproj", "{72AFB4A3-C857-44FD-8234-33343678072B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Package", "Package", "{C85DCE9E-88E7-4874-A62D-A6C6FC69B34B}"
 EndProject
