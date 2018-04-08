@@ -84,14 +84,22 @@ The following instructions will help you get started with a working SaaS wallet 
 
 ### Prerequisites
 1. An Azure subscription
-2. Create a new Azure Active Directory application. This application will be used for authenticating against Azure. 
-[Setting AAD application](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-integrating-applications)
-3. Get the service principal id and secret for the application from step 2
+2. Setup an Azure Active Directory application
+3. Prepare the [Service principal id and secret and assign it to a contributor role](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal)
+4. An Azure Active Directory TenantId - Same link as step 3
+5. Prepare the Azure Service principal object id
+   1. Go to the azure portal
+   2. go to Azure Active Directory -> Enterprise Applications -> All applications. 
+   3. filter for your recently created application. One of the columns is 'Object Id'. 
+   4. copy this value for later use.
+7. Install [Azure Powershell SDK](https://www.microsoft.com/web/handlers/webpi.ashx/getinstaller/WindowsAzurePowershellGet.3f.3f.3fnew.appids)
 
 ### Deploy resources
 1. Edit the parameters in the file [WalletSample/Deployment/oneclick.ps1](WalletSample/Deployment/oneclick.ps1)
 2. Open the Powershell console **(As administrator)** and navigate to the file's location.
 3. run .\oneclick.ps1
+   1. The script will create a resource group and deploy different resources into it. Some of the resources are Azure Service Fabric cluster, storage accounts, KeyVaults, Azure SQL, etc...
+
 
 The script will take a few minutes to finish.
 Once done:
