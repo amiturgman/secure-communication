@@ -42,7 +42,7 @@ $sfClusterName = "walletsf$(Get-Random)"
 
 # Hard coded values, which can be changed if decided
 # Service Fabric
-$clustersize = 3
+$clustersize = 5
 $adminuser = 'nimda13'
 $adminpwd="Password#1234" | ConvertTo-SecureString -AsPlainText -Force 
 

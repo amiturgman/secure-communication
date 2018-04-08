@@ -89,9 +89,9 @@ The following instructions will help you get started with a working SaaS wallet 
 4. An Azure Active Directory TenantId - Same link as step 3
 5. Prepare the Azure Service principal object id
    1. Go to the azure portal
-   2. go to Azure Active Directory -> Enterprise Applications -> All applications. 
-   3. filter for your recently created application. One of the columns is 'Object Id'. 
-   4. copy this value for later use.
+   2. Go to Azure Active Directory -> Enterprise Applications -> All applications. 
+   3. Filter for your recently created application. One of the columns is 'Object Id'. 
+   4. Copy this value for later use.
 7. Install [Azure Powershell SDK](https://www.microsoft.com/web/handlers/webpi.ashx/getinstaller/WindowsAzurePowershellGet.3f.3f.3fnew.appids)
 
 ### Deploy resources
