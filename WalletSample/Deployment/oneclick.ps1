@@ -7,6 +7,8 @@
 
 # Parameters
 
+# The following are values which you should collect from the Azure portal 
+# -- Start --
 # The Azure tenant id (under active directory properties -> directory Id)
 $tenantId  = '[Azure tenant id]'
 # The Azure service principal's object id
@@ -15,33 +17,32 @@ $objectId = '[Azure Service principal object id]'
 $applicationId= '[Azure application id]'
 # The  Azure Service principal secret
 $applicationSecret = "[Azure application key]"
+# -- End --
+
+## The following are values which you decide
+## -- Start --
 # The Azure resource group name that will hold all the resources
 $resourceGroupName = '[The resource group name]'
 # The Azure resources geo location
 $resourcesLocation = '[The resources location]'
+# -- End --
 
+# -------The following parameters are already set, but can be changed if wanted ----
 # The Azure KeyVault Name
-$keyvaultName = '[The vault name]'
+$keyvaultName = "walletkv$(Get-Random)"
 # The Azure KeyVault secret name
-$secretName = '[The keyvault secret name example: encryptionCert]'
-# Azure storage name to create - will hold the Azure Queue
-$storageName = '[Azure storage name]'
-
-#certificate configuration
-# The temporary pfx location
-$pfxFilePath = '[The pfx temporary file, example: c:\temp\certificate.pfx]'
-# Temporary password, for installing and exporting the certificate
-$plainpass = '123456' 
-# The certificate DNS name
-$dnsName = '[The certificate dns name, example: testcert.contoso.com]'
+$secretName = 'encryptionCert'
 
 # Queue
-$storageAccountName = '[storage account name]'
-$queueName = '[azure queue name, the one inside the storage account]'
+$storageAccountName = "walletstorage$(Get-Random)"
+$queueName = "queue$(Get-Random)"
 
 # Service Fabric
-$sfClusterName = '[Service Fbric cluster name]'
-$clustersize = 3
+$sfClusterName = "walletsf$(Get-Random)"
+
+# Hard coded values, which can be changed if decided
+# Service Fabric
+$clustersize = 5
 $adminuser = 'nimda13'
 $adminpwd="Password#1234" | ConvertTo-SecureString -AsPlainText -Force 
 
@@ -50,6 +51,18 @@ $certfolder="c:\saaswalletcertificates\"
 
 $subname= "$sfClusterName.$resourcesLocation.cloudapp.azure.com"
 $vmsku = "Standard_D2_v2"
+
+# Certificate configuration
+# The temporary pfx location
+$pfxFilePath = 'c:\temp\certificate.pfx'
+# Temporary password, for installing and exporting the certificate
+$plainpass = '123456' 
+# The certificate DNS name
+$dnsName = 'testcert.contoso.com'
+
+# SQL DB
+$sqlAdminUsername = 'nimda12'
+$sqlAdminPassword = 'adminPass#12!word'
 
 # SCRIPT START
 
@@ -63,13 +76,13 @@ New-AzureRmResourceGroup -Name $resourceGroupName -Location $resourcesLocation
 
 # Deploy SQL server and configure it
 $script = $PSScriptRoot + "\deploySqlDB.ps1"
-& $script -resourcegroupname $resourceGroupName -location $resourcesLocation -adminlogin 'nimda12' -password 'adminPass#12!word'
+& $script -resourcegroupname $resourceGroupName -location $resourcesLocation -adminlogin $sqlAdminUsername -password $sqlAdminPassword
 
 # make sure the path exists
 New-Item -ItemType Directory -Force -Path $certfolder
 
 # Create the Service Fabric cluster.
-New-AzureRmServiceFabricCluster -Name $sfClusterName -ResourceGroupName $resourceGroupName -Location  "SouthCentralUS" `
+New-AzureRmServiceFabricCluster -Name $sfClusterName -ResourceGroupName $resourceGroupName -Location $resourcesLocation `
 -ClusterSize $clustersize -VmPassword $adminpwd -CertificateSubjectName $subname `
 -CertificateOutputFolder $certfolder -CertificatePassword $certpwd `
 -OS WindowsServer2016Datacenter
