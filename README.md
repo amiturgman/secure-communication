@@ -1,4 +1,4 @@
-# Core modules for crypto-currency virtual wallet [![Build Status](https://travis-ci.org/Azure/Secured-SaaS-Wallet.png?branch=master)](https://travis-ci.org/Azure/Secured-SaaS-Wallet)
+# Core modules for crypto-currency virtual wallet
 The project consists of the infrastructure Core modules needed for implementing a SaaS cryptocurrency virtual wallet. This project has the following modules:
 ### Secrets manager for the communication pipeline
 For abstracting the needed secrets for the encryption/signing operations over the sent messages
@@ -123,3 +123,6 @@ https://faucet.rinkeby.io/
 ![Tranfer funds to another address](/images/sendFunds.png)
 4. Press the 'Get balance' button
 ![Get the current balance](/images/getBalance.png)
+
+## Known Issues
+1. getting 'access denied' when the script trys to set a new secret into KeyVault: wrong object id was entered. refer to the pre-requisites step and make sure you the correct object id.
