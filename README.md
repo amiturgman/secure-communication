@@ -125,4 +125,4 @@ https://faucet.rinkeby.io/
 ![Get the current balance](/images/getBalance.png)
 
 ## Known Issues
-1. getting 'access denied' when the script trys to set a new secret into KeyVault: wrong object id was entered. refer to the pre-requisites step and make sure you the correct object id.
+1. Getting 'access denied' when the script trys to set a new secret into KeyVault: wrong object id was entered. refer to the pre-requisites step and make sure you are using the correct object id.
