@@ -74,6 +74,32 @@ Add-AzureRmAccount -Credential $cred -Tenant $tenantId -ServicePrincipal
 # Create Azure Resource group
 New-AzureRmResourceGroup -Name $resourceGroupName -Location $resourcesLocation
 
+# Creates the certificate
+$cert = New-SelfSignedCertificate -certstorelocation cert:\localmachine\my -dnsname $dnsName
+$pwd = ConvertTo-SecureString -String $plainpass -Force -AsPlainText
+$path = 'cert:\localMachine\my\' + $cert.thumbprint 
+Export-PfxCertificate -cert $path -FilePath $pfxFilePath -Password $pwd
+
+# Store the certificate in the AzureKeyVault
+$flag = [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable
+$collection = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2Collection
+$collection.Import($pfxFilePath, $plainpass, $flag)
+$pkcs12ContentType = [System.Security.Cryptography.X509Certificates.X509ContentType]::Pkcs12
+$clearBytes = $collection.Export($pkcs12ContentType, $plainpass)
+$fileContentEncoded = [System.Convert]::ToBase64String($clearBytes)
+$secret = ConvertTo-SecureString -String $fileContentEncoded -Force -AsPlainText
+$secretContentType = 'application/x-pkcs12'
+
+# Create the Key vault
+# Note: We are using the KeyVault related methods BEFORE the Service Fabric methods. due to the following known issue:
+# https://github.com/Azure/azure-powershell/issues/5636
+New-AzureRmKeyVault -VaultName $keyvaultName -ResourceGroupName $resourceGroupName -Location $resourcesLocation
+Set-AzureRmKeyVaultAccessPolicy -VaultName $keyvaultName -ObjectId $objectId -PermissionsToSecrets Get,Set,List
+Set-AzureKeyVaultSecret -VaultName $keyvaultName -Name $secretName -SecretValue $secret -ContentType $secretContentType
+
+# Delete local Certificate 
+Remove-Item -path $pfxFilePath
+
 # Deploy SQL server and configure it
 $script = $PSScriptRoot + "\deploySqlDB.ps1"
 & $script -resourcegroupname $resourceGroupName -location $resourcesLocation -adminlogin $sqlAdminUsername -password $sqlAdminPassword
@@ -95,27 +121,3 @@ $storageAccount = New-AzureRmStorageAccount -ResourceGroupName $resourceGroupNam
 
 $ctx = $storageAccount.Context
 $queue = New-AzureStorageQueue -Name $queueName -Context $ctx
-
-# Creates the certificate
-$cert = New-SelfSignedCertificate -certstorelocation cert:\localmachine\my -dnsname $dnsName
-$pwd = ConvertTo-SecureString -String $plainpass -Force -AsPlainText
-$path = 'cert:\localMachine\my\' + $cert.thumbprint 
-Export-PfxCertificate -cert $path -FilePath $pfxFilePath -Password $pwd
-
-# Store the certificate in the AzureKeyVault
-$flag = [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable
-$collection = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2Collection
-$collection.Import($pfxFilePath, $plainpass, $flag)
-$pkcs12ContentType = [System.Security.Cryptography.X509Certificates.X509ContentType]::Pkcs12
-$clearBytes = $collection.Export($pkcs12ContentType, $plainpass)
-$fileContentEncoded = [System.Convert]::ToBase64String($clearBytes)
-$secret = ConvertTo-SecureString -String $fileContentEncoded -Force -AsPlainText
-$secretContentType = 'application/x-pkcs12'
-
-# Create the Key vault
-New-AzureRmKeyVault -VaultName $keyvaultName -ResourceGroupName $resourceGroupName -Location $resourcesLocation
-Set-AzureRmKeyVaultAccessPolicy -VaultName $keyvaultName -ObjectId $objectId -PermissionsToSecrets Get,Set,List
-Set-AzureKeyVaultSecret -VaultName $keyvaultName -Name $secretName -SecretValue $secret -ContentType $secretContentType
-
-# Delete local Certificate 
-Remove-Item -path $pfxFilePath
