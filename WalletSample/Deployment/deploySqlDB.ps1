@@ -8,12 +8,12 @@ Param(
 	[Parameter( Mandatory = $true)]
 	$adminlogin,
 	[Parameter( Mandatory = $true)]
-	$password
+	$password,
+    [Parameter( Mandatory = $true)]
+	$servername,
+    [Parameter( Mandatory = $true)]
+	$databasename
 )
-# Set server name - the logical server name has to be unique in the system
-$servername = "server-$(Get-Random)"
-# The sample database name
-$databasename = "walletDatabase"
 
 # The ip address range that you want to allow to access your server
 $startip = "0.0.0.0"
