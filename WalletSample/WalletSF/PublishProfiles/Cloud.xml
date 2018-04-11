@@ -22,7 +22,7 @@
   -->
 
   <!-- Fill with your own certificate thumprint and SF cluster name -->
-  <!-- <ClusterConnectionParameters ConnectionEndpoint="<SFClusterName>.southcentralus.cloudapp.azure.com:19000" X509Credential="true" ServerCertThumbprint="E59709604163161EA8216D72222CB8D5C4B590C2" FindType="FindByThumbprint" FindValue="E59709604163161EA8216D72222CB8D5C4B590C2" StoreLocation="CurrentUser" StoreName="My" /> -->
+  <!-- <ClusterConnectionParameters ConnectionEndpoint="<SFClusterName>.<location>.cloudapp.azure.com:19000" X509Credential="true" ServerCertThumbprint="<Thumbprint-placeholder>" FindType="FindByThumbprint" FindValue="<Thumbprint-placeholder>" StoreLocation="LocalMachine" StoreName="My" /> -->
   <ApplicationParameterFile Path="..\ApplicationParameters\Cloud.xml" />
   <CopyPackageParameters CompressPackage="true" />
   <UpgradeDeployment Mode="Monitored" Enabled="false">

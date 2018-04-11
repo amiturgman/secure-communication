@@ -31,7 +31,7 @@ $resourcesLocation = '[The resources location]'
 # The Azure KeyVault Name
 $keyvaultName = "walletkv$(Get-Random)"
 # The Azure KeyVault secret name
-$secretName = 'encryptionCert'
+$secretName = 'myCert'
 
 # Queue
 $storageAccountName = "walletstorage$(Get-Random)"
@@ -44,9 +44,11 @@ $sfClusterName = "walletsf$(Get-Random)"
 # Service Fabric
 $clustersize = 5
 $adminuser = 'nimda13'
-$adminpwd="Password#1234" | ConvertTo-SecureString -AsPlainText -Force 
+$adminpwdPlain = "Password#1234"
+$adminpwd= $adminpwdPlain | ConvertTo-SecureString -AsPlainText -Force 
 
-$certpwd="Password#1234" | ConvertTo-SecureString -AsPlainText -Force
+$certpwdPlain = "Password#1234"
+$certpwd= $certpwdPlain | ConvertTo-SecureString -AsPlainText -Force
 $certfolder="c:\saaswalletcertificates\"
 
 $subname= "$sfClusterName.$resourcesLocation.cloudapp.azure.com"
@@ -63,7 +65,8 @@ $dnsName = 'testcert.contoso.com'
 # SQL DB
 $sqlAdminUsername = 'nimda12'
 $sqlAdminPassword = 'adminPass#12!word'
-
+$sqlServerName = "server-$(Get-Random)"
+$sqlDbName = "walletDatabase"
 # SCRIPT START
 
 # Login to Azure with service principal
@@ -102,7 +105,7 @@ Remove-Item -path $pfxFilePath
 
 # Deploy SQL server and configure it
 $script = $PSScriptRoot + "\deploySqlDB.ps1"
-& $script -resourcegroupname $resourceGroupName -location $resourcesLocation -adminlogin $sqlAdminUsername -password $sqlAdminPassword
+& $script -resourcegroupname $resourceGroupName -location $resourcesLocation -adminlogin $sqlAdminUsername -password $sqlAdminPassword -servername $sqlServerName -databasename $sqlDbName
 
 # make sure the path exists
 New-Item -ItemType Directory -Force -Path $certfolder
@@ -121,3 +124,7 @@ $storageAccount = New-AzureRmStorageAccount -ResourceGroupName $resourceGroupNam
 
 $ctx = $storageAccount.Context
 $queue = New-AzureStorageQueue -Name $queueName -Context $ctx
+
+# Save all generate values to config files
+$script = $PSScriptRoot + "\saveParams.ps1"
+& $script -resourcegroupname $resourceGroupName -storageName $storageAccountName -vaultName $keyvaultName -certificateName $secretName -certPassword $certpwdPlain -applicationId $applicationId -applicationSecret $applicationSecret -tenantId $tenantId -sqlUserId $adminuser -sqlUserPassword $adminpwdPlain -sqlCatalog $sqlDbName -sqlServerName $sqlServerName
