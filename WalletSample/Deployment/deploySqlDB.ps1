@@ -34,5 +34,4 @@ $serverfirewallrule = New-AzureRmSqlServerFirewallRule -ResourceGroupName $resou
 $database = New-AzureRmSqlDatabase  -ResourceGroupName $resourcegroupname `
     -ServerName $servername `
     -DatabaseName $databasename `
-    -RequestedServiceObjectiveName "S0" `
-    -SampleName "AdventureWorksLT"
+    -RequestedServiceObjectiveName "S0"

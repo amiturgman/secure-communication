@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WalletSample", "WalletSample", "{90D4D08A-DAD5-40ED-959E-4B560C75ADA4}"
 EndProject
@@ -13,7 +13,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", 
 		WalletSample\Deployment\keyGenerationScript.ps1 = WalletSample\Deployment\keyGenerationScript.ps1
 		WalletSample\Deployment\oneclick.ps1 = WalletSample\Deployment\oneclick.ps1
 		WalletSample\Deployment\parameters.json = WalletSample\Deployment\parameters.json
+		WalletSample\Deployment\saveParams.ps1 = WalletSample\Deployment\saveParams.ps1
 		WalletSample\Deployment\template.json = WalletSample\Deployment\template.json
+		WalletSample\Deployment\updateFile.ps1 = WalletSample\Deployment\updateFile.ps1
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blockchain", "Blockchain\Blockchain.csproj", "{5E606156-AE1C-4472-86D7-9A4FD87D910E}"
