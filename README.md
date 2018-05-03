@@ -92,6 +92,7 @@ The following instructions will help you get started with a working SaaS wallet 
    2. Go to Azure Active Directory -> Enterprise Applications -> All applications. 
    3. Filter for your recently created application. One of the columns is 'Object Id'. 
    4. Copy this value for later use.
+6. An Azure subscription id
 7. Install [Azure Powershell SDK](https://www.microsoft.com/web/handlers/webpi.ashx/getinstaller/WindowsAzurePowershellGet.3f.3f.3fnew.appids)
 8. Install [Service Fabric SDK for Visual Studio](https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-get-started)
 

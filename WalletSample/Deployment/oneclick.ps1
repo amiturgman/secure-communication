@@ -17,6 +17,8 @@ $objectId = '[Azure Service principal object id]'
 $applicationId= '[Azure application id]'
 # The  Azure Service principal secret
 $applicationSecret = "[Azure application key]"
+# The subscription id, where the resources will be created
+$subscriptionId = "Subscription Id"
 # -- End --
 
 ## The following are values which you decide
@@ -73,6 +75,7 @@ $sqlDbName = "walletDatabase"
 $SecurePassword = $applicationSecret | ConvertTo-SecureString -AsPlainText -Force
 $cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $applicationId, $SecurePassword
 Add-AzureRmAccount -Credential $cred -Tenant $tenantId -ServicePrincipal
+Select-AzureRmSubscription -SubscriptionId $subscriptionId
 
 # Create Azure Resource group
 New-AzureRmResourceGroup -Name $resourceGroupName -Location $resourcesLocation
