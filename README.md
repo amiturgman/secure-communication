@@ -83,7 +83,7 @@ var result = await ethereumNodeClient.GetPublicAddressAsync("0x012345...");
 The following instructions will help you get started with a working SaaS wallet deployed on Azure.
 
 ### Prerequisites
-1. An Azure subscription
+1. An Azure subscription id
 2. Setup an Azure Active Directory application
 3. Prepare the [Service principal id and secret and assign it to a contributor role](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-create-service-principal-portal)
 4. An Azure Active Directory TenantId - Same link as step 3
@@ -92,9 +92,8 @@ The following instructions will help you get started with a working SaaS wallet 
    2. Go to Azure Active Directory -> Enterprise Applications -> All applications. 
    3. Filter for your recently created application. One of the columns is 'Object Id'. 
    4. Copy this value for later use.
-6. An Azure subscription id
-7. Install [Azure Powershell SDK](https://www.microsoft.com/web/handlers/webpi.ashx/getinstaller/WindowsAzurePowershellGet.3f.3f.3fnew.appids)
-8. Install [Service Fabric SDK for Visual Studio](https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-get-started)
+6. Install [Azure Powershell SDK](https://www.microsoft.com/web/handlers/webpi.ashx/getinstaller/WindowsAzurePowershellGet.3f.3f.3fnew.appids)
+7. Install [Service Fabric SDK for Visual Studio](https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-get-started)
 
 ### Deploy resources
 1. Edit the parameters in the file [WalletSample/Deployment/oneclick.ps1](WalletSample/Deployment/oneclick.ps1)
