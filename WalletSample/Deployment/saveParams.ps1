@@ -14,8 +14,6 @@ Param(
     [Parameter( Mandatory = $true)]
 	$applicationSecret,
     [Parameter( Mandatory = $true)]
-	$tenantId,
-    [Parameter( Mandatory = $true)]
 	$sqlUserId,
     [Parameter( Mandatory = $true)]
 	$sqlUserPassword,
@@ -24,10 +22,6 @@ Param(
     [Parameter( Mandatory = $true)]
 	$sqlServerName
 )
-
-$SecurePassword = $applicationSecret | ConvertTo-SecureString -AsPlainText -Force
-$cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $applicationId, $SecurePassword
-Add-AzureRmAccount -Credential $cred -Tenant $tenantId -ServicePrincipal
 
 $key = (Get-AzureRmStorageAccountKey -ResourceGroupName $resourcegroupname -AccountName $storageName).Value[0]
 $storageConnString = "DefaultEndpointsProtocol=https;AccountName=$storageName;AccountKey=$key;EndpointSuffix=core.windows.net"

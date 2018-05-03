@@ -130,4 +130,4 @@ $queue = New-AzureStorageQueue -Name $queueName -Context $ctx
 
 # Save all generate values to config files
 $script = $PSScriptRoot + "\saveParams.ps1"
-& $script -resourcegroupname $resourceGroupName -storageName $storageAccountName -vaultName $keyvaultName -certificateName $secretName -certPassword $plainpass -applicationId $applicationId -applicationSecret $applicationSecret -tenantId $tenantId -sqlUserId $sqlAdminUsername -sqlUserPassword $sqlAdminPassword -sqlCatalog $sqlDbName -sqlServerName $sqlServerName
+& $script -resourcegroupname $resourceGroupName -storageName $storageAccountName -vaultName $keyvaultName -certificateName $secretName -certPassword $plainpass -applicationId $applicationId -applicationSecret $applicationSecret -sqlUserId $sqlAdminUsername -sqlUserPassword $sqlAdminPassword -sqlCatalog $sqlDbName -sqlServerName $sqlServerName
