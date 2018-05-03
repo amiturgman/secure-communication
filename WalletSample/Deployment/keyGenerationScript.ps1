@@ -50,9 +50,9 @@ Add-AzureRmAccount -Credential $cred -Tenant $tenantId -ServicePrincipal
 # Creates the certificate
 $pfxFilePath = $certTempDirectory + $secretName + '.pfx'
 $cerFilePath = $certTempDirectory + $secretName + '.cer'
-$cert = New-SelfSignedCertificate -certstorelocation cert:\localmachine\my -dnsname $dnsName
+$cert = New-SelfSignedCertificate -certstorelocation cert:\currentuser\my -dnsname $dnsName
 $pwd = ConvertTo-SecureString -String $plainpass -Force -AsPlainText
-$path = 'cert:\localMachine\my\' + $cert.thumbprint 
+$path = 'cert:\currentUser\my\' + $cert.thumbprint 
 # With private portion
 Export-PfxCertificate -cert $path -FilePath $pfxFilePath -Password $pwd
 # With public portion

@@ -55,7 +55,7 @@ $paths | ForEach-Object {
   & $script -filePath $_ -searchFor 'SqlUserID-PlaceHolder' -value $sqlUserId
   & $script -filePath $_ -searchFor 'SqlPassword-PlaceHolder' -value $sqlUserPassword
   & $script -filePath $_ -searchFor 'SqlInitialCatalog-PlaceHolder' -value $sqlCatalog
-  & $script -filePath $_ -searchFor 'SqlDataSource-PlaceHolder' -value $sqlServerName +'.database.windows.net'
+  & $script -filePath $_ -searchFor 'SqlDataSource-PlaceHolder' -value ($sqlServerName +'.database.windows.net')
 
   & $script -filePath $_ -searchFor 'EncryptionCertPassword-PlaceHolder' -value $certPassword
   & $script -filePath $_ -searchFor 'DecryptionCertPassword-PlaceHolder' -value $certPassword

@@ -78,9 +78,9 @@ Add-AzureRmAccount -Credential $cred -Tenant $tenantId -ServicePrincipal
 New-AzureRmResourceGroup -Name $resourceGroupName -Location $resourcesLocation
 
 # Creates the certificate
-$cert = New-SelfSignedCertificate -certstorelocation cert:\localmachine\my -dnsname $dnsName
+$cert = New-SelfSignedCertificate -certstorelocation cert:\currentuser\my -dnsname $dnsName
 $pwd = ConvertTo-SecureString -String $plainpass -Force -AsPlainText
-$path = 'cert:\localMachine\my\' + $cert.thumbprint 
+$path = 'cert:\currentUser\my\' + $cert.thumbprint 
 Export-PfxCertificate -cert $path -FilePath $pfxFilePath -Password $pwd
 
 # Store the certificate in the AzureKeyVault
